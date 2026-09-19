@@ -1,514 +1,822 @@
-import os
-import sys
-import re
-import json
-import random
-import shutil
-import zipfile
-import threading
-import subprocess
-from datetime import datetime
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, jsonify
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Servers</title>
+  
+  <!-- Google Fonts: আপনার দেওয়া ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
 
-app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+  <style>
+    /* ==========================================================
+       আপনার দেওয়া হুবহু Text Size এবং Exact Color কোড
+       ========================================================== */
+    :root {
+      /* Font Sizes */
+      --header-title-size: 26px;     /* 'My Servers' */
+      --create-btn-size: 15px;       /* '+ CREATE' */
+      --server-title-size: 19px;     /* 'Testing' */
+      --server-id-size: 13.5px;      /* 'testing_1779785743' */
+      --status-badge-size: 11.5px;   /* 'OFFLINE' */
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-BOTS_DIR = os.path.join(BASE_DIR, "bots")
-DATA_FILE = os.path.join(BASE_DIR, "servers.json")
+      /* Exact Colors */
+      --bg-color: #000000;           /* সম্পূর্ণ পিচ ব্ল্যাক ব্যাকগ্রাউন্ড */
+      --card-bg: #0e0f13;            /* কার্ডের আসল ডার্ক গ্রে কালার */
+      --card-border: #1a1b22;        /* কার্ডের চারপাশের সূক্ষ্ম বর্ডার */
+      --purple-btn: #9d5cd2;         /* পারফেক্ট পার্পল কালার */
+      --text-white: #ffffff;         /* হেডিং ও টাইটেলের জন্য */
+      --text-muted: #5e606b;         /* আইডি এবং অফলাইন টেক্সটের ছাই রঙ */
+      --badge-bg: #1a1b22;           /* অফলাইন ব্যাজের ব্যাকগ্রাউন্ড */
 
-os.makedirs(BOTS_DIR, exist_ok=True)
-DATA_LOCK = threading.Lock()
-RUNNING_PROCESSES = {}
-
-
-# ==================== HELPERS ====================
-
-def load_servers():
-    with DATA_LOCK:
-        if not os.path.exists(DATA_FILE):
-            with open(DATA_FILE, "w", encoding="utf-8") as f:
-                json.dump({}, f, indent=4)
-            return {}
-        try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return {}
-
-
-def save_servers(servers):
-    with DATA_LOCK:
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(servers, f, indent=4)
-
-
-def sanitize_server_id(server_id):
-    if not server_id or not isinstance(server_id, str):
-        return None
-    cleaned = re.sub(r'[^a-zA-Z0-9_\-]', '', server_id)
-    return cleaned if cleaned == server_id else None
-
-
-def get_safe_path(base_dir, relative_path=""):
-    clean_rel = relative_path.lstrip("/\\")
-    target_path = os.path.abspath(os.path.join(base_dir, clean_rel))
-    if os.path.commonpath([base_dir, target_path]) != base_dir:
-        return None
-    return target_path
-
-
-def sync_server_process(server_id, servers=None):
-    if servers is None:
-        servers = load_servers()
-
-    server = servers.get(server_id)
-    if not server:
-        return None
-
-    proc_info = RUNNING_PROCESSES.get(server_id)
-    if proc_info:
-        proc = proc_info.get("process")
-        if proc and proc.poll() is not None:
-            try:
-                proc_info["log_file"].close()
-            except Exception:
-                pass
-            del RUNNING_PROCESSES[server_id]
-            server["status"] = "stopped"
-            server["pid"] = None
-            save_servers(servers)
-    else:
-        if server.get("status") == "running":
-            server["status"] = "stopped"
-            server["pid"] = None
-            save_servers(servers)
-
-    return server
-
-
-def sync_all_servers():
-    servers = load_servers()
-    updated = False
-    for s_id in list(servers.keys()):
-        proc_info = RUNNING_PROCESSES.get(s_id)
-        if proc_info:
-            proc = proc_info.get("process")
-            if proc and proc.poll() is not None:
-                try:
-                    proc_info["log_file"].close()
-                except Exception:
-                    pass
-                del RUNNING_PROCESSES[s_id]
-                servers[s_id]["status"] = "stopped"
-                servers[s_id]["pid"] = None
-                updated = True
-        else:
-            if servers[s_id].get("status") == "running":
-                servers[s_id]["status"] = "stopped"
-                servers[s_id]["pid"] = None
-                updated = True
-
-    if updated:
-        save_servers(servers)
-    return servers
-
-
-# ==================== MAIN ROUTES ====================
-
-@app.route("/")
-def index():
-    servers = sync_all_servers()
-    return render_template("home.html", servers=servers)
-
-
-@app.route("/api/servers", methods=["GET"])
-def api_get_servers():
-    servers = sync_all_servers()
-    return jsonify({"status": "success", "servers": servers})
-
-
-@app.route("/api/server/<server_id>", methods=["GET"])
-def api_get_server(server_id):
-    clean_id = sanitize_server_id(server_id)
-    if not clean_id:
-        return jsonify({"status": "error", "message": "Invalid ID"}), 400
-
-    server = sync_server_process(clean_id)
-    if not server:
-        return jsonify({"status": "error", "message": "Server not found"}), 404
-
-    return jsonify({"status": "success", "server": server})
-
-
-@app.route("/api/create_server", methods=["POST"])
-def api_create_server():
-    data = request.get_json() or {}
-    name = data.get("name", "").strip()
-    if not name:
-        return jsonify({"status": "error", "message": "Server Name is required!"}), 400
-
-    # ID format matching: testing_1779785743
-    name_clean = re.sub(r'[^a-zA-Z0-9]', '', name).lower() or "server"
-    random_digits = "".join([str(random.randint(0, 9)) for _ in range(10)])
-    server_id = f"{name_clean}_{random_digits}"
-
-    server_dir = os.path.join(BOTS_DIR, server_id)
-    os.makedirs(server_dir, exist_ok=True)
-
-    # 1. Default main.py
-    main_code = (
-        'import time\n\n'
-        f'print("Starting {name}...")\n'
-        'counter = 0\n'
-        'while True:\n'
-        '    counter += 1\n'
-        '    print(f"[{time.strftime(\'%H:%M:%S\')}] Heartbeat #{counter} - Server online.")\n'
-        '    time.sleep(10)\n'
-    )
-    with open(os.path.join(server_dir, "main.py"), "w", encoding="utf-8") as f:
-        f.write(main_code)
-
-    # 2. requirements.txt
-    with open(os.path.join(server_dir, "requirements.txt"), "w", encoding="utf-8") as f:
-        f.write("# Add pip dependencies here\n")
-
-    # 3. output.log
-    with open(os.path.join(server_dir, "output.log"), "w", encoding="utf-8") as f:
-        f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Server created successfully.\n")
-
-    servers = load_servers()
-    new_server = {
-        "id": server_id,
-        "name": name,
-        "type": "Python",
-        "status": "stopped",
-        "pid": None,
-        "startup_file": "main.py",
-        "requirements_file": "requirements.txt",
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M")
-    }
-    servers[server_id] = new_server
-    save_servers(servers)
-
-    return jsonify({"status": "success", "message": "Server created successfully!", "server": new_server})
-
-
-@app.route("/api/start/<server_id>", methods=["POST"])
-def api_start_server(server_id):
-    clean_id = sanitize_server_id(server_id)
-    servers = load_servers()
-    server = sync_server_process(clean_id, servers)
-    if not server:
-        return jsonify({"status": "error", "message": "Server not found"}), 404
-
-    if clean_id in RUNNING_PROCESSES:
-        return jsonify({"status": "error", "message": "Server already running"}), 400
-
-    server_dir = os.path.join(BOTS_DIR, clean_id)
-    startup_file = server.get("startup_file", "main.py")
-    startup_path = os.path.join(server_dir, startup_file)
-
-    if not os.path.exists(startup_path):
-        return jsonify({"status": "error", "message": f"'{startup_file}' not found"}), 404
-
-    log_path = os.path.join(server_dir, "output.log")
-    log_file = open(log_path, "a", encoding="utf-8", buffering=1)
-
-    req_file = server.get("requirements_file", "requirements.txt")
-    req_path = os.path.join(server_dir, req_file)
-    if os.path.exists(req_path) and os.path.getsize(req_path) > 5:
-        log_file.write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Installing dependencies...\n")
-        try:
-            subprocess.run(
-                [sys.executable, "-m", "pip", "install", "-r", req_file],
-                cwd=server_dir,
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                timeout=45
-            )
-        except Exception as e:
-            log_file.write(f"Pip error: {str(e)}\n")
-
-    env = os.environ.copy()
-    env["PYTHONUNBUFFERED"] = "1"
-
-    try:
-        proc = subprocess.Popen(
-            [sys.executable, "-u", startup_file],
-            cwd=server_dir,
-            stdout=log_file,
-            stderr=subprocess.STDOUT,
-            stdin=subprocess.PIPE,
-            text=True,
-            bufsize=1,
-            env=env
-        )
-    except Exception as e:
-        log_file.close()
-        return jsonify({"status": "error", "message": f"Launch failed: {str(e)}"}), 500
-
-    RUNNING_PROCESSES[clean_id] = {
-        "process": proc,
-        "log_file": log_file,
-        "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      /* Online Green Colors */
+      --online-green: #22c55e;
+      --badge-online-bg: #11241a;
     }
 
-    server["status"] = "running"
-    server["pid"] = proc.pid
-    save_servers(servers)
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    return jsonify({"status": "success", "message": "Server started successfully!"})
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--text-white);
+      display: flex;
+      justify-content: center;
+      padding: 30px 16px;
+      min-height: 100vh;
+    }
+
+    /* স্ক্রিনের উইডথ ও কন্টেইনার */
+    .wrapper {
+      width: 100%;
+      max-width: 480px; /* মোবাইল রেশিও অনুযায়ী */
+    }
+
+    /* TOAST */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: #14151c;
+      border-left: 4px solid var(--purple-btn);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      pointer-events: auto;
+    }
+
+    /* ১. হেডার পার্ট */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: var(--header-title-size);
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    /* '+ CREATE' বাটন */
+    .create-button {
+      background-color: var(--purple-btn);
+      color: #ffffff;
+      border: none;
+      outline: none;
+      padding: 10px 20px;
+      border-radius: 16px;
+      font-size: var(--create-btn-size);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.15s ease, transform 0.1s ease;
+    }
+
+    .create-button:hover { opacity: 0.9; }
+    .create-button:active { transform: scale(0.97); }
+
+    .plus-symbol {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1;
+      margin-top: -1px;
+    }
+
+    /* ২. সার্ভার কার্ড লিস্ট */
+    .servers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* আপনার দেওয়া হুবহু সার্ভার কার্ড (কোনো CPU, RAM বা DISK ছাড়া) */
+    .server-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .server-card:hover {
+      transform: translateY(-2px);
+      border-color: #2b2c38;
+    }
+
+    /* বাম পাশের সার্ভার ইনফো */
+    .server-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .server-name {
+      font-size: var(--server-title-size);
+      font-weight: 800;
+      color: var(--text-white);
+      line-height: 1.2;
+    }
+
+    .server-id {
+      font-family: 'Roboto Mono', ui-monospace, monospace;
+      font-size: var(--server-id-size);
+      color: var(--text-muted);
+      letter-spacing: -0.3px;
+    }
+
+    /* ৩. অফলাইন / অনলাইন ব্যাজ (ডান পাশে) */
+    .offline-badge {
+      background-color: var(--badge-bg);
+      padding: 6px 14px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .offline-badge.online {
+      background-color: var(--badge-online-bg);
+    }
+
+    .offline-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--text-muted);
+    }
+    .offline-badge.online .offline-dot {
+      background-color: var(--online-green);
+    }
+
+    .offline-text {
+      font-size: var(--status-badge-size);
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+      line-height: 1;
+    }
+    .offline-badge.online .offline-text {
+      color: var(--online-green);
+    }
+
+    /* ==========================================================
+       ম্যানেজমেন্ট ভিউ (সার্ভার কার্ডে ক্লিক করলে যা ওপেন হবে)
+       ========================================================== */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .panel-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: #14151d;
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--purple-btn);
+      color: #fff;
+      border-color: var(--purple-btn);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn-action {
+      padding: 11px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn-start { background: #16a34a; }
+    .btn-stop { background: #dc2626; }
+    .btn-restart { background: #7c3aed; }
+
+    /* টার্মিনাল */
+    .terminal {
+      background: #050508;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      height: 380px;
+      padding: 14px;
+      color: #22c55e;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12.5px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+    .cmd-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .cmd-input {
+      flex-grow: 1;
+      background: #08080d;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      outline: none;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+    }
+
+    /* ফাইল ম্যানেজার */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .file-table th, .file-table td {
+      padding: 10px 6px;
+      text-align: left;
+      border-bottom: 1px solid #161720;
+    }
+    .file-table th { color: var(--text-muted); font-size: 12px; }
+    .file-click { cursor: pointer; color: #fff; font-weight: 600; }
+    .file-click:hover { color: var(--purple-btn); }
+
+    /* মোডাল */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+    }
+    .input-field {
+      width: 100%;
+      background: #08080c;
+      border: 1px solid var(--card-border);
+      padding: 11px 14px;
+      border-radius: 12px;
+      color: #fff;
+      margin: 8px 0 16px 0;
+      outline: none;
+      font-size: 14px;
+    }
+    .input-field:focus { border-color: var(--purple-btn); }
+    .btn-secondary {
+      background: #191a24;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast-container"></div>
+
+  <div class="wrapper">
+
+    <!-- ================= ১. MY SERVERS (হুবহু আপনার দেওয়া ডিজাইন) ================= -->
+    <div id="view-home" class="view-section active">
+      <div class="header-row">
+        <h1 class="title">My Servers</h1>
+        <button class="create-button" onclick="openCreateModal()">
+          <span class="plus-symbol">+</span> CREATE
+        </button>
+      </div>
+
+      <div id="servers-container" class="servers-list">
+        <!-- সার্ভার কার্ড জাভাস্ক্রিপ্ট দিয়ে এখানে লোড হবে -->
+      </div>
+    </div>
 
 
-@app.route("/api/stop/<server_id>", methods=["POST"])
-def api_stop_server(server_id):
-    clean_id = sanitize_server_id(server_id)
-    servers = load_servers()
-    server = servers.get(clean_id)
-    if not server:
-        return jsonify({"status": "error", "message": "Server not found"}), 404
+    <!-- ================= ২. SERVER DETAILS & CONTROLS ================= -->
+    <div id="view-dashboard" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <button class="btn-secondary" onclick="backToHome()">← Back to Servers</button>
+        <span id="nav-server-title" style="font-weight: 800; font-size: 15px;"></span>
+      </div>
 
-    proc_info = RUNNING_PROCESSES.get(clean_id)
-    if proc_info:
-        proc = proc_info.get("process")
-        try:
-            proc.terminate()
-            proc.wait(timeout=3)
-        except Exception:
-            try:
-                proc.kill()
-            except Exception:
-                pass
-        try:
-            proc_info["log_file"].write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Server stopped.\n")
-            proc_info["log_file"].close()
-        except Exception:
-            pass
-        del RUNNING_PROCESSES[clean_id]
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('tab-overview')">Overview</button>
+        <button class="tab-btn" onclick="switchTab('tab-console')">Console</button>
+        <button class="tab-btn" onclick="switchTab('tab-files')">Files</button>
+        <button class="tab-btn" onclick="switchTab('tab-settings')">Settings</button>
+      </div>
 
-    server["status"] = "stopped"
-    server["pid"] = None
-    save_servers(servers)
+      <!-- OVERVIEW -->
+      <div id="tab-overview" class="tab-content">
+        <div class="panel-box">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="server-info">
+              <div class="server-name" id="d-name">Server</div>
+              <div class="server-id" id="d-id">id</div>
+            </div>
+            <div id="d-badge" class="offline-badge">
+              <span class="offline-dot"></span>
+              <span id="d-status-text" class="offline-text">OFFLINE</span>
+            </div>
+          </div>
 
-    return jsonify({"status": "success", "message": "Server stopped successfully!"})
+          <div class="action-grid">
+            <button class="btn-action btn-start" onclick="power('start')">Start</button>
+            <button class="btn-action btn-stop" onclick="power('stop')">Stop</button>
+            <button class="btn-action btn-restart" onclick="power('restart')">Restart</button>
+          </div>
+        </div>
+      </div>
 
+      <!-- CONSOLE -->
+      <div id="tab-console" class="tab-content" style="display: none;">
+        <div class="panel-box" style="padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 800;">LIVE TERMINAL</span>
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearLogs()">Clear</button>
+          </div>
+          <div id="terminal" class="terminal">Loading logs...</div>
+          <form class="cmd-bar" onsubmit="sendCmd(event)">
+            <input type="text" id="cmd-input" class="cmd-input" placeholder="Type command..." autocomplete="off">
+            <button type="submit" class="create-button" style="padding: 0 16px; border-radius: 12px;">Send</button>
+          </form>
+        </div>
+      </div>
 
-@app.route("/api/restart/<server_id>", methods=["POST"])
-def api_restart_server(server_id):
-    api_stop_server(server_id)
-    return api_start_server(server_id)
+      <!-- FILES -->
+      <div id="tab-files" class="tab-content" style="display: none;">
+        <div class="panel-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span id="fm-current-path" style="font-size: 12px; color: var(--purple-btn); font-family: 'Roboto Mono', monospace;">root</span>
+            <div style="display: flex; gap: 6px;">
+              <input type="file" id="fm-upload" style="display: none;" onchange="uploadFile(event)">
+              <button class="btn-secondary" style="font-size: 12px;" onclick="document.getElementById('fm-upload').click()">↑ Upload</button>
+              <button class="btn-secondary" style="font-size: 12px;" onclick="newFolderPrompt()">+ Folder</button>
+            </div>
+          </div>
 
+          <table class="file-table">
+            <thead>
+              <tr><th>Name</th><th>Size</th><th style="text-align: right;">Action</th></tr>
+            </thead>
+            <tbody id="files-list"></tbody>
+          </table>
+        </div>
+      </div>
 
-@app.route("/api/server/<server_id>", methods=["DELETE"])
-def api_delete_server(server_id):
-    clean_id = sanitize_server_id(server_id)
-    api_stop_server(clean_id)
+      <!-- SETTINGS -->
+      <div id="tab-settings" class="tab-content" style="display: none;">
+        <div class="panel-box">
+          <h3 style="margin-bottom: 14px; font-size: 16px;">Server Settings</h3>
+          <form onsubmit="saveSettings(event)">
+            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Server Name</label>
+            <input type="text" id="s-name" class="input-field" required>
 
-    server_dir = os.path.join(BOTS_DIR, clean_id)
-    if os.path.exists(server_dir):
-        shutil.rmtree(server_dir, ignore_errors=True)
+            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Startup Script</label>
+            <input type="text" id="s-startup" class="input-field" required>
 
-    servers = load_servers()
-    if clean_id in servers:
-        del servers[clean_id]
-        save_servers(servers)
+            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Requirements File</label>
+            <input type="text" id="s-reqs" class="input-field" required>
 
-    return jsonify({"status": "success", "message": "Server deleted successfully!"})
+            <button type="submit" class="create-button" style="width: 100%; justify-content: center;">Save Changes</button>
+          </form>
 
+          <hr style="border: none; border-top: 1px solid var(--card-border); margin: 24px 0 16px 0;">
 
-# ==================== FILE MANAGER ====================
+          <button class="btn-secondary" style="background: #dc2626; width: 100%; font-weight: 800;" onclick="deleteCurrentServer()">
+            Delete Server Permanently
+          </button>
+        </div>
+      </div>
 
-@app.route("/api/files/<server_id>", methods=["GET"])
-def api_list_files(server_id):
-    clean_id = sanitize_server_id(server_id)
-    server_dir = os.path.join(BOTS_DIR, clean_id)
-    subpath = request.args.get("path", "").strip()
-    target_dir = get_safe_path(server_dir, subpath)
+    </div>
 
-    if not target_dir or not os.path.isdir(target_dir):
-        return jsonify({"status": "error", "message": "Invalid directory"}), 400
+  </div>
 
-    items = []
-    for entry in sorted(os.listdir(target_dir)):
-        entry_path = os.path.join(target_dir, entry)
-        is_dir = os.path.isdir(entry_path)
-        try:
-            stat = os.stat(entry_path)
-            size = stat.st_size
-            mtime = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
-        except Exception:
-            size, mtime = 0, "-"
+  <!-- MODAL: CREATE SERVER -->
+  <div id="modal-create" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 12px; font-size: 18px;">Create New Server</h3>
+      <form onsubmit="handleCreate(event)">
+        <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">SERVER NAME</label>
+        <input type="text" id="c-name" class="input-field" placeholder="e.g. Testing" required>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" class="create-button">
+            <span class="plus-symbol">+</span> CREATE
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-        items.append({"name": entry, "is_dir": is_dir, "size": size, "mtime": mtime})
+  <!-- MODAL: FILE EDITOR -->
+  <div id="modal-editor" class="modal-overlay">
+    <div class="modal-card" style="max-width: 600px;">
+      <h3 id="edit-filename" style="margin-bottom: 12px; font-size: 16px;">Edit File</h3>
+      <textarea id="edit-content" class="input-field" style="height: 320px; font-family: 'Roboto Mono', monospace; font-size: 13px;"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn-secondary" onclick="closeEditorModal()">Cancel</button>
+        <button type="button" class="create-button" onclick="saveEditedFile()">Save</button>
+      </div>
+    </div>
+  </div>
 
-    rel = os.path.relpath(target_dir, server_dir).replace("\\", "/")
-    return jsonify({"status": "success", "files": items, "current_path": "" if rel == "." else rel})
+  <script>
+    let ACTIVE_ID = null;
+    let FM_PATH = "";
+    let EDIT_PATH = "";
+    let LOG_TIMER = null;
 
+    function showToast(msg, isErr = false) {
+      const c = document.getElementById("toast-container");
+      const t = document.createElement("div");
+      t.className = "toast";
+      if (isErr) t.style.borderLeftColor = "#ef4444";
+      t.innerText = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
 
-@app.route("/api/file/<server_id>", methods=["GET", "POST", "DELETE"])
-def api_file_action(server_id):
-    clean_id = sanitize_server_id(server_id)
-    server_dir = os.path.join(BOTS_DIR, clean_id)
+    async function loadServers() {
+      try {
+        const res = await fetch("/api/servers");
+        const data = await res.json();
+        if (data.status === "success") {
+          renderCards(data.servers);
+        }
+      } catch (e) {
+        showToast("Connection error", true);
+      }
+    }
 
-    if request.method == "GET":
-        target = get_safe_path(server_dir, request.args.get("path", ""))
-        if not target or not os.path.isfile(target):
-            return jsonify({"status": "error", "message": "File not found"}), 404
-        try:
-            with open(target, "r", encoding="utf-8", errors="replace") as f:
-                return jsonify({"status": "success", "content": f.read()})
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
+    /* হুবহু আপনার দেওয়া HTML অনুযায়ী কার্ড রেন্ডার হবে */
+    function renderCards(servers) {
+      const container = document.getElementById("servers-container");
+      container.innerHTML = "";
 
-    elif request.method == "POST":
-        data = request.get_json() or {}
-        target = get_safe_path(server_dir, data.get("path", ""))
-        if not target:
-            return jsonify({"status": "error", "message": "Invalid path"}), 400
-        try:
-            with open(target, "w", encoding="utf-8") as f:
-                f.write(data.get("content", ""))
-            return jsonify({"status": "success", "message": "File saved!"})
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
+      const keys = Object.keys(servers);
+      if (keys.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px 16px; color: var(--text-muted); border: 1px dashed var(--card-border); border-radius: 20px;">
+            <p style="font-weight: 700;">No servers created yet.</p>
+          </div>
+        `;
+        return;
+      }
 
-    elif request.method == "DELETE":
-        target = get_safe_path(server_dir, request.args.get("path", ""))
-        if not target or target == server_dir:
-            return jsonify({"status": "error", "message": "Cannot delete server root"}), 400
-        try:
-            if os.path.isdir(target):
-                shutil.rmtree(target)
-            else:
-                os.remove(target)
-            return jsonify({"status": "success", "message": "Deleted successfully!"})
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
+      keys.forEach(id => {
+        const s = servers[id];
+        const isOnline = s.status === "running";
 
+        const card = document.createElement("div");
+        card.className = "server-card";
+        card.onclick = () => openDashboard(s.id); // কার্ডে ক্লিক করলে ড্যাশবোর্ড ওপেন হবে
 
-@app.route("/api/upload/<server_id>", methods=["POST"])
-def api_upload_file(server_id):
-    clean_id = sanitize_server_id(server_id)
-    server_dir = os.path.join(BOTS_DIR, clean_id)
-    target_dir = get_safe_path(server_dir, request.form.get("path", ""))
+        card.innerHTML = `
+          <div class="server-info">
+            <div class="server-name">${escapeHtml(s.name)}</div>
+            <div class="server-id">${escapeHtml(s.id)}</div>
+          </div>
 
-    if not target_dir or not os.path.isdir(target_dir) or 'file' not in request.files:
-        return jsonify({"status": "error", "message": "Upload error"}), 400
+          <div class="offline-badge ${isOnline ? 'online' : ''}">
+            <span class="offline-dot"></span>
+            <span class="offline-text">${isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-    if not filename:
-        return jsonify({"status": "error", "message": "Invalid filename"}), 400
+    // Dashboard Controller
+    async function openDashboard(id) {
+      ACTIVE_ID = id;
+      document.getElementById("view-home").classList.remove("active");
+      document.getElementById("view-dashboard").classList.add("active");
+      switchTab('tab-overview');
+      refreshDashboard();
+    }
 
-    file.save(os.path.join(target_dir, filename))
-    return jsonify({"status": "success", "message": f"'{filename}' uploaded!"})
+    function backToHome() {
+      if (LOG_TIMER) clearInterval(LOG_TIMER);
+      document.getElementById("view-dashboard").classList.remove("active");
+      document.getElementById("view-home").classList.add("active");
+      loadServers();
+    }
 
+    async function refreshDashboard() {
+      if (!ACTIVE_ID) return;
+      const res = await fetch(`/api/server/${ACTIVE_ID}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        const s = data.server;
+        document.getElementById("nav-server-title").innerText = s.name;
+        document.getElementById("d-name").innerText = s.name;
+        document.getElementById("d-id").innerText = s.id;
 
-@app.route("/api/create_folder/<server_id>", methods=["POST"])
-def api_create_folder(server_id):
-    clean_id = sanitize_server_id(server_id)
-    server_dir = os.path.join(BOTS_DIR, clean_id)
-    data = request.get_json() or {}
-    folder_name = secure_filename(data.get("name", "").strip())
-    target_dir = get_safe_path(server_dir, data.get("path", ""))
+        const isOnline = s.status === "running";
+        const badge = document.getElementById("d-badge");
+        badge.className = `offline-badge ${isOnline ? 'online' : ''}`;
+        document.getElementById("d-status-text").innerText = isOnline ? "ONLINE" : "OFFLINE";
 
-    if not folder_name or not target_dir:
-        return jsonify({"status": "error", "message": "Invalid folder name"}), 400
+        document.getElementById("s-name").value = s.name;
+        document.getElementById("s-startup").value = s.startup_file;
+        document.getElementById("s-reqs").value = s.requirements_file;
+      }
+    }
 
-    try:
-        os.makedirs(os.path.join(target_dir, folder_name), exist_ok=False)
-        return jsonify({"status": "success", "message": f"Folder '{folder_name}' created!"})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+    async function power(action) {
+      if (!ACTIVE_ID) return;
+      const res = await fetch(`/api/${action}/${ACTIVE_ID}`, { method: "POST" });
+      const data = await res.json();
+      showToast(data.message, data.status !== "success");
+      refreshDashboard();
+    }
 
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+      document.getElementById(tabId).style.display = "block";
 
-# ==================== CONSOLE ====================
+      const btn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick").includes(tabId));
+      if (btn) btn.classList.add("active");
 
-@app.route("/api/logs/<server_id>", methods=["GET"])
-def api_logs(server_id):
-    clean_id = sanitize_server_id(server_id)
-    log_path = os.path.join(BOTS_DIR, clean_id, "output.log")
-    if not os.path.exists(log_path):
-        return jsonify({"status": "success", "logs": ""})
-    try:
-        with open(log_path, "r", encoding="utf-8", errors="replace") as f:
-            return jsonify({"status": "success", "logs": "".join(f.readlines()[-200:])})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+      if (LOG_TIMER) clearInterval(LOG_TIMER);
 
+      if (tabId === 'tab-console') {
+        fetchLogs();
+        LOG_TIMER = setInterval(fetchLogs, 2500);
+      } else if (tabId === 'tab-files') {
+        FM_PATH = "";
+        loadFiles("");
+      }
+    }
 
-@app.route("/api/clear_logs/<server_id>", methods=["POST"])
-def api_clear_logs(server_id):
-    clean_id = sanitize_server_id(server_id)
-    log_path = os.path.join(BOTS_DIR, clean_id, "output.log")
-    try:
-        with open(log_path, "w", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Console cleared.\n")
-        return jsonify({"status": "success", "message": "Cleared!"})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+    // Console
+    async function fetchLogs() {
+      if (!ACTIVE_ID) return;
+      const res = await fetch(`/api/logs/${ACTIVE_ID}`);
+      const data = await res.json();
+      if (data.status === "success") {
+        const t = document.getElementById("terminal");
+        t.innerText = data.logs || "Console ready.";
+        t.scrollTop = t.scrollHeight;
+      }
+    }
 
+    async function clearLogs() {
+      if (!ACTIVE_ID) return;
+      await fetch(`/api/clear_logs/${ACTIVE_ID}`, { method: "POST" });
+      fetchLogs();
+    }
 
-@app.route("/api/command", methods=["POST"])
-def api_command():
-    data = request.get_json() or {}
-    server_id = sanitize_server_id(data.get("server_id"))
-    cmd = data.get("command", "").strip()
+    async function sendCmd(e) {
+      e.preventDefault();
+      const input = document.getElementById("cmd-input");
+      const cmd = input.value.trim();
+      if (!cmd || !ACTIVE_ID) return;
+      input.value = "";
 
-    if not server_id or not cmd:
-        return jsonify({"status": "error", "message": "Invalid request"}), 400
+      await fetch("/api/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ server_id: ACTIVE_ID, command: cmd })
+      });
+      fetchLogs();
+    }
 
-    server_dir = os.path.join(BOTS_DIR, server_id)
-    log_path = os.path.join(server_dir, "output.log")
+    // Files
+    async function loadFiles(path = "") {
+      FM_PATH = path;
+      document.getElementById("fm-current-path").innerText = path ? `root/${path}` : "root";
+      const res = await fetch(`/api/files/${ACTIVE_ID}?path=${encodeURIComponent(path)}`);
+      const data = await res.json();
+      const tbody = document.getElementById("files-list");
+      tbody.innerHTML = "";
 
-    proc_info = RUNNING_PROCESSES.get(server_id)
-    if proc_info and proc_info.get("process") and proc_info["process"].poll() is None:
-        try:
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(f"\n> {cmd}\n")
-            proc_info["process"].stdin.write(cmd + "\n")
-            proc_info["process"].stdin.flush()
-            return jsonify({"status": "success", "message": "Piped to stdin"})
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
-    else:
-        try:
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(f"\n> {cmd}\n")
-                subprocess.run(cmd, shell=True, cwd=server_dir, stdout=f, stderr=subprocess.STDOUT, timeout=10)
-            return jsonify({"status": "success", "message": "Executed"})
-        except Exception as e:
-            return jsonify({"status": "error", "message": str(e)}), 500
+      if (path) {
+        const parent = path.includes("/") ? path.substring(0, path.lastIndexOf("/")) : "";
+        tbody.innerHTML += `<tr><td colspan="3"><span class="file-click" onclick="loadFiles('${parent}')">📁 .. (Back)</span></td></tr>`;
+      }
 
+      data.files.forEach(f => {
+        const p = path ? `${path}/${f.name}` : f.name;
+        tbody.innerHTML += `
+          <tr>
+            <td><span class="file-click" onclick="${f.is_dir ? `loadFiles('${p}')` : `editFile('${p}')`}">${f.is_dir ? '📁' : '📄'} ${escapeHtml(f.name)}</span></td>
+            <td style="color: var(--text-muted); font-family: 'Roboto Mono', monospace;">${f.is_dir ? '-' : formatBytes(f.size)}</td>
+            <td style="text-align: right;">
+              ${!f.is_dir ? `<button class="btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="editFile('${p}')">Edit</button>` : ''}
+              <button class="btn-secondary" style="padding: 2px 8px; font-size: 11px; color: #ef4444;" onclick="deleteFile('${p}')">✕</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
 
-# ==================== SETTINGS ====================
+    async function editFile(p) {
+      EDIT_PATH = p;
+      const res = await fetch(`/api/file/${ACTIVE_ID}?path=${encodeURIComponent(p)}`);
+      const d = await res.json();
+      if (d.status === "success") {
+        document.getElementById("edit-filename").innerText = `Edit: ${p}`;
+        document.getElementById("edit-content").value = d.content;
+        document.getElementById("modal-editor").classList.add("open");
+      }
+    }
 
-@app.route("/api/server/<server_id>/settings", methods=["POST"])
-def api_update_settings(server_id):
-    clean_id = sanitize_server_id(server_id)
-    servers = load_servers()
-    server = servers.get(clean_id)
-    if not server:
-        return jsonify({"status": "error", "message": "Server not found"}), 404
+    async function saveEditedFile() {
+      const content = document.getElementById("edit-content").value;
+      const res = await fetch(`/api/file/${ACTIVE_ID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: EDIT_PATH, content: content })
+      });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      closeEditorModal();
+      loadFiles(FM_PATH);
+    }
 
-    data = request.get_json() or {}
-    name = data.get("name", "").strip()
-    startup = secure_filename(data.get("startup_file", "main.py"))
-    reqs = secure_filename(data.get("requirements_file", "requirements.txt"))
+    async function uploadFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("path", FM_PATH);
+      const res = await fetch(`/api/upload/${ACTIVE_ID}`, { method: "POST", body: fd });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(FM_PATH);
+      e.target.value = "";
+    }
 
-    if not name:
-        return jsonify({"status": "error", "message": "Server name required"}), 400
+    async function newFolderPrompt() {
+      const name = prompt("Folder Name:");
+      if (!name) return;
+      const res = await fetch(`/api/create_folder/${ACTIVE_ID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: FM_PATH, name: name })
+      });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(FM_PATH);
+    }
 
-    server["name"] = name
-    server["startup_file"] = startup or "main.py"
-    server["requirements_file"] = reqs or "requirements.txt"
-    save_servers(servers)
+    async function deleteFile(p) {
+      if (!confirm(`Delete ${p}?`)) return;
+      const res = await fetch(`/api/file/${ACTIVE_ID}?path=${encodeURIComponent(p)}`, { method: "DELETE" });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(FM_PATH);
+    }
 
-    return jsonify({"status": "success", "message": "Settings updated!"})
+    function closeEditorModal() { document.getElementById("modal-editor").classList.remove("open"); }
 
+    // Settings
+    async function saveSettings(e) {
+      e.preventDefault();
+      const res = await fetch(`/api/server/${ACTIVE_ID}/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: document.getElementById("s-name").value.trim(),
+          startup_file: document.getElementById("s-startup").value.trim(),
+          requirements_file: document.getElementById("s-reqs").value.trim()
+        })
+      });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      refreshDashboard();
+    }
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    async function deleteCurrentServer() {
+      if (!confirm("Are you sure? All files and logs will be erased.")) return;
+      const res = await fetch(`/api/server/${ACTIVE_ID}`, { method: "DELETE" });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      backToHome();
+    }
+
+    // Modal
+    function openCreateModal() { document.getElementById("modal-create").classList.add("open"); }
+    function closeCreateModal() { document.getElementById("modal-create").classList.remove("open"); }
+
+    async function handleCreate(e) {
+      e.preventDefault();
+      const name = document.getElementById("c-name").value.trim();
+      if (!name) return;
+
+      const res = await fetch("/api/create_server", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name })
+      });
+      const d = await res.json();
+      if (d.status === "success") {
+        showToast(d.message);
+        closeCreateModal();
+        document.getElementById("c-name").value = "";
+        loadServers();
+      } else {
+        showToast(d.message, true);
+      }
+    }
+
+    function escapeHtml(s) {
+      return (s || "").replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+    }
+    function formatBytes(b) {
+      if (!b) return '0 B';
+      const k = 1024, sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(b) / Math.log(k));
+      return parseFloat((b / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    window.addEventListener("DOMContentLoaded", loadServers);
+  </script>
+</body>
+</html>
