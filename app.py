@@ -11,12 +11,6 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, jsonify
 
-try:
-    import psutil
-    HAS_PSUTIL = True
-except ImportError:
-    HAS_PSUTIL = False
-
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
@@ -65,36 +59,6 @@ def get_safe_path(base_dir, relative_path=""):
     return target_path
 
 
-def get_directory_size_mb(path):
-    total = 0
-    if not os.path.exists(path):
-        return 0.0
-    for dirpath, _, filenames in os.walk(path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            try:
-                total += os.path.getsize(fp)
-            except Exception:
-                pass
-    return round(total / (1024 * 1024), 2)
-
-
-def get_process_metrics(proc):
-    cpu = 0.0
-    ram_mb = 0.0
-    if not proc or proc.poll() is not None:
-        return cpu, ram_mb
-
-    if HAS_PSUTIL:
-        try:
-            p = psutil.Process(proc.pid)
-            ram_mb = round(p.memory_info().rss / (1024 * 1024), 1)
-            cpu = round(p.cpu_percent(interval=None), 1)
-        except Exception:
-            pass
-    return cpu, ram_mb
-
-
 def sync_server_process(server_id, servers=None):
     if servers is None:
         servers = load_servers()
@@ -121,17 +85,6 @@ def sync_server_process(server_id, servers=None):
             server["pid"] = None
             save_servers(servers)
 
-    server_dir = os.path.join(BOTS_DIR, server_id)
-    server["disk_used_mb"] = get_directory_size_mb(server_dir)
-
-    if server.get("status") == "running" and server_id in RUNNING_PROCESSES:
-        cpu, ram = get_process_metrics(RUNNING_PROCESSES[server_id].get("process"))
-        server["cpu_percent"] = cpu
-        server["ram_used_mb"] = ram
-    else:
-        server["cpu_percent"] = 0.0
-        server["ram_used_mb"] = 0.0
-
     return server
 
 
@@ -156,16 +109,6 @@ def sync_all_servers():
                 servers[s_id]["status"] = "stopped"
                 servers[s_id]["pid"] = None
                 updated = True
-
-        server_dir = os.path.join(BOTS_DIR, s_id)
-        servers[s_id]["disk_used_mb"] = get_directory_size_mb(server_dir)
-        if servers[s_id].get("status") == "running" and s_id in RUNNING_PROCESSES:
-            cpu, ram = get_process_metrics(RUNNING_PROCESSES[s_id].get("process"))
-            servers[s_id]["cpu_percent"] = cpu
-            servers[s_id]["ram_used_mb"] = ram
-        else:
-            servers[s_id]["cpu_percent"] = 0.0
-            servers[s_id]["ram_used_mb"] = 0.0
 
     if updated:
         save_servers(servers)
@@ -206,7 +149,7 @@ def api_create_server():
     if not name:
         return jsonify({"status": "error", "message": "Server Name is required!"}), 400
 
-    # ID format matching screenshot: testing_1779785743
+    # ID format matching: testing_1779785743
     name_clean = re.sub(r'[^a-zA-Z0-9]', '', name).lower() or "server"
     random_digits = "".join([str(random.randint(0, 9)) for _ in range(10)])
     server_id = f"{name_clean}_{random_digits}"
@@ -240,16 +183,11 @@ def api_create_server():
         "id": server_id,
         "name": name,
         "type": "Python",
-        "ram_max_mb": 8192,
-        "disk_max_mb": 20480,
         "status": "stopped",
         "pid": None,
         "startup_file": "main.py",
         "requirements_file": "requirements.txt",
-        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "disk_used_mb": 0.01,
-        "ram_used_mb": 0.0,
-        "cpu_percent": 0.0
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M")
     }
     servers[server_id] = new_server
     save_servers(servers)
