@@ -6,32 +6,32 @@
   <title>My Servers</title>
   <style>
     :root {
-      --bg-body: #000000;
-      --card-bg: #121216;
-      --card-border: #1a1a22;
-      --purple-btn: #9959bb;
+      --bg-page: #0a0a0d;
+      --card-surface: #131318;
+      --card-border: #1c1c24;
+      --purple-btn: #9a5bb7;
       --purple-btn-hover: #8848aa;
       --text-white: #ffffff;
-      --text-id: #5f6170;
-      --badge-bg: #1c1d24;
+      --text-muted-id: #555765;
+      --badge-bg: #1c1d25;
       --badge-text: #717382;
       --badge-online-bg: #11241a;
       --badge-online-text: #22c55e;
       --stat-title: #727482;
       --stat-val: #cfcfe0;
-      --progress-track: #20202d;
-      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --progress-track: #1f1f2b;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: var(--font);
+      font-family: var(--font-stack);
     }
 
     body {
-      background-color: var(--bg-body);
+      background-color: var(--bg-page);
       color: var(--text-white);
       min-height: 100vh;
       display: flex;
@@ -44,7 +44,7 @@
       max-width: 480px;
     }
 
-    /* TOAST */
+    /* TOAST NOTIFICATION */
     #toast-container {
       position: fixed;
       top: 16px;
@@ -65,7 +65,9 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     }
 
-    /* TOP HEADER: EXACT SCREENSHOT MATCH */
+    /* ====================================================
+       TOP HEADER: EXACT MATCH WITH SCREENSHOT
+    ==================================================== */
     .top-header {
       display: flex;
       justify-content: space-between;
@@ -77,17 +79,17 @@
       font-size: 1.55rem;
       font-weight: 700;
       letter-spacing: -0.3px;
-      color: #ffffff;
+      color: var(--text-white);
     }
     .btn-create {
       background-color: var(--purple-btn);
       color: #ffffff;
       border: none;
-      padding: 9px 18px;
-      border-radius: 12px;
+      padding: 10px 20px;
+      border-radius: 14px;
       font-weight: 700;
       font-size: 0.88rem;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -97,7 +99,9 @@
     .btn-create:hover { background-color: var(--purple-btn-hover); }
     .btn-create:active { transform: scale(0.97); }
 
-    /* SERVER CARD: EXACT SCREENSHOT MATCH */
+    /* ====================================================
+       SERVER CARD: EXACT MATCH WITH SCREENSHOT
+    ==================================================== */
     .servers-list {
       display: flex;
       flex-direction: column;
@@ -105,20 +109,20 @@
     }
 
     .server-card {
-      background: var(--card-bg);
+      background: var(--card-surface);
       border: 1px solid var(--card-border);
       border-radius: 18px;
-      padding: 20px 20px 18px 20px;
+      padding: 20px 22px 18px 22px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    /* CARD TOP: Testing & testing_1779785743 + • OFFLINE */
+    /* CARD HEADER: Testing & testing_1779785743 + • OFFLINE */
     .card-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .server-titles {
@@ -137,19 +141,19 @@
     .server-id-text {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       font-size: 0.85rem;
-      color: var(--text-id);
+      color: var(--text-muted-id);
       margin-top: 5px;
       letter-spacing: -0.1px;
     }
 
-    /* BADGE: • OFFLINE */
+    /* STATUS BADGE: • OFFLINE / • ONLINE */
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       padding: 6px 14px;
       border-radius: 9999px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.6px;
       text-transform: uppercase;
@@ -227,7 +231,7 @@
       color: #ffffff;
       border: none;
       width: 100%;
-      padding: 12px 0;
+      padding: 13px 0;
       border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 700;
@@ -242,12 +246,12 @@
     .btn-manage:hover { background: var(--purple-btn-hover); }
     .btn-manage:active { transform: scale(0.98); }
 
-    /* MANAGEMENT SUB-PANEL VIEW */
+    /* SUB PANEL (DASHBOARD) */
     .panel-view { display: none; }
     .panel-view.active { display: block; }
 
     .panel-card {
-      background: var(--card-bg);
+      background: var(--card-surface);
       border: 1px solid var(--card-border);
       border-radius: 18px;
       padding: 20px;
@@ -391,7 +395,7 @@
 
   <div class="container">
 
-    <!-- ================= VIEW 1: MY SERVERS (EXACT CROP MATCH) ================= -->
+    <!-- ================= VIEW 1: MY SERVERS (EXACT SCREENSHOT) ================= -->
     <div id="view-servers" class="panel-view active">
       <div class="top-header">
         <h1>My Servers</h1>
@@ -399,7 +403,7 @@
       </div>
 
       <div id="servers-list" class="servers-list">
-        <!-- Server Cards Dynamically Rendered -->
+        <!-- Rendered via JS -->
       </div>
     </div>
 
@@ -461,7 +465,7 @@
       <div id="tab-console" class="tab-content" style="display: none;">
         <div class="panel-card" style="padding: 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 0.85rem; color: var(--stat-title);">Live Console Output</span>
+            <span style="font-size: 0.85rem; color: var(--stat-title);">Terminal Log Output</span>
             <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="clearLogs()">Clear</button>
           </div>
           <div id="terminal-box" class="terminal">Loading console...</div>
@@ -609,7 +613,7 @@
         const card = document.createElement("div");
         card.className = "server-card";
         card.innerHTML = `
-          <!-- CARD TOP: EXACT SCREENSHOT MATCH -->
+          <!-- CARD TOP: EXACT SCREENSHOT REPLICA -->
           <div class="card-top">
             <div class="server-titles">
               <div class="server-title">${escapeHtml(s.name)}</div>
@@ -620,7 +624,7 @@
             </div>
           </div>
 
-          <!-- METRICS -->
+          <!-- METRICS BARS -->
           <div class="stats-section">
             <div class="stat-row">
               <div class="stat-labels">
