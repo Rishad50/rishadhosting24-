@@ -6,35 +6,36 @@
   <title>My Servers</title>
   <style>
     :root {
-      --bg-color: #0c0d12;
-      --card-bg: #14161f;
-      --card-border: #1f2230;
-      --purple: #9d5ce5;
-      --purple-hover: #b072f5;
+      --bg-body: #000000;
+      --card-bg: #121216;
+      --card-border: #1a1a22;
+      --purple-btn: #9959bb;
+      --purple-btn-hover: #8848aa;
       --text-white: #ffffff;
-      --text-muted: #858c9f;
-      --online-bg: #10261c;
-      --online-text: #22c55e;
-      --offline-bg: #1f232f;
-      --offline-text: #8e95a5;
-      --danger: #ef4444;
-      --progress-bg: #1d2130;
-      --radius-card: 22px;
+      --text-id: #5f6170;
+      --badge-bg: #1c1d24;
+      --badge-text: #717382;
+      --badge-online-bg: #11241a;
+      --badge-online-text: #22c55e;
+      --stat-title: #727482;
+      --stat-val: #cfcfe0;
+      --progress-track: #20202d;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: var(--font);
     }
 
     body {
-      background-color: var(--bg-color);
+      background-color: var(--bg-body);
       color: var(--text-white);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      min-height: 100vh;
       padding: 24px 16px;
     }
 
@@ -46,302 +47,306 @@
     /* TOAST */
     #toast-container {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 16px;
+      right: 16px;
       z-index: 9999;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      pointer-events: none;
     }
     .toast {
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      background: #1c202d;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #1c1d25;
+      border-left: 4px solid var(--purple-btn);
       color: #fff;
-      border-left: 4px solid var(--purple);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      animation: fadeIn 0.25s ease;
+      font-size: 0.86rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     }
-    .toast.success { border-left-color: var(--online-text); }
-    .toast.error { border-left-color: var(--danger); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* HEADER */
+    /* TOP HEADER: EXACT SCREENSHOT MATCH */
     .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
+      padding: 0 2px;
     }
     .top-header h1 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #ffffff;
     }
     .btn-create {
-      background-color: var(--purple);
-      color: #fff;
+      background-color: var(--purple-btn);
+      color: #ffffff;
       border: none;
-      padding: 10px 18px;
+      padding: 9px 18px;
       border-radius: 12px;
-      font-weight: 800;
-      font-size: 0.9rem;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.4px;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
-      transition: background 0.2s, transform 0.1s;
+      gap: 6px;
+      transition: background 0.15s ease, transform 0.1s ease;
     }
-    .btn-create:hover { background-color: var(--purple-hover); }
+    .btn-create:hover { background-color: var(--purple-btn-hover); }
     .btn-create:active { transform: scale(0.97); }
 
-    /* CARDS */
+    /* SERVER CARD: EXACT SCREENSHOT MATCH */
+    .servers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
     .server-card {
-      background-color: var(--card-bg);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-card);
-      padding: 22px;
-      margin-bottom: 20px;
+      border-radius: 18px;
+      padding: 20px 20px 18px 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    .server-card-top {
+    /* CARD TOP: Testing & testing_1779785743 + • OFFLINE */
+    .card-top {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-    }
-    .server-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .server-icon {
-      width: 48px;
-      height: 48px;
-      background: #201e33;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #bb86fc;
-      font-size: 1.4rem;
-    }
-    .server-name {
-      font-size: 1.12rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .server-id {
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      font-weight: 600;
-      margin-top: 2px;
+      align-items: flex-start;
     }
 
-    .badge-status {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-    }
-    .badge-status.offline {
-      background: var(--offline-bg);
-      color: var(--offline-text);
-    }
-    .badge-status.online {
-      background: var(--online-bg);
-      color: var(--online-text);
-    }
-
-    /* METRIC ROWS */
-    .metric-item {
+    .server-titles {
       display: flex;
       flex-direction: column;
-      gap: 5px;
     }
-    .metric-header {
+
+    .server-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+
+    .server-id-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.85rem;
+      color: var(--text-id);
+      margin-top: 5px;
+      letter-spacing: -0.1px;
+    }
+
+    /* BADGE: • OFFLINE */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+    .status-badge.online {
+      background: var(--badge-online-bg);
+      color: var(--badge-online-text);
+    }
+    .status-badge .bullet-dot {
+      font-size: 0.85rem;
+      line-height: 0;
+    }
+
+    /* STATS METRICS & PROGRESS BARS */
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 4px;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-labels {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.88rem;
-      font-weight: 700;
+      font-size: 0.85rem;
     }
-    .metric-label {
+
+    .stat-name {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--text-muted);
+      color: var(--stat-title);
+      font-weight: 600;
       letter-spacing: 0.5px;
     }
-    .metric-value {
-      color: var(--text-white);
-      font-weight: 600;
+    .stat-name svg {
+      width: 15px;
+      height: 15px;
+      fill: var(--stat-title);
     }
 
-    .progress-bar-bg {
+    .stat-val {
+      font-weight: 600;
+      color: var(--stat-val);
+      font-size: 0.85rem;
+    }
+
+    .progress-bar-track {
       width: 100%;
-      height: 4px;
-      background-color: var(--progress-bg);
+      height: 3px;
+      background: var(--progress-track);
       border-radius: 4px;
       overflow: hidden;
-      margin-top: 2px;
     }
     .progress-bar-fill {
       height: 100%;
-      background: #60a5fa;
-      border-radius: 4px;
+      background: var(--purple-btn);
       width: 0%;
       transition: width 0.3s ease;
     }
+    .progress-bar-fill.blue { background: #38bdf8; }
 
     /* MANAGE BUTTON */
     .btn-manage {
-      width: 100%;
-      background-color: var(--purple);
-      color: #fff;
+      background: var(--purple-btn);
+      color: #ffffff;
       border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-weight: 700;
+      width: 100%;
+      padding: 12px 0;
+      border-radius: 12px;
       font-size: 0.95rem;
-      cursor: pointer;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: background 0.2s, transform 0.1s;
+      cursor: pointer;
       margin-top: 4px;
+      transition: background 0.15s ease, transform 0.1s ease;
     }
-    .btn-manage:hover { background-color: var(--purple-hover); }
+    .btn-manage:hover { background: var(--purple-btn-hover); }
     .btn-manage:active { transform: scale(0.98); }
 
-    /* VIEW SWITCHER */
-    .view-page { display: none; }
-    .view-page.active { display: block; }
+    /* MANAGEMENT SUB-PANEL VIEW */
+    .panel-view { display: none; }
+    .panel-view.active { display: block; }
 
-    /* DETAILS VIEW (DASHBOARD/FILES/CONSOLE) */
-    .back-nav {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .back-nav:hover { color: #fff; }
-
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
       margin-bottom: 16px;
     }
-    .btn-action {
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-    .btn-start { background: #16a34a; color: #fff; }
-    .btn-stop { background: var(--danger); color: #fff; }
-    .btn-restart { background: #7c3aed; color: #fff; }
 
-    .tab-bar {
+    .panel-nav {
       display: flex;
       gap: 8px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 8px;
+      margin-bottom: 18px;
       overflow-x: auto;
     }
-    .tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
+    .panel-nav button {
+      background: #191a24;
+      color: #9295a6;
+      border: 1px solid var(--card-border);
       padding: 8px 14px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.88rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
     }
-    .tab-btn.active {
-      background: #1c202e;
+    .panel-nav button.active {
+      background: var(--purple-btn);
       color: #fff;
+      border-color: var(--purple-btn);
     }
 
-    .terminal-box {
-      background: #08090d;
-      border: 1px solid #1c202e;
-      border-radius: 14px;
-      padding: 14px;
-      height: 360px;
-      overflow-y: auto;
+    .btn-action-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn-action {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn-start { background: #16a34a; }
+    .btn-stop { background: #dc2626; }
+    .btn-restart { background: #7c3aed; }
+
+    /* CONSOLE */
+    .terminal {
+      background: #08080c;
+      border: 1px solid #1c1c28;
+      border-radius: 12px;
+      height: 380px;
+      padding: 12px;
+      color: #22c55e;
       font-family: monospace;
       font-size: 0.85rem;
-      color: #00ff88;
+      overflow-y: auto;
       white-space: pre-wrap;
       line-height: 1.4;
-      margin-bottom: 12px;
     }
-
-    .cmd-row {
+    .terminal-input-bar {
       display: flex;
       gap: 8px;
+      margin-top: 10px;
     }
-    .cmd-input {
-      flex: 1;
-      background: #12141c;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px 14px;
+    .terminal-input {
+      flex-grow: 1;
+      background: #0d0d14;
+      border: 1px solid #232334;
       color: #fff;
-      font-family: monospace;
+      padding: 10px 12px;
+      border-radius: 10px;
       outline: none;
+      font-family: monospace;
     }
-    .cmd-input:focus { border-color: var(--purple); }
 
-    /* FILE MANAGER TABLE */
-    .fm-list {
-      background: #0f1118;
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: 16px;
+    /* FILE MANAGER */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      margin-top: 12px;
     }
-    .fm-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      border-bottom: 1px solid #181b26;
-      font-size: 0.9rem;
+    .file-table th, .file-table td {
+      padding: 10px 6px;
+      text-align: left;
+      border-bottom: 1px solid #1a1a28;
     }
-    .fm-row:last-child { border-bottom: none; }
-    .fm-name {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #cbd5e1;
-      font-weight: 600;
-    }
-    .fm-name:hover { color: var(--purple); }
+    .file-table th { color: var(--stat-title); }
+    .file-name-click { cursor: pointer; color: #e2e8f0; font-weight: 500; }
+    .file-name-click:hover { color: #c084fc; }
 
     /* MODAL */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -349,482 +354,538 @@
       padding: 16px;
     }
     .modal-overlay.open { display: flex; }
-    .modal-content {
-      background: var(--card-bg);
+    .modal-box {
+      background: #14141e;
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-card);
+      border-radius: 16px;
       width: 100%;
       max-width: 440px;
-      padding: 24px;
+      padding: 22px;
     }
-    .modal-content input, .modal-content textarea {
+    .modal-box h3 { margin-bottom: 14px; font-size: 1.2rem; }
+    .form-input {
       width: 100%;
-      background: #0d0f15;
-      border: 1px solid var(--card-border);
-      padding: 12px;
+      background: #0b0b10;
+      border: 1px solid #232334;
+      padding: 10px 14px;
       border-radius: 10px;
       color: #fff;
-      margin: 12px 0 20px 0;
+      margin-bottom: 14px;
       outline: none;
-      font-size: 0.95rem;
     }
-    .modal-content input:focus, .modal-content textarea:focus { border-color: var(--purple); }
+    .form-input:focus { border-color: var(--purple-btn); }
+    .btn-secondary {
+      background: #20202c;
+      color: #fff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <!-- NOTIFICATIONS -->
   <div id="toast-container"></div>
 
   <div class="container">
 
-    <!-- ================= VIEW 1: MY SERVERS (MATCHING SCREENSHOT) ================= -->
-    <div id="view-my-servers" class="view-page active">
+    <!-- ================= VIEW 1: MY SERVERS (EXACT CROP MATCH) ================= -->
+    <div id="view-servers" class="panel-view active">
       <div class="top-header">
         <h1>My Servers</h1>
         <button class="btn-create" onclick="openCreateModal()">+ CREATE</button>
       </div>
 
-      <div id="servers-list">
-        <!-- Server cards will be injected dynamically -->
+      <div id="servers-list" class="servers-list">
+        <!-- Server Cards Dynamically Rendered -->
       </div>
     </div>
 
 
-    <!-- ================= VIEW 2: SERVER DETAIL / MANAGE ================= -->
-    <div id="view-server-manage" class="view-page">
-      <div class="back-nav" onclick="switchView('my-servers')">
-        <span>←</span> Back to Servers
+    <!-- ================= VIEW 2: SERVER DASHBOARD ================= -->
+    <div id="view-manage" class="panel-view">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+        <button class="btn-secondary" onclick="backToServers()">← Back</button>
+        <span id="active-panel-title" style="font-weight: 700;"></span>
       </div>
 
-      <div class="server-card" style="margin-bottom: 16px;">
-        <div class="server-card-top">
-          <div class="server-brand">
-            <div class="server-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-            </div>
+      <div class="panel-nav">
+        <button class="active" onclick="switchTab('tab-overview')">Overview</button>
+        <button onclick="switchTab('tab-console')">Console</button>
+        <button onclick="switchTab('tab-files')">Files</button>
+        <button onclick="switchTab('tab-settings')">Settings</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div id="tab-overview" class="tab-content">
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div class="server-name" id="manage-name">SERVER</div>
-              <div class="server-id" id="manage-id">#00000000</div>
+              <h2 id="m-server-name" style="font-size: 1.25rem;">Server</h2>
+              <p id="m-server-id" class="server-id-text"></p>
+            </div>
+            <div id="m-status-badge" class="status-badge">
+              <span class="bullet-dot">•</span> <span id="m-status-text">OFFLINE</span>
             </div>
           </div>
-          <div id="manage-badge" class="badge-status offline">Offline</div>
-        </div>
 
-        <div class="action-grid" style="margin-top: 10px;">
-          <button class="btn-action btn-start" onclick="startActiveServer()">▶ Start</button>
-          <button class="btn-action btn-stop" onclick="stopActiveServer()">■ Stop</button>
-          <button class="btn-action btn-restart" onclick="restartActiveServer()">↻ Restart</button>
-        </div>
-      </div>
-
-      <!-- TABS -->
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('console')">Console</button>
-        <button class="tab-btn" onclick="switchTab('files')">Files</button>
-        <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
-      </div>
-
-      <!-- TAB: CONSOLE -->
-      <div id="tab-console" class="tab-content">
-        <div id="console-terminal" class="terminal-box">Connecting to log stream...</div>
-        <form class="cmd-row" onsubmit="sendCommand(event)">
-          <input type="text" id="cmd-input" class="cmd-input" placeholder="Enter command..." autocomplete="off">
-          <button type="submit" class="btn-create" style="padding: 10px 16px;">Send</button>
-        </form>
-      </div>
-
-      <!-- TAB: FILES -->
-      <div id="tab-files" class="tab-content" style="display: none;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
-          <span id="breadcrumb" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;" onclick="loadFiles('')">root</span>
-          <div style="display: flex; gap: 8px;">
-            <input type="file" id="file-uploader" style="display: none;" onchange="uploadFile(event)">
-            <button class="btn-create" style="padding: 6px 12px; font-size: 0.8rem;" onclick="document.getElementById('file-uploader').click()">Upload</button>
-            <button class="btn-create" style="padding: 6px 12px; font-size: 0.8rem; background: #232838;" onclick="newFolder()">+ Folder</button>
+          <div class="btn-action-group">
+            <button class="btn-action btn-start" onclick="powerAction('start')">Start</button>
+            <button class="btn-action btn-stop" onclick="powerAction('stop')">Stop</button>
+            <button class="btn-action btn-restart" onclick="powerAction('restart')">Restart</button>
           </div>
         </div>
-        <div class="fm-list" id="files-tbody">
-          <!-- Files list -->
+
+        <div class="panel-card">
+          <h4 style="margin-bottom: 12px; font-size: 0.9rem; color: var(--stat-title);">Assigned Resources</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: #0b0b10; padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+              <span style="font-size: 0.75rem; color: var(--stat-title);">CPU</span>
+              <h3 id="m-cpu" style="margin-top: 4px;">0%</h3>
+            </div>
+            <div style="background: #0b0b10; padding: 12px; border-radius: 10px; border: 1px solid var(--card-border);">
+              <span style="font-size: 0.75rem; color: var(--stat-title);">RAM</span>
+              <h3 id="m-ram" style="margin-top: 4px;">0 / 8192 MB</h3>
+            </div>
+            <div style="background: #0b0b10; padding: 12px; border-radius: 10px; border: 1px solid var(--card-border); grid-column: span 2;">
+              <span style="font-size: 0.75rem; color: var(--stat-title);">DISK</span>
+              <h3 id="m-disk" style="margin-top: 4px;">0 / 20480 MB</h3>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- TAB: SETTINGS -->
+      <!-- CONSOLE -->
+      <div id="tab-console" class="tab-content" style="display: none;">
+        <div class="panel-card" style="padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.85rem; color: var(--stat-title);">Live Console Output</span>
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="clearLogs()">Clear</button>
+          </div>
+          <div id="terminal-box" class="terminal">Loading console...</div>
+          <form class="terminal-input-bar" onsubmit="sendCommand(event)">
+            <input type="text" id="term-input" class="terminal-input" placeholder="Type command..." autocomplete="off">
+            <button type="submit" class="btn-create" style="border-radius: 10px;">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- FILES -->
+      <div id="tab-files" class="tab-content" style="display: none;">
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span id="fm-path" style="font-size: 0.85rem; color: #a855f7; font-family: monospace;">root</span>
+            <div style="display: flex; gap: 6px;">
+              <input type="file" id="fm-file-input" style="display: none;" onchange="uploadSelectedFile(event)">
+              <button class="btn-secondary" style="font-size: 0.75rem;" onclick="document.getElementById('fm-file-input').click()">↑ Upload</button>
+              <button class="btn-secondary" style="font-size: 0.75rem;" onclick="createFolderPrompt()">+ Folder</button>
+            </div>
+          </div>
+
+          <table class="file-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="files-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
       <div id="tab-settings" class="tab-content" style="display: none;">
-        <div class="server-card">
-          <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">SERVER NAME</label>
-          <input type="text" id="set-name" class="cmd-input" style="margin: 6px 0 14px 0;">
+        <div class="panel-card">
+          <h3 style="margin-bottom: 14px; font-size: 1.1rem;">Configuration</h3>
+          <form onsubmit="saveServerSettings(event)">
+            <label style="font-size: 0.8rem; color: var(--stat-title);">Server Name</label>
+            <input type="text" id="set-name" class="form-input" required>
 
-          <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">STARTUP FILE</label>
-          <input type="text" id="set-startup" class="cmd-input" style="margin: 6px 0 14px 0;">
+            <label style="font-size: 0.8rem; color: var(--stat-title);">Startup Script</label>
+            <input type="text" id="set-startup" class="form-input" required>
 
-          <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">REQUIREMENTS FILE</label>
-          <input type="text" id="set-reqs" class="cmd-input" style="margin: 6px 0 16px 0;">
+            <label style="font-size: 0.8rem; color: var(--stat-title);">Requirements File</label>
+            <input type="text" id="set-reqs" class="form-input" required>
 
-          <button class="btn-manage" onclick="saveSettings()">Save Settings</button>
-          <button class="btn-manage" style="background: var(--danger); margin-top: 10px;" onclick="deleteActiveServer()">Delete Server</button>
+            <button type="submit" class="btn-create" style="width: 100%; justify-content: center;">Save Changes</button>
+          </form>
+
+          <hr style="border: none; border-top: 1px solid var(--card-border); margin: 24px 0 16px 0;">
+
+          <button class="btn-secondary" style="background: #ef4444; width: 100%; font-weight: 700;" onclick="deleteActiveServer()">
+            Delete Server
+          </button>
         </div>
       </div>
-
     </div>
 
   </div>
 
-  <!-- MODAL: CREATE SERVER -->
+  <!-- MODAL: CREATE -->
   <div id="modal-create" class="modal-overlay">
-    <div class="modal-content">
-      <h2 style="font-size: 1.3rem; margin-bottom: 8px;">Create New Server</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Enter your bot/server name below:</p>
-      <input type="text" id="create-name" placeholder="e.g. FLEX ROSE BOT">
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-manage" style="background: #232838;" onclick="closeModal('modal-create')">Cancel</button>
-        <button class="btn-manage" onclick="submitCreateServer()">Create</button>
-      </div>
+    <div class="modal-box">
+      <h3>Create New Server</h3>
+      <form onsubmit="createServerSubmit(event)">
+        <label style="font-size: 0.85rem; color: var(--stat-title); margin-bottom: 4px; display: block;">SERVER NAME</label>
+        <input type="text" id="create-name" class="form-input" placeholder="e.g. Testing" required>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn-create">+ CREATE</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- MODAL: FILE EDITOR -->
   <div id="modal-editor" class="modal-overlay">
-    <div class="modal-content" style="max-width: 580px;">
-      <h3 id="editor-title" style="margin-bottom: 8px;">Edit File</h3>
-      <textarea id="editor-text" style="height: 320px; font-family: monospace; font-size: 0.85rem;"></textarea>
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-manage" style="background: #232838;" onclick="closeModal('modal-editor')">Cancel</button>
-        <button class="btn-manage" onclick="saveActiveFile()">Save</button>
+    <div class="modal-box" style="max-width: 600px;">
+      <h3 id="edit-file-name">Edit File</h3>
+      <textarea id="edit-file-content" class="form-input" style="height: 320px; font-family: monospace; font-size: 0.88rem;"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn-secondary" onclick="closeEditorModal()">Cancel</button>
+        <button type="button" class="btn-create" onclick="saveFileContent()">Save</button>
       </div>
     </div>
   </div>
 
   <script>
     let ACTIVE_SERVER_ID = null;
-    let ACTIVE_FILE_PATH = "";
+    let CURRENT_FILE_PATH = "";
+    let EDITING_TARGET = "";
     let LOG_TIMER = null;
 
-    function toast(msg, type = "success") {
+    function showToast(msg, isError = false) {
       const c = document.getElementById("toast-container");
       const t = document.createElement("div");
-      t.className = `toast ${type}`;
+      t.className = "toast";
+      if (isError) t.style.borderLeftColor = "#ef4444";
       t.innerText = msg;
       c.appendChild(t);
-      setTimeout(() => t.remove(), 3200);
+      setTimeout(() => { t.remove(); }, 3000);
     }
 
-    function switchView(view) {
-      document.querySelectorAll(".view-page").forEach(el => el.classList.remove("active"));
-      document.getElementById(`view-${view}`).classList.add("active");
-      if (view === "my-servers") {
-        if (LOG_TIMER) clearInterval(LOG_TIMER);
-        loadServers();
-      }
-    }
-
-    function switchTab(tab) {
-      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
-      event.target.classList.add("active");
-      document.getElementById(`tab-${tab}`).style.display = "block";
-
-      if (tab === "console") {
-        fetchLogs();
-        if (!LOG_TIMER) LOG_TIMER = setInterval(fetchLogs, 2500);
-      } else {
-        if (LOG_TIMER) clearInterval(LOG_TIMER);
-      }
-      if (tab === "files") loadFiles();
-    }
-
-    function openCreateModal() {
-      document.getElementById("create-name").value = "";
-      document.getElementById("modal-create").classList.add("open");
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
-    }
-
-    // ==================== LOAD SERVERS (EXACT UI) ====================
     async function loadServers() {
       try {
         const res = await fetch("/api/servers");
         const data = await res.json();
-        const list = document.getElementById("servers-list");
-        list.innerHTML = "";
-
-        const keys = Object.keys(data.servers || {});
-        if (keys.length === 0) {
-          list.innerHTML = `
-            <div style="text-align: center; padding: 40px 10px; color: var(--text-muted);">
-              No servers available. Click <b>+ CREATE</b> to make one!
-            </div>`;
-          return;
+        if (data.status === "success") {
+          renderServerCards(data.servers);
         }
+      } catch (err) {
+        showToast("Error connecting to panel", true);
+      }
+    }
 
-        keys.forEach(id => {
-          const s = data.servers[id];
-          const isOnline = s.status === "running";
-          const ramPct = Math.min(100, Math.round((s.ram_used / s.ram_max) * 100));
-          const diskPct = Math.min(100, Math.round((s.disk_used / s.disk_max) * 100));
+    function renderServerCards(servers) {
+      const container = document.getElementById("servers-list");
+      container.innerHTML = "";
 
-          const card = document.createElement("div");
-          card.className = "server-card";
-          card.innerHTML = `
-            <div class="server-card-top">
-              <div class="server-brand">
-                <div class="server-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-                </div>
-                <div>
-                  <div class="server-name">${escapeHtml(s.name)}</div>
-                  <div class="server-id">#${s.id}</div>
-                </div>
-              </div>
-              <div class="badge-status ${isOnline ? 'online' : 'offline'}">${isOnline ? 'Online' : 'Offline'}</div>
+      const keys = Object.keys(servers);
+      if (keys.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px 16px; color: var(--stat-title); border: 1px dashed var(--card-border); border-radius: 16px;">
+            <p>No servers yet. Tap <strong>+ CREATE</strong> above.</p>
+          </div>
+        `;
+        return;
+      }
+
+      keys.forEach(id => {
+        const s = servers[id];
+        const isOnline = s.status === "running";
+        const ramUsed = s.ram_used_mb || 0;
+        const ramMax = s.ram_max_mb || 8192;
+        const ramPercent = Math.min(100, Math.round((ramUsed / ramMax) * 100));
+
+        const diskUsed = s.disk_used_mb || 0;
+        const diskMax = s.disk_max_mb || 20480;
+        const diskPercent = Math.min(100, Math.round((diskUsed / diskMax) * 100));
+
+        const card = document.createElement("div");
+        card.className = "server-card";
+        card.innerHTML = `
+          <!-- CARD TOP: EXACT SCREENSHOT MATCH -->
+          <div class="card-top">
+            <div class="server-titles">
+              <div class="server-title">${escapeHtml(s.name)}</div>
+              <div class="server-id-text">${escapeHtml(s.id)}</div>
             </div>
+            <div class="status-badge ${isOnline ? 'online' : ''}">
+              <span class="bullet-dot">•</span> ${isOnline ? 'ONLINE' : 'OFFLINE'}
+            </div>
+          </div>
 
-            <!-- CPU -->
-            <div class="metric-item">
-              <div class="metric-header">
-                <span class="metric-label">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          <!-- METRICS -->
+          <div class="stats-section">
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span class="stat-name">
+                  <svg viewBox="0 0 24 24"><path d="M6 4h12v16H6V4zm2 2v12h8V6H8zm-4 3H2v2h2V9zm0 4H2v2h2v-2zm18-4h-2v2h2V9zm0 4h-2v2h2v-2zM9 2h2v2H9V2zm4 0h2v2h-2V2zm-4 18h2v2H9v-2zm4 0h2v2h-2v-2z"/></svg>
                   CPU
                 </span>
-                <span class="metric-value">0%</span>
+                <span class="stat-val">${s.cpu_percent || 0}%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: ${Math.min(100, s.cpu_percent || 0)}%"></div>
               </div>
             </div>
 
-            <!-- RAM -->
-            <div class="metric-item">
-              <div class="metric-header">
-                <span class="metric-label">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10h20"/><path d="M2 14h20"/><path d="M6 6v12"/><path d="M10 6v12"/><path d="M14 6v12"/><path d="M18 6v12"/></svg>
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span class="stat-name">
+                  <svg viewBox="0 0 24 24"><path d="M2 7h20v10H2V7zm2 2v6h16V9H4zm2 1h2v4H6v-4zm4 0h2v4h-2v-4zm4 0h2v4h-2v-4z"/></svg>
                   RAM
                 </span>
-                <span class="metric-value">${s.ram_used} / ${s.ram_max} MB</span>
+                <span class="stat-val">${ramUsed} / ${ramMax} MB</span>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: ${isOnline ? Math.max(ramPct, 2) : 0}%;"></div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill blue" style="width: ${ramPercent}%"></div>
               </div>
             </div>
 
-            <!-- DISK -->
-            <div class="metric-item">
-              <div class="metric-header">
-                <span class="metric-label">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            <div class="stat-row">
+              <div class="stat-labels">
+                <span class="stat-name">
+                  <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v7h16V6H4zm0 9v3h16v-3H4zm13 1h2v1h-2v-1z"/></svg>
                   DISK
                 </span>
-                <span class="metric-value">${s.disk_used} / ${s.disk_max} MB</span>
+                <span class="stat-val">${diskUsed} / ${diskMax} MB</span>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: ${Math.max(diskPct, 1)}%;"></div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" style="width: ${diskPercent}%"></div>
               </div>
             </div>
+          </div>
 
-            <button class="btn-manage" onclick="openServerManage('${s.id}')">
-              Manage server ➔
-            </button>
-          `;
-          list.appendChild(card);
-        });
-      } catch (e) {
-        toast("Failed to load servers", "error");
-      }
-    }
-
-    // ==================== CREATE SERVER ====================
-    async function submitCreateServer() {
-      const name = document.getElementById("create-name").value.trim();
-      if (!name) return;
-
-      const res = await fetch("/api/create_server", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+          <button class="btn-manage" onclick="openServerDashboard('${s.id}')">
+            Manage server ➔
+          </button>
+        `;
+        container.appendChild(card);
       });
-      const data = await res.json();
-      if (data.status === "success") {
-        closeModal("modal-create");
-        toast("Server created!");
-        loadServers();
-      } else {
-        toast(data.message, "error");
+    }
+
+    async function openServerDashboard(id) {
+      ACTIVE_SERVER_ID = id;
+      document.getElementById("view-servers").classList.remove("active");
+      document.getElementById("view-manage").classList.add("active");
+      switchTab('tab-overview');
+      refreshActiveServerData();
+    }
+
+    function backToServers() {
+      if (LOG_TIMER) clearInterval(LOG_TIMER);
+      document.getElementById("view-manage").classList.remove("active");
+      document.getElementById("view-servers").classList.add("active");
+      loadServers();
+    }
+
+    async function refreshActiveServerData() {
+      if (!ACTIVE_SERVER_ID) return;
+      try {
+        const res = await fetch(`/api/server/${ACTIVE_SERVER_ID}`);
+        const data = await res.json();
+        if (data.status === "success") {
+          const s = data.server;
+          document.getElementById("active-panel-title").innerText = s.name;
+          document.getElementById("m-server-name").innerText = s.name;
+          document.getElementById("m-server-id").innerText = s.id;
+
+          const isOnline = s.status === "running";
+          const badge = document.getElementById("m-status-badge");
+          badge.className = `status-badge ${isOnline ? 'online' : ''}`;
+          document.getElementById("m-status-text").innerText = isOnline ? "ONLINE" : "OFFLINE";
+
+          document.getElementById("m-cpu").innerText = `${s.cpu_percent || 0}%`;
+          document.getElementById("m-ram").innerText = `${s.ram_used_mb || 0} / 8192 MB`;
+          document.getElementById("m-disk").innerText = `${s.disk_used_mb || 0} / 20480 MB`;
+
+          document.getElementById("set-name").value = s.name;
+          document.getElementById("set-startup").value = s.startup_file;
+          document.getElementById("set-reqs").value = s.requirements_file;
+        }
+      } catch (e) {}
+    }
+
+    async function powerAction(action) {
+      if (!ACTIVE_SERVER_ID) return;
+      try {
+        const res = await fetch(`/api/${action}/${ACTIVE_SERVER_ID}`, { method: "POST" });
+        const data = await res.json();
+        showToast(data.message, data.status !== "success");
+        refreshActiveServerData();
+      } catch (err) {
+        showToast(`Action failed`, true);
       }
     }
 
-    // ==================== MANAGE VIEW ====================
-    async function openServerManage(serverId) {
-      ACTIVE_SERVER_ID = serverId;
-      const res = await fetch(`/api/server/${serverId}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        const s = data.server;
-        document.getElementById("manage-name").innerText = s.name;
-        document.getElementById("manage-id").innerText = `#${s.id}`;
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+      document.querySelectorAll(".panel-nav button").forEach(el => el.classList.remove("active"));
+      document.getElementById(tabId).style.display = "block";
 
-        const isOnline = s.status === "running";
-        const badge = document.getElementById("manage-badge");
-        badge.className = `badge-status ${isOnline ? 'online' : 'offline'}`;
-        badge.innerText = isOnline ? "Online" : "Offline";
+      const navBtn = Array.from(document.querySelectorAll(".panel-nav button")).find(b => b.getAttribute("onclick").includes(tabId));
+      if (navBtn) navBtn.classList.add("active");
 
-        document.getElementById("set-name").value = s.name;
-        document.getElementById("set-startup").value = s.startup_file;
-        document.getElementById("set-reqs").value = s.requirements_file;
+      if (LOG_TIMER) clearInterval(LOG_TIMER);
 
-        switchView("server-manage");
-        switchTab("console");
+      if (tabId === 'tab-console') {
+        fetchLogs();
+        LOG_TIMER = setInterval(fetchLogs, 2500);
+      } else if (tabId === 'tab-files') {
+        CURRENT_FILE_PATH = "";
+        loadFiles("");
       }
     }
 
-    async function startActiveServer() {
-      const res = await fetch(`/api/start/${ACTIVE_SERVER_ID}`, { method: "POST" });
-      const data = await res.json();
-      toast(data.message, data.status);
-      openServerManage(ACTIVE_SERVER_ID);
-    }
-
-    async function stopActiveServer() {
-      const res = await fetch(`/api/stop/${ACTIVE_SERVER_ID}`, { method: "POST" });
-      const data = await res.json();
-      toast(data.message, data.status);
-      openServerManage(ACTIVE_SERVER_ID);
-    }
-
-    async function restartActiveServer() {
-      toast("Restarting...", "success");
-      await fetch(`/api/restart/${ACTIVE_SERVER_ID}`, { method: "POST" });
-      openServerManage(ACTIVE_SERVER_ID);
-    }
-
-    async function deleteActiveServer() {
-      if (!confirm("Are you sure you want to delete this server completely?")) return;
-      const res = await fetch(`/api/server/${ACTIVE_SERVER_ID}`, { method: "DELETE" });
-      const data = await res.json();
-      toast(data.message, data.status);
-      switchView("my-servers");
-    }
-
-    // ==================== CONSOLE ====================
     async function fetchLogs() {
       if (!ACTIVE_SERVER_ID) return;
       try {
         const res = await fetch(`/api/logs/${ACTIVE_SERVER_ID}`);
         const data = await res.json();
-        const box = document.getElementById("console-terminal");
-        box.innerText = data.logs || "No logs.";
-        box.scrollTop = box.scrollHeight;
+        if (data.status === "success") {
+          const t = document.getElementById("terminal-box");
+          t.innerText = data.logs || "Console ready.";
+          t.scrollTop = t.scrollHeight;
+        }
       } catch (e) {}
+    }
+
+    async function clearLogs() {
+      if (!ACTIVE_SERVER_ID) return;
+      await fetch(`/api/clear_logs/${ACTIVE_SERVER_ID}`, { method: "POST" });
+      fetchLogs();
     }
 
     async function sendCommand(e) {
       e.preventDefault();
-      const input = document.getElementById("cmd-input");
+      const input = document.getElementById("term-input");
       const cmd = input.value.trim();
-      if (!cmd) return;
+      if (!cmd || !ACTIVE_SERVER_ID) return;
       input.value = "";
-      await fetch("/api/command", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ server_id: ACTIVE_SERVER_ID, command: cmd })
-      });
-      fetchLogs();
-    }
 
-    // ==================== FILE MANAGER ====================
-    let CURRENT_PATH = "";
-    async function loadFiles(path = CURRENT_PATH) {
-      CURRENT_PATH = path;
-      document.getElementById("breadcrumb").innerText = path ? `root/${path}` : "root";
-      const res = await fetch(`/api/files/${ACTIVE_SERVER_ID}?path=${encodeURIComponent(path)}`);
-      const data = await res.json();
-      const tbody = document.getElementById("files-tbody");
-      tbody.innerHTML = "";
-
-      if (path) {
-        const pRow = document.createElement("div");
-        pRow.className = "fm-row";
-        pRow.innerHTML = `<span class="fm-name" onclick="loadFiles('')">📁 .. (Up)</span>`;
-        tbody.appendChild(pRow);
+      try {
+        const res = await fetch("/api/command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ server_id: ACTIVE_SERVER_ID, command: cmd })
+        });
+        const d = await res.json();
+        if (d.status === "success") fetchLogs();
+        else showToast(d.message, true);
+      } catch (err) {
+        showToast("Error sending command", true);
       }
-
-      data.files.forEach(f => {
-        const row = document.createElement("div");
-        row.className = "fm-row";
-        const fPath = CURRENT_PATH ? `${CURRENT_PATH}/${f.name}` : f.name;
-        row.innerHTML = `
-          <span class="fm-name" onclick="${f.is_dir ? `loadFiles('${fPath}')` : `openEditor('${fPath}')`}">
-            ${f.is_dir ? '📁' : '📄'} ${escapeHtml(f.name)}
-          </span>
-          <div style="display:flex; gap:6px;">
-            ${f.name.endsWith('.zip') ? `<button class="btn-create" style="padding:4px 8px; font-size:0.75rem;" onclick="extractZip('${fPath}')">Extract</button>` : ''}
-            <button class="btn-create" style="padding:4px 8px; font-size:0.75rem; background: var(--danger);" onclick="deleteItem('${fPath}')">✕</button>
-          </div>
-        `;
-        tbody.appendChild(row);
-      });
     }
 
-    async function openEditor(path) {
-      ACTIVE_FILE_PATH = path;
+    async function loadFiles(path = "") {
+      CURRENT_FILE_PATH = path;
+      document.getElementById("fm-path").innerText = path ? `root/${path}` : "root";
+      try {
+        const res = await fetch(`/api/files/${ACTIVE_SERVER_ID}?path=${encodeURIComponent(path)}`);
+        const data = await res.json();
+        const tbody = document.getElementById("files-list");
+        tbody.innerHTML = "";
+
+        if (path) {
+          const parent = path.includes("/") ? path.substring(0, path.lastIndexOf("/")) : "";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td colspan="3"><span class="file-name-click" onclick="loadFiles('${parent}')">📁 .. (Up)</span></td>`;
+          tbody.appendChild(tr);
+        }
+
+        data.files.forEach(item => {
+          const itemPath = path ? `${path}/${item.name}` : item.name;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <span class="file-name-click" onclick="handleItemClick('${itemPath}', ${item.is_dir})">
+                ${item.is_dir ? '📁' : '📄'} ${escapeHtml(item.name)}
+              </span>
+            </td>
+            <td style="color: var(--stat-title);">${item.is_dir ? '-' : formatBytes(item.size)}</td>
+            <td style="text-align: right;">
+              ${!item.is_dir ? `<button class="btn-secondary" style="padding: 2px 6px; font-size: 0.75rem;" onclick="editFile('${itemPath}')">Edit</button>` : ''}
+              <button class="btn-secondary" style="padding: 2px 6px; font-size: 0.75rem; color: #ef4444;" onclick="deleteFileItem('${itemPath}')">✕</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {}
+    }
+
+    function handleItemClick(path, isDir) {
+      if (isDir) loadFiles(path);
+      else editFile(path);
+    }
+
+    async function editFile(path) {
+      EDITING_TARGET = path;
       const res = await fetch(`/api/file/${ACTIVE_SERVER_ID}?path=${encodeURIComponent(path)}`);
       const data = await res.json();
-      document.getElementById("editor-title").innerText = path;
-      document.getElementById("editor-text").value = data.content;
-      document.getElementById("modal-editor").classList.add("open");
+      if (data.status === "success") {
+        document.getElementById("edit-file-name").innerText = `Edit: ${path}`;
+        document.getElementById("edit-file-content").value = data.content;
+        document.getElementById("modal-editor").classList.add("open");
+      }
     }
 
-    async function saveActiveFile() {
-      const content = document.getElementById("editor-text").value;
+    async function saveFileContent() {
+      const content = document.getElementById("edit-file-content").value;
       const res = await fetch(`/api/file/${ACTIVE_SERVER_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: ACTIVE_FILE_PATH, content })
+        body: JSON.stringify({ path: EDITING_TARGET, content: content })
       });
-      const data = await res.json();
-      closeModal("modal-editor");
-      toast(data.message);
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      closeEditorModal();
+      loadFiles(CURRENT_FILE_PATH);
     }
 
-    async function uploadFile(e) {
+    async function uploadSelectedFile(e) {
       const file = e.target.files[0];
       if (!file) return;
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("path", CURRENT_PATH);
-      const res = await fetch(`/api/upload/${ACTIVE_SERVER_ID}`, { method: "POST", body: fd });
-      const data = await res.json();
-      toast(data.message);
-      loadFiles();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", CURRENT_FILE_PATH);
+      const res = await fetch(`/api/upload/${ACTIVE_SERVER_ID}`, { method: "POST", body: formData });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(CURRENT_FILE_PATH);
+      e.target.value = "";
     }
 
-    async function newFolder() {
+    async function createFolderPrompt() {
       const name = prompt("Folder Name:");
       if (!name) return;
-      await fetch(`/api/create_folder/${ACTIVE_SERVER_ID}`, {
+      const res = await fetch(`/api/create_folder/${ACTIVE_SERVER_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: CURRENT_PATH, name })
+        body: JSON.stringify({ path: CURRENT_FILE_PATH, name: name })
       });
-      loadFiles();
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(CURRENT_FILE_PATH);
     }
 
-    async function extractZip(path) {
-      const res = await fetch(`/api/extract/${ACTIVE_SERVER_ID}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path })
-      });
-      const data = await res.json();
-      toast(data.message);
-      loadFiles();
-    }
-
-    async function deleteItem(path) {
+    async function deleteFileItem(path) {
       if (!confirm(`Delete ${path}?`)) return;
-      await fetch(`/api/file/${ACTIVE_SERVER_ID}?path=${encodeURIComponent(path)}`, { method: "DELETE" });
-      loadFiles();
+      const res = await fetch(`/api/file/${ACTIVE_SERVER_ID}?path=${encodeURIComponent(path)}`, { method: "DELETE" });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      loadFiles(CURRENT_FILE_PATH);
     }
 
-    // ==================== SETTINGS ====================
-    async function saveSettings() {
+    function closeEditorModal() { document.getElementById("modal-editor").classList.remove("open"); }
+
+    async function saveServerSettings(e) {
+      e.preventDefault();
       const name = document.getElementById("set-name").value.trim();
       const startup = document.getElementById("set-startup").value.trim();
       const reqs = document.getElementById("set-reqs").value.trim();
@@ -832,18 +893,57 @@
       const res = await fetch(`/api/server/${ACTIVE_SERVER_ID}/settings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, startup_file: startup, requirements_file: reqs })
+        body: JSON.stringify({ name: name, startup_file: startup, requirements_file: reqs })
       });
-      const data = await res.json();
-      toast(data.message);
-      openServerManage(ACTIVE_SERVER_ID);
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      refreshActiveServerData();
+    }
+
+    async function deleteActiveServer() {
+      if (!confirm("Are you sure you want to delete this server?")) return;
+      const res = await fetch(`/api/server/${ACTIVE_SERVER_ID}`, { method: "DELETE" });
+      const d = await res.json();
+      showToast(d.message, d.status !== "success");
+      backToServers();
+    }
+
+    function openCreateModal() { document.getElementById("modal-create").classList.add("open"); }
+    function closeCreateModal() { document.getElementById("modal-create").classList.remove("open"); }
+
+    async function createServerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById("create-name").value.trim();
+      if (!name) return;
+
+      const res = await fetch("/api/create_server", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name })
+      });
+      const d = await res.json();
+      if (d.status === "success") {
+        showToast(d.message);
+        closeCreateModal();
+        document.getElementById("create-name").value = "";
+        loadServers();
+      } else {
+        showToast(d.message, true);
+      }
     }
 
     function escapeHtml(str) {
-      return (str || "").replace(/[&<>'"]/g, t => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[t] || t));
+      return (str || "").replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+    }
+    function formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
-    window.onload = loadServers;
+    window.addEventListener("DOMContentLoaded", loadServers);
   </script>
 </body>
 </html>
