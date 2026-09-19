@@ -1,604 +1,719 @@
 import os
 import sys
 import json
-import time
+import uuid
+import shutil
 import zipfile
-import subprocess
 import threading
+import subprocess
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, send_file
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB max upload limit
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_FILE = os.path.join(BASE_DIR, "servers.json")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BOTS_DIR = os.path.join(BASE_DIR, "bots")
+DATA_FILE = os.path.join(BASE_DIR, "servers.json")
 
 os.makedirs(BOTS_DIR, exist_ok=True)
 
-# In-memory dictionary to hold running process handles: {server_id: {"process": Popen, "log_file": file_handle}}
-RUNNING_PROCESSES = {}
-PROCESS_LOCK = threading.Lock()
+# Lock for data integrity
+DATA_LOCK = threading.Lock()
 
-# -------------------------------------------------------------
-# HELPER FUNCTIONS & STORAGE
-# -------------------------------------------------------------
+# Store active process instances: { server_id: { "process": Popen, "log_file": file_obj, "started_at": str } }
+RUNNING_PROCESSES = {}
+
+
+# ==================== HELPER FUNCTIONS ====================
 
 def load_servers():
-    if not os.path.exists(DATA_FILE):
-        return {}
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {}
+    with DATA_LOCK:
+        if not os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "w", encoding="utf-8") as f:
+                json.dump({}, f, indent=4)
+            return {}
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
 
-def save_servers(data):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
 
-def get_server_dir(server_id):
-    path = os.path.abspath(os.path.join(BOTS_DIR, server_id))
-    os.makedirs(path, exist_ok=True)
-    return path
+def save_servers(servers):
+    with DATA_LOCK:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(servers, f, indent=4)
 
-def safe_path_join(base_dir, relative_path=""):
-    clean_rel = relative_path.replace("\\", "/").lstrip("/")
-    target = os.path.abspath(os.path.join(base_dir, clean_rel))
-    if not (target == base_dir or target.startswith(base_dir + os.sep)):
-        raise PermissionError("Access denied: Invalid path traversal detected.")
-    return target
 
-def format_file_size(bytes_size):
-    if bytes_size < 1024:
-        return f"{bytes_size} B"
-    elif bytes_size < 1024 * 1024:
-        return f"{bytes_size / 1024:.1f} KB"
+def sanitize_server_id(server_id):
+    if not server_id or not isinstance(server_id, str):
+        return None
+    cleaned = "".join(c for c in server_id if c.isalnum() or c in "-_")
+    return cleaned if cleaned == server_id else None
+
+
+def get_safe_path(base_dir, relative_path=""):
+    clean_rel = relative_path.lstrip("/\\")
+    target_path = os.path.abspath(os.path.join(base_dir, clean_rel))
+    if os.path.commonpath([base_dir, target_path]) != base_dir:
+        return None
+    return target_path
+
+
+def sync_server_process(server_id, servers=None):
+    if servers is None:
+        servers = load_servers()
+
+    server = servers.get(server_id)
+    if not server:
+        return None
+
+    proc_info = RUNNING_PROCESSES.get(server_id)
+    if proc_info:
+        proc = proc_info.get("process")
+        if proc and proc.poll() is not None:
+            # Process terminated
+            try:
+                proc_info["log_file"].close()
+            except Exception:
+                pass
+            del RUNNING_PROCESSES[server_id]
+            server["status"] = "stopped"
+            server["pid"] = None
+            save_servers(servers)
     else:
-        return f"{bytes_size / (1024 * 1024):.1f} MB"
+        if server.get("status") == "running":
+            server["status"] = "stopped"
+            server["pid"] = None
+            save_servers(servers)
 
-def append_to_log(server_id, text):
-    s_dir = get_server_dir(server_id)
-    log_file = os.path.join(s_dir, "output.log")
-    timestamp = datetime.now().strftime("[%H:%M:%S] ")
-    with open(log_file, "a", encoding="utf-8", errors="replace") as f:
-        for line in text.splitlines(True):
-            if not line.startswith("["):
-                f.write(timestamp + line)
-            else:
-                f.write(line)
+    return server
 
-def check_and_update_status(server_id):
-    with PROCESS_LOCK:
-        if server_id in RUNNING_PROCESSES:
-            proc_info = RUNNING_PROCESSES[server_id]
+
+def sync_all_servers():
+    servers = load_servers()
+    updated = False
+    for s_id in list(servers.keys()):
+        proc_info = RUNNING_PROCESSES.get(s_id)
+        if proc_info:
             proc = proc_info.get("process")
             if proc and proc.poll() is not None:
-                # Process exited
                 try:
                     proc_info["log_file"].close()
                 except Exception:
                     pass
-                del RUNNING_PROCESSES[server_id]
-                servers = load_servers()
-                if server_id in servers:
-                    servers[server_id]["status"] = "Stopped"
-                    servers[server_id]["pid"] = None
-                    save_servers(servers)
-                append_to_log(server_id, f"[System] Process terminated with exit code {proc.returncode}.\n")
+                del RUNNING_PROCESSES[s_id]
+                servers[s_id]["status"] = "stopped"
+                servers[s_id]["pid"] = None
+                updated = True
+        else:
+            if servers[s_id].get("status") == "running":
+                servers[s_id]["status"] = "stopped"
+                servers[s_id]["pid"] = None
+                updated = True
+    if updated:
+        save_servers(servers)
+    return servers
 
-# -------------------------------------------------------------
-# CORE PROCESS MANAGEMENT
-# -------------------------------------------------------------
 
-def start_server_process(server_id):
-    check_and_update_status(server_id)
+# ==================== VIEW ROUTES ====================
+
+@app.route("/")
+def home():
+    servers = sync_all_servers()
+    return render_template("home.html", servers=servers)
+
+
+# ==================== SERVER MANAGEMENT APIS ====================
+
+@app.route("/api/servers", methods=["GET"])
+def api_get_servers():
+    servers = sync_all_servers()
+    return jsonify({"status": "success", "servers": servers})
+
+
+@app.route("/api/server/<server_id>", methods=["GET"])
+def api_get_server(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server = sync_server_process(clean_id)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
+
+    return jsonify({"status": "success", "server": server})
+
+
+@app.route("/api/create_server", methods=["POST"])
+def api_create_server():
+    data = request.get_json() or {}
+    name = data.get("name", "").strip()
+    if not name:
+        return jsonify({"status": "error", "message": "Server name is required"}), 400
+
+    server_type = data.get("type", "Python")
+    ram = data.get("ram", "1 GB")
+    disk = data.get("disk", "1 GB")
+
+    server_id = uuid.uuid4().hex[:10]
+    server_dir = os.path.join(BOTS_DIR, server_id)
+    os.makedirs(server_dir, exist_ok=True)
+
+    # 1. Default main.py
+    main_code = (
+        'import time\n\n'
+        'print("Server started successfully!")\n\n'
+        'counter = 0\n\n'
+        'while True:\n'
+        '    counter += 1\n'
+        '    print(f"Heartbeat #{counter} | Active")\n'
+        '    time.sleep(10)\n'
+    )
+    with open(os.path.join(server_dir, "main.py"), "w", encoding="utf-8") as f:
+        f.write(main_code)
+
+    # 2. Default requirements.txt
+    req_text = "# Add your pip packages here\n"
+    with open(os.path.join(server_dir, "requirements.txt"), "w", encoding="utf-8") as f:
+        f.write(req_text)
+
+    # 3. Default output.log
+    with open(os.path.join(server_dir, "output.log"), "w", encoding="utf-8") as f:
+        f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Server created successfully.\n")
+
+    # 4. Update servers.json
     servers = load_servers()
-    if server_id not in servers:
-        return False, "Server not found"
+    new_server = {
+        "id": server_id,
+        "name": name,
+        "type": server_type,
+        "ram": ram,
+        "disk": disk,
+        "status": "stopped",
+        "pid": None,
+        "startup_file": "main.py",
+        "requirements_file": "requirements.txt",
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "started_at": None
+    }
+    servers[server_id] = new_server
+    save_servers(servers)
 
-    with PROCESS_LOCK:
-        if server_id in RUNNING_PROCESSES:
-            return False, "Server is already running"
+    return jsonify({"status": "success", "message": "Server created successfully!", "server": new_server})
 
-        s_info = servers[server_id]
-        s_dir = get_server_dir(server_id)
-        main_file = s_info.get("main_file", "main.py")
-        req_file = s_info.get("requirements_file", "requirements.txt")
 
-        target_script = os.path.join(s_dir, main_file)
-        if not os.path.exists(target_script):
-            return False, f"Startup file '{main_file}' not found."
+@app.route("/api/start/<server_id>", methods=["POST"])
+def api_start_server(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
 
-        log_path = os.path.join(s_dir, "output.log")
-        log_handle = open(log_path, "a", buffering=1, encoding="utf-8", errors="replace")
+    servers = load_servers()
+    server = sync_server_process(clean_id, servers)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
 
-        # Pip install check if requirements file exists and has content
-        req_path = os.path.join(s_dir, req_file)
-        if os.path.exists(req_path) and os.path.getsize(req_path) > 0:
-            log_handle.write(f"[{datetime.now().strftime('%H:%M:%S')}] Checking requirements in {req_file}...\n")
-            try:
-                subprocess.run(
-                    [sys.executable, "-m", "pip", "install", "-r", req_path],
-                    cwd=s_dir,
-                    stdout=log_handle,
-                    stderr=log_handle,
-                    timeout=60
-                )
-            except Exception as e:
-                log_handle.write(f"[{datetime.now().strftime('%H:%M:%S')}] [Pip Error] {str(e)}\n")
+    if clean_id in RUNNING_PROCESSES:
+        return jsonify({"status": "error", "message": "Server is already running!"}), 400
 
-        log_handle.write(f"[{datetime.now().strftime('%H:%M:%S')}] Starting server: {sys.executable} {main_file}...\n")
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    startup_file = server.get("startup_file", "main.py")
+    startup_path = os.path.join(server_dir, startup_file)
 
+    if not os.path.exists(startup_path):
+        return jsonify({"status": "error", "message": f"Startup file '{startup_file}' not found."}), 404
+
+    log_path = os.path.join(server_dir, "output.log")
+    log_file = open(log_path, "a", encoding="utf-8", buffering=1)
+
+    req_file = server.get("requirements_file", "requirements.txt")
+    req_path = os.path.join(server_dir, req_file)
+    if os.path.exists(req_path) and os.path.getsize(req_path) > 0:
+        log_file.write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Installing requirements...\n")
         try:
-            process = subprocess.Popen(
-                [sys.executable, "-u", main_file],
-                cwd=s_dir,
-                stdin=subprocess.PIPE,
-                stdout=log_handle,
-                stderr=log_handle,
-                text=True,
-                bufsize=1
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-r", req_file],
+                cwd=server_dir,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                timeout=60
             )
-            RUNNING_PROCESSES[server_id] = {
-                "process": process,
-                "log_file": log_handle
-            }
-            servers[server_id]["status"] = "Running"
-            servers[server_id]["pid"] = process.pid
-            save_servers(servers)
-            return True, "Server started successfully"
         except Exception as e:
-            log_handle.close()
-            return False, f"Execution failed: {str(e)}"
+            log_file.write(f"Pip installation error: {str(e)}\n")
 
-def stop_server_process(server_id):
-    check_and_update_status(server_id)
-    with PROCESS_LOCK:
-        if server_id not in RUNNING_PROCESSES:
-            servers = load_servers()
-            if server_id in servers:
-                servers[server_id]["status"] = "Stopped"
-                servers[server_id]["pid"] = None
-                save_servers(servers)
-            return True, "Server is already stopped"
+    env = os.environ.copy()
+    env["PYTHONUNBUFFERED"] = "1"
 
-        proc_info = RUNNING_PROCESSES[server_id]
+    log_file.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Starting {startup_file}...\n")
+
+    try:
+        proc = subprocess.Popen(
+            [sys.executable, "-u", startup_file],
+            cwd=server_dir,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            env=env
+        )
+    except Exception as e:
+        log_file.close()
+        return jsonify({"status": "error", "message": f"Execution failed: {str(e)}"}), 500
+
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    RUNNING_PROCESSES[clean_id] = {
+        "process": proc,
+        "log_file": log_file,
+        "started_at": now_str
+    }
+
+    server["status"] = "running"
+    server["pid"] = proc.pid
+    server["started_at"] = now_str
+    save_servers(servers)
+
+    return jsonify({"status": "success", "message": "Server started!", "pid": proc.pid})
+
+
+@app.route("/api/stop/<server_id>", methods=["POST"])
+def api_stop_server(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    servers = load_servers()
+    server = servers.get(clean_id)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
+
+    proc_info = RUNNING_PROCESSES.get(clean_id)
+    if proc_info:
         proc = proc_info.get("process")
         try:
             proc.terminate()
-            try:
-                proc.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
+            proc.wait(timeout=4)
         except Exception:
-            pass
+            try:
+                proc.kill()
+            except Exception:
+                pass
 
         try:
+            proc_info["log_file"].write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Process stopped by user.\n")
             proc_info["log_file"].close()
         except Exception:
             pass
 
-        del RUNNING_PROCESSES[server_id]
-        servers = load_servers()
-        if server_id in servers:
-            servers[server_id]["status"] = "Stopped"
-            servers[server_id]["pid"] = None
-            save_servers(servers)
-            
-        append_to_log(server_id, "[System] Server stopped by user.\n")
-        return True, "Server stopped successfully"
+        del RUNNING_PROCESSES[clean_id]
 
-# -------------------------------------------------------------
-# ROUTES: PAGE
-# -------------------------------------------------------------
-
-@app.route('/')
-def index():
-    servers = load_servers()
-    for sid in list(servers.keys()):
-        check_and_update_status(sid)
-    servers = load_servers()
-    return render_template("home.html", servers=servers)
-
-# -------------------------------------------------------------
-# API: SERVER LIFE CYCLE
-# -------------------------------------------------------------
-
-@app.route('/api/create_server', methods=['POST'])
-def api_create_server():
-    data = request.get_json() or {}
-    server_name = data.get("server_name", "").strip()
-    if not server_name:
-        return jsonify({"success": False, "error": "Server Name is required."}), 400
-
-    server_id = f"srv_{int(time.time())}"
-    s_dir = get_server_dir(server_id)
-
-    # Initial main.py
-    main_code = (
-        "import time\n\n"
-        "print(\"Server started successfully!\")\n\n"
-        "counter = 0\n\n"
-        "while True:\n"
-        "    counter += 1\n"
-        "    print(f\"Heartbeat #{counter} | Active\")\n"
-        "    time.sleep(10)\n"
-    )
-    with open(os.path.join(s_dir, "main.py"), "w", encoding="utf-8") as f:
-        f.write(main_code)
-
-    # Initial requirements.txt
-    with open(os.path.join(s_dir, "requirements.txt"), "w", encoding="utf-8") as f:
-        f.write("")
-
-    # Initial output.log
-    with open(os.path.join(s_dir, "output.log"), "w", encoding="utf-8") as f:
-        f.write(f"[{datetime.now().strftime('%H:%M:%S')}] Server created successfully.\n")
-
-    servers = load_servers()
-    servers[server_id] = {
-        "id": server_id,
-        "name": server_name,
-        "type": "Python",
-        "ram": data.get("ram", "1 GB"),
-        "disk": data.get("disk", "1 GB"),
-        "status": "Stopped",
-        "created": datetime.now().strftime("%b %d, %Y %H:%M"),
-        "main_file": "main.py",
-        "requirements_file": "requirements.txt",
-        "pid": None
-    }
+    server["status"] = "stopped"
+    server["pid"] = None
     save_servers(servers)
 
-    return jsonify({"success": True, "server_id": server_id, "server": servers[server_id]})
+    return jsonify({"status": "success", "message": "Server stopped successfully!"})
 
-@app.route('/api/start/<server_id>', methods=['POST'])
-def api_start(server_id):
-    success, msg = start_server_process(server_id)
-    return jsonify({"success": success, "message": msg})
 
-@app.route('/api/stop/<server_id>', methods=['POST'])
-def api_stop(server_id):
-    success, msg = stop_server_process(server_id)
-    return jsonify({"success": success, "message": msg})
+@app.route("/api/restart/<server_id>", methods=["POST"])
+def api_restart_server(server_id):
+    api_stop_server(server_id)
+    return api_start_server(server_id)
 
-@app.route('/api/restart/<server_id>', methods=['POST'])
-def api_restart(server_id):
-    stop_server_process(server_id)
-    time.sleep(0.5)
-    success, msg = start_server_process(server_id)
-    return jsonify({"success": success, "message": "Server restarted successfully" if success else msg})
 
-# -------------------------------------------------------------
-# API: LOGS & CONSOLE COMMAND
-# -------------------------------------------------------------
+@app.route("/api/server/<server_id>", methods=["DELETE"])
+def api_delete_server(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
 
-@app.route('/api/logs/<server_id>', methods=['GET'])
-def api_logs(server_id):
-    check_and_update_status(server_id)
+    api_stop_server(clean_id)
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    if os.path.exists(server_dir):
+        shutil.rmtree(server_dir, ignore_errors=True)
+
     servers = load_servers()
-    if server_id not in servers:
-        return jsonify({"success": False, "error": "Server not found"}), 404
+    if clean_id in servers:
+        del servers[clean_id]
+        save_servers(servers)
 
-    s_dir = get_server_dir(server_id)
-    log_file = os.path.join(s_dir, "output.log")
-    logs = ""
-    if os.path.exists(log_file):
-        try:
-            with open(log_file, "r", encoding="utf-8", errors="replace") as f:
-                logs = f.read()
-        except Exception as e:
-            logs = f"Error reading logs: {str(e)}"
+    return jsonify({"status": "success", "message": "Server deleted permanently!"})
 
-    return jsonify({
-        "success": True,
-        "logs": logs,
-        "status": servers[server_id].get("status", "Stopped")
-    })
 
-@app.route('/api/clear_logs/<server_id>', methods=['POST'])
-def api_clear_logs(server_id):
-    s_dir = get_server_dir(server_id)
-    log_file = os.path.join(s_dir, "output.log")
-    try:
-        with open(log_file, "w", encoding="utf-8") as f:
-            f.write(f"[{datetime.now().strftime('%H:%M:%S')}] Logs cleared.\n")
-        return jsonify({"success": True, "message": "Logs cleared"})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+# ==================== FILE MANAGER APIS ====================
 
-@app.route('/api/command', methods=['POST'])
-def api_command():
-    data = request.get_json() or {}
-    server_id = data.get("server_id")
-    command = data.get("command", "").strip()
+@app.route("/api/files/<server_id>", methods=["GET"])
+def api_list_files(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
 
-    if not server_id or not command:
-        return jsonify({"success": False, "error": "Missing parameters"}), 400
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    if not os.path.exists(server_dir):
+        return jsonify({"status": "error", "message": "Server directory not found"}), 404
 
-    check_and_update_status(server_id)
-    s_dir = get_server_dir(server_id)
-
-    # 1. If server process is active, send to stdin
-    with PROCESS_LOCK:
-        if server_id in RUNNING_PROCESSES:
-            proc = RUNNING_PROCESSES[server_id].get("process")
-            if proc and proc.stdin:
-                try:
-                    proc.stdin.write(command + "\n")
-                    proc.stdin.flush()
-                    append_to_log(server_id, f"> {command}\n")
-                    return jsonify({"success": True, "message": "Command sent to running process stdin"})
-                except Exception as e:
-                    return jsonify({"success": False, "error": f"Stdin error: {str(e)}"}), 500
-
-    # 2. Server is stopped: execute safely inside the server's directory
-    append_to_log(server_id, f"$ {command}\n")
-    try:
-        res = subprocess.run(
-            command,
-            shell=True,
-            cwd=s_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=15
-        )
-        output = res.stdout + res.stderr
-        if output:
-            append_to_log(server_id, output)
-        return jsonify({"success": True, "message": "Command executed"})
-    except subprocess.TimeoutExpired:
-        append_to_log(server_id, "[Error] Command timed out after 15 seconds.\n")
-        return jsonify({"success": False, "error": "Command timed out"}), 408
-    except Exception as e:
-        append_to_log(server_id, f"[Error] {str(e)}\n")
-        return jsonify({"success": False, "error": str(e)}), 500
-
-# -------------------------------------------------------------
-# API: FILE MANAGER
-# -------------------------------------------------------------
-
-@app.route('/api/files/<server_id>', methods=['GET'])
-def api_files(server_id):
-    s_dir = get_server_dir(server_id)
-    req_sub_path = request.args.get('path', '').strip()
-
-    try:
-        target_dir = safe_path_join(s_dir, req_sub_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
-
-    if not os.path.exists(target_dir) or not os.path.isdir(target_dir):
-        return jsonify({"success": False, "error": "Directory not found"}), 404
+    subpath = request.args.get("path", "").strip()
+    target_dir = get_safe_path(server_dir, subpath)
+    if target_dir is None or not os.path.isdir(target_dir):
+        return jsonify({"status": "error", "message": "Directory not found or access denied"}), 400
 
     items = []
-    try:
-        for entry in os.scandir(target_dir):
-            stat = entry.stat()
-            mod_time = datetime.fromtimestamp(stat.st_mtime).strftime("%b %d, %H:%M")
-            is_dir = entry.is_dir()
-            items.append({
-                "name": entry.name,
-                "is_dir": is_dir,
-                "size": "-" if is_dir else format_file_size(stat.st_size),
-                "modified": mod_time
-            })
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+    for entry in sorted(os.listdir(target_dir)):
+        entry_path = os.path.join(target_dir, entry)
+        is_dir = os.path.isdir(entry_path)
+        try:
+            stat = os.stat(entry_path)
+            size = stat.st_size
+            mtime = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            size = 0
+            mtime = "-"
 
-    # Folders first, then sorted by name
-    items.sort(key=lambda x: (not x["is_dir"], x["name"].lower()))
-    
-    # Calculate relative current path
-    rel_path = os.path.relpath(target_dir, s_dir).replace("\\", "/")
-    if rel_path == ".":
-        rel_path = ""
+        items.append({
+            "name": entry,
+            "is_dir": is_dir,
+            "size": size,
+            "mtime": mtime
+        })
 
-    return jsonify({"success": True, "current_path": rel_path, "items": items})
+    rel_breadcrumb = os.path.relpath(target_dir, server_dir).replace("\\", "/")
+    if rel_breadcrumb == ".":
+        rel_breadcrumb = ""
 
-@app.route('/api/file/<server_id>', methods=['GET'])
-def api_get_file(server_id):
-    s_dir = get_server_dir(server_id)
-    rel_path = request.args.get('path', '').strip()
-    try:
-        target_file = safe_path_join(s_dir, rel_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
+    return jsonify({"status": "success", "files": items, "current_path": rel_breadcrumb})
 
-    if not os.path.exists(target_file) or os.path.isdir(target_file):
-        return jsonify({"success": False, "error": "File not found"}), 404
 
-    try:
-        with open(target_file, "r", encoding="utf-8", errors="replace") as f:
-            content = f.read()
-        return jsonify({"success": True, "content": content, "filename": os.path.basename(target_file)})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+@app.route("/api/file/<server_id>", methods=["GET", "POST", "DELETE"])
+def api_file_operations(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
 
-@app.route('/api/file/<server_id>', methods=['POST'])
-def api_save_file(server_id):
-    s_dir = get_server_dir(server_id)
-    data = request.get_json() or {}
-    rel_path = data.get("path", "").strip()
-    content = data.get("content", "")
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    if not os.path.exists(server_dir):
+        return jsonify({"status": "error", "message": "Server directory not found"}), 404
 
-    try:
-        target_file = safe_path_join(s_dir, rel_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
+    if request.method == "GET":
+        subpath = request.args.get("path", "")
+        target_file = get_safe_path(server_dir, subpath)
+        if not target_file or not os.path.isfile(target_file):
+            return jsonify({"status": "error", "message": "File not found"}), 404
 
-    try:
-        os.makedirs(os.path.dirname(target_file), exist_ok=True)
-        with open(target_file, "w", encoding="utf-8") as f:
-            f.write(content)
-        return jsonify({"success": True, "message": "File saved successfully"})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        try:
+            with open(target_file, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            return jsonify({"status": "success", "content": content})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/file/<server_id>', methods=['DELETE'])
-def api_delete_file(server_id):
-    s_dir = get_server_dir(server_id)
-    data = request.get_json() or {}
-    rel_path = data.get("path", "").strip()
+    elif request.method == "POST":
+        data = request.get_json() or {}
+        subpath = data.get("path", "")
+        content = data.get("content", "")
+        target_file = get_safe_path(server_dir, subpath)
+        if not target_file:
+            return jsonify({"status": "error", "message": "Invalid path"}), 400
 
-    try:
-        target = safe_path_join(s_dir, rel_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
+        try:
+            with open(target_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            return jsonify({"status": "success", "message": "File saved successfully!"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
-    if target == s_dir:
-        return jsonify({"success": False, "error": "Cannot delete server root directory"}), 400
+    elif request.method == "DELETE":
+        subpath = request.args.get("path", "")
+        target = get_safe_path(server_dir, subpath)
+        if not target or target == server_dir:
+            return jsonify({"status": "error", "message": "Cannot delete server root"}), 400
 
-    if not os.path.exists(target):
-        return jsonify({"success": False, "error": "Target does not exist"}), 404
+        if not os.path.exists(target):
+            return jsonify({"status": "error", "message": "File or directory not found"}), 404
 
-    try:
-        if os.path.isdir(target):
-            import shutil
-            shutil.rmtree(target)
-        else:
-            os.remove(target)
-        return jsonify({"success": True, "message": "Deleted successfully"})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        try:
+            if os.path.isdir(target):
+                shutil.rmtree(target)
+            else:
+                os.remove(target)
+            return jsonify({"status": "success", "message": "Deleted successfully!"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/upload/<server_id>', methods=['POST'])
-def api_upload(server_id):
-    s_dir = get_server_dir(server_id)
-    rel_path = request.form.get("path", "").strip()
 
-    try:
-        target_dir = safe_path_join(s_dir, rel_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
+@app.route("/api/upload/<server_id>", methods=["POST"])
+def api_upload_file(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    subpath = request.form.get("path", "")
+    target_dir = get_safe_path(server_dir, subpath)
+
+    if not target_dir or not os.path.isdir(target_dir):
+        return jsonify({"status": "error", "message": "Invalid upload destination"}), 400
 
     if 'file' not in request.files:
-        return jsonify({"success": False, "error": "No file uploaded"}), 400
+        return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
-    uploaded_file = request.files['file']
-    if uploaded_file.filename == '':
-        return jsonify({"success": False, "error": "Empty filename"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"status": "error", "message": "No file selected"}), 400
 
-    safe_name = secure_filename(uploaded_file.filename)
-    if not safe_name:
-        return jsonify({"success": False, "error": "Invalid filename"}), 400
+    filename = secure_filename(file.filename)
+    if not filename:
+        return jsonify({"status": "error", "message": "Invalid filename"}), 400
 
-    os.makedirs(target_dir, exist_ok=True)
-    destination = os.path.join(target_dir, safe_name)
-    uploaded_file.save(destination)
+    file.save(os.path.join(target_dir, filename))
+    return jsonify({"status": "success", "message": f"'{filename}' uploaded successfully!"})
 
-    return jsonify({"success": True, "message": f"Uploaded '{safe_name}' successfully"})
 
-@app.route('/api/create_folder/<server_id>', methods=['POST'])
+@app.route("/api/create_folder/<server_id>", methods=["POST"])
 def api_create_folder(server_id):
-    s_dir = get_server_dir(server_id)
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
     data = request.get_json() or {}
-    rel_path = data.get("path", "").strip()
-    folder_name = secure_filename(data.get("folder_name", "").strip())
+    subpath = data.get("path", "")
+    folder_name = secure_filename(data.get("name", "").strip())
 
     if not folder_name:
-        return jsonify({"success": False, "error": "Invalid folder name"}), 400
+        return jsonify({"status": "error", "message": "Folder name is invalid"}), 400
 
+    target_dir = get_safe_path(server_dir, subpath)
+    if not target_dir or not os.path.isdir(target_dir):
+        return jsonify({"status": "error", "message": "Target directory invalid"}), 400
+
+    new_folder_path = os.path.join(target_dir, folder_name)
     try:
-        target_dir = safe_path_join(s_dir, os.path.join(rel_path, folder_name))
-        os.makedirs(target_dir, exist_ok=True)
-        return jsonify({"success": True, "message": "Folder created successfully"})
+        os.makedirs(new_folder_path, exist_ok=False)
+        return jsonify({"status": "success", "message": f"Folder '{folder_name}' created!"})
+    except FileExistsError:
+        return jsonify({"status": "error", "message": "Folder already exists!"}), 400
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/rename/<server_id>', methods=['POST'])
+
+@app.route("/api/rename/<server_id>", methods=["POST"])
 def api_rename(server_id):
-    s_dir = get_server_dir(server_id)
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
     data = request.get_json() or {}
-    old_path = data.get("old_path", "").strip()
+    old_path_rel = data.get("old_path", "")
     new_name = secure_filename(data.get("new_name", "").strip())
 
     if not new_name:
-        return jsonify({"success": False, "error": "Invalid new name"}), 400
+        return jsonify({"status": "error", "message": "New name cannot be empty"}), 400
+
+    old_target = get_safe_path(server_dir, old_path_rel)
+    if not old_target or not os.path.exists(old_target) or old_target == server_dir:
+        return jsonify({"status": "error", "message": "Invalid original file"}), 400
+
+    parent_dir = os.path.dirname(old_target)
+    new_target = os.path.join(parent_dir, new_name)
 
     try:
-        source = safe_path_join(s_dir, old_path)
-        dest_dir = os.path.dirname(source)
-        dest = os.path.join(dest_dir, new_name)
-        
-        if os.path.exists(dest):
-            return jsonify({"success": False, "error": "File or folder with this name already exists"}), 400
-
-        os.rename(source, dest)
-        return jsonify({"success": True, "message": "Renamed successfully"})
+        os.rename(old_target, new_target)
+        return jsonify({"status": "success", "message": "Renamed successfully!"})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/api/extract/<server_id>', methods=['POST'])
-def api_extract(server_id):
-    s_dir = get_server_dir(server_id)
+
+@app.route("/api/extract/<server_id>", methods=["POST"])
+def api_extract_zip(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
     data = request.get_json() or {}
-    rel_path = data.get("path", "").strip()
+    file_rel = data.get("path", "")
+    target_file = get_safe_path(server_dir, file_rel)
 
+    if not target_file or not os.path.isfile(target_file) or not target_file.endswith(".zip"):
+        return jsonify({"status": "error", "message": "Valid ZIP file required"}), 400
+
+    dest_dir = os.path.dirname(target_file)
     try:
-        zip_path = safe_path_join(s_dir, rel_path)
-    except PermissionError as e:
-        return jsonify({"success": False, "error": str(e)}), 403
-
-    if not os.path.exists(zip_path) or not zip_path.lower().endswith(".zip"):
-        return jsonify({"success": False, "error": "Not a valid ZIP file"}), 400
-
-    target_dir = os.path.dirname(zip_path)
-
-    try:
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            # Zip Slip protection
+        with zipfile.ZipFile(target_file, 'r') as zip_ref:
+            # Safe zip extraction checking against path traversal
             for member in zip_ref.namelist():
-                member_path = os.path.abspath(os.path.join(target_dir, member))
-                if not (member_path == target_dir or member_path.startswith(target_dir + os.sep)):
-                    return jsonify({"success": False, "error": "Malicious ZIP content detected"}), 400
-            zip_ref.extractall(target_dir)
-        return jsonify({"success": True, "message": "ZIP extracted successfully"})
+                filename = os.path.basename(member)
+                if not filename:
+                    continue
+                extracted_path = os.path.abspath(os.path.join(dest_dir, member))
+                if os.path.commonpath([dest_dir, extracted_path]) == dest_dir:
+                    zip_ref.extract(member, dest_dir)
+        return jsonify({"status": "success", "message": "Extracted successfully!"})
     except Exception as e:
-        return jsonify({"success": False, "error": f"Extraction error: {str(e)}"}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-# -------------------------------------------------------------
-# API: SETTINGS (STARTUP CONFIG)
-# -------------------------------------------------------------
 
-@app.route('/api/get_startup/<server_id>', methods=['GET'])
+# ==================== CONSOLE APIS ====================
+
+@app.route("/api/logs/<server_id>", methods=["GET"])
+def api_get_logs(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    log_path = os.path.join(server_dir, "output.log")
+    if not os.path.exists(log_path):
+        return jsonify({"status": "success", "logs": ""})
+
+    try:
+        with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+            lines = f.readlines()
+            logs = "".join(lines[-300:])
+        return jsonify({"status": "success", "logs": logs})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/clear_logs/<server_id>", methods=["POST"])
+def api_clear_logs(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, clean_id)
+    log_path = os.path.join(server_dir, "output.log")
+    try:
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Logs cleared.\n")
+        return jsonify({"status": "success", "message": "Logs cleared!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route("/api/command", methods=["POST"])
+def api_send_command():
+    data = request.get_json() or {}
+    server_id = sanitize_server_id(data.get("server_id"))
+    command = data.get("command", "").strip()
+
+    if not server_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+    if not command:
+        return jsonify({"status": "error", "message": "Command is empty"}), 400
+
+    server_dir = os.path.join(BOTS_DIR, server_id)
+    log_path = os.path.join(server_dir, "output.log")
+
+    proc_info = RUNNING_PROCESSES.get(server_id)
+    if proc_info and proc_info.get("process") and proc_info["process"].poll() is None:
+        proc = proc_info["process"]
+        try:
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(f"\n> {command}\n")
+            proc.stdin.write(command + "\n")
+            proc.stdin.flush()
+            return jsonify({"status": "success", "message": "Command sent to active process stdin"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Stdin pipe write error: {str(e)}"}), 500
+    else:
+        # If server is stopped, execute terminal command directly inside the server's directory
+        try:
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(f"\n> {command}\n")
+                res = subprocess.run(
+                    command,
+                    shell=True,
+                    cwd=server_dir,
+                    stdout=f,
+                    stderr=subprocess.STDOUT,
+                    timeout=15,
+                    text=True
+                )
+            return jsonify({"status": "success", "message": "Command executed in server directory"})
+        except subprocess.TimeoutExpired:
+            return jsonify({"status": "error", "message": "Command timed out after 15s"}), 408
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+
+# ==================== SETTINGS APIS ====================
+
+@app.route("/api/get_startup/<server_id>", methods=["GET"])
 def api_get_startup(server_id):
-    servers = load_servers()
-    if server_id not in servers:
-        return jsonify({"success": False, "error": "Server not found"}), 404
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
 
-    s = servers[server_id]
+    servers = load_servers()
+    server = servers.get(clean_id)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
+
     return jsonify({
-        "success": True,
-        "server_id": s["id"],
-        "main_file": s.get("main_file", "main.py"),
-        "requirements_file": s.get("requirements_file", "requirements.txt")
+        "status": "success",
+        "name": server.get("name"),
+        "startup_file": server.get("startup_file", "main.py"),
+        "requirements_file": server.get("requirements_file", "requirements.txt")
     })
 
-@app.route('/api/set_startup/<server_id>', methods=['POST'])
+
+@app.route("/api/set_startup/<server_id>", methods=["POST"])
 def api_set_startup(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
     servers = load_servers()
-    if server_id not in servers:
-        return jsonify({"success": False, "error": "Server not found"}), 404
+    server = servers.get(clean_id)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
 
     data = request.get_json() or {}
-    main_file = secure_filename(data.get("main_file", "main.py").strip()) or "main.py"
-    req_file = secure_filename(data.get("requirements_file", "requirements.txt").strip()) or "requirements.txt"
+    startup_file = secure_filename(data.get("startup_file", "main.py"))
+    requirements_file = secure_filename(data.get("requirements_file", "requirements.txt"))
 
-    servers[server_id]["main_file"] = main_file
-    servers[server_id]["requirements_file"] = req_file
+    if not startup_file:
+        return jsonify({"status": "error", "message": "Startup file name invalid"}), 400
+
+    server["startup_file"] = startup_file
+    if requirements_file:
+        server["requirements_file"] = requirements_file
     save_servers(servers)
 
-    return jsonify({"success": True, "message": "Startup configuration saved successfully"})
+    return jsonify({"status": "success", "message": "Startup configuration saved!"})
 
-# -------------------------------------------------------------
-# RUN
-# -------------------------------------------------------------
+
+@app.route("/api/server/<server_id>/settings", methods=["POST"])
+def api_update_settings(server_id):
+    clean_id = sanitize_server_id(server_id)
+    if not clean_id:
+        return jsonify({"status": "error", "message": "Invalid Server ID"}), 400
+
+    servers = load_servers()
+    server = servers.get(clean_id)
+    if not server:
+        return jsonify({"status": "error", "message": "Server not found"}), 404
+
+    data = request.get_json() or {}
+    name = data.get("name", "").strip()
+    startup_file = secure_filename(data.get("startup_file", "main.py"))
+    requirements_file = secure_filename(data.get("requirements_file", "requirements.txt"))
+
+    if not name:
+        return jsonify({"status": "error", "message": "Server name cannot be empty"}), 400
+
+    server["name"] = name
+    server["startup_file"] = startup_file or "main.py"
+    server["requirements_file"] = requirements_file or "requirements.txt"
+    save_servers(servers)
+
+    return jsonify({"status": "success", "message": "Server settings updated successfully!"})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
