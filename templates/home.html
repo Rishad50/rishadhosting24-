@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ServerPanel — Professional Dashboard</title>
   <style>
-    /* ---------------- GLOBAL RESET & VARIABLES ---------------- */
+    /* ---------------- GLOBAL CSS & VARIABLES ---------------- */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     :root {
-      --bg-body: #f1f5f9;
+      --bg-body: #f8fafc;
       --surface: #ffffff;
       --border: #e2e8f0;
       --border-focus: #3b82f6;
@@ -21,14 +21,12 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --success: #10b981;
-      --success-hover: #059669;
       --danger: #ef4444;
-      --danger-hover: #dc2626;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.07);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -43,7 +41,7 @@
       flex-direction: column;
     }
 
-    /* ---------------- TOP HEADER ---------------- */
+    /* ---------------- HEADER ---------------- */
     .app-header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -52,19 +50,19 @@
       z-index: 40;
     }
     .header-container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 0.9rem 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      flex-wrap: wrap;
     }
     .brand-section {
       display: flex;
       align-items: center;
       gap: 0.85rem;
+      cursor: pointer;
     }
     .brand-icon {
       width: 40px;
@@ -77,20 +75,8 @@
       color: #fff;
     }
     .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .brand-subtitle {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-    }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
+    .brand-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); }
 
     /* ---------------- BUTTONS ---------------- */
     .btn {
@@ -101,40 +87,35 @@
       font-family: inherit;
       font-size: 0.85rem;
       font-weight: 600;
-      padding: 0.55rem 1rem;
+      padding: 0.5rem 0.95rem;
       border-radius: var(--radius-sm);
       border: 1px solid transparent;
       cursor: pointer;
       transition: all 0.15s ease-in-out;
       outline: none;
-      white-space: nowrap;
     }
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-
+    .btn-primary:hover { background: var(--primary-hover); }
     .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
-    .btn-secondary:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
 
-    .btn-success { background: var(--success); color: #fff; }
-    .btn-success:hover:not(:disabled) { background: var(--success-hover); }
-
-    .btn-danger { background: var(--danger); color: #fff; }
-    .btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
-
-    /* ---------------- MAIN CONTAINER & STATS ---------------- */
+    /* ---------------- MAIN WRAPPER ---------------- */
     .main-container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 1.5rem;
       width: 100%;
       flex: 1;
     }
+
+    /* ---------------- VIEW 1: SERVERS LIST VIEW ---------------- */
+    #view-servers-list { display: block; }
+    
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
@@ -142,7 +123,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.15rem 1.25rem;
+      padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -162,13 +143,12 @@
     .stat-val { font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
     .stat-label { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); }
 
-    /* ---------------- FILTER BAR ---------------- */
     .filter-bar {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 0.75rem 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -183,50 +163,55 @@
       outline: none;
       min-width: 220px;
     }
-    .filter-select {
-      padding: 0.45rem 0.85rem;
-      font-size: 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      outline: none;
-      cursor: pointer;
-    }
 
-    /* ---------------- SERVER CARD ---------------- */
-    .servers-list {
+    /* Clean Clickable Server Card */
+    .servers-grid {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 0.85rem;
     }
-    .server-card {
+    .server-card-item {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem;
+      padding: 1.15rem 1.4rem;
       box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .server-top-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 0.85rem;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .server-identity {
+    .server-card-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .server-item-left {
       display: flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 1rem;
     }
+    .server-item-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #eff6ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .server-item-icon svg { width: 22px; height: 22px; }
+    .server-item-name { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; }
+    .server-item-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      padding: 0.2rem 0.55rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 600;
@@ -234,35 +219,76 @@
     .badge-running { background: #ecfdf5; color: var(--success); }
     .badge-stopped { background: #f1f5f9; color: var(--text-muted); }
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
-    .server-name-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-    .server-specs-row { font-size: 0.8rem; color: var(--text-muted); }
 
-    .server-nav-tools {
+    /* ---------------- VIEW 2: SERVER DETAIL VIEW (IMAGE EXACT MATCH) ---------------- */
+    #view-server-detail {
+      display: none;
+      animation: fadeIn 0.15s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-nav-header {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+    .back-btn:hover { color: var(--primary); }
 
-    /* ---------------- SERVER CONTROLS (IMAGE EXACT MATCH) ---------------- */
-    .controls-panel {
+    .detail-top-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .detail-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; }
+
+    /* --- Server Controls Box (Exact like user screenshot) --- */
+    .controls-card {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1.15rem 1.25rem;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
     }
     .controls-title {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.2rem;
     }
-    .controls-subtitle {
-      font-size: 0.8rem;
+    .controls-desc {
+      font-size: 0.82rem;
       color: var(--text-muted);
       margin-bottom: 1rem;
     }
-    .control-buttons-grid {
+    .control-buttons-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.85rem;
@@ -289,49 +315,47 @@
 
     .btn-ctrl-restart { background-color: #2563eb; }
     .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; }
+    .btn-ctrl:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ---------------- RECENT LOGS (IMAGE EXACT MATCH) ---------------- */
-    .logs-panel {
+    /* --- Recent Logs Terminal (Exact like user screenshot) --- */
+    .logs-card {
       background: #0b1329;
-      border-radius: var(--radius-md);
-      padding: 1rem 1.25rem;
-      color: #93c5fd;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 1.4rem;
+      box-shadow: var(--shadow-md);
     }
-    .logs-header {
+    .logs-header-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 0.85rem;
-      font-family: var(--font-family);
     }
-    .logs-title {
-      font-size: 0.95rem;
+    .logs-heading {
+      font-size: 0.98rem;
       font-weight: 700;
       color: #ffffff;
     }
-    .logs-view-all {
-      font-size: 0.8rem;
+    .logs-view-all-btn {
+      font-size: 0.82rem;
       font-weight: 600;
       color: #38bdf8;
       cursor: pointer;
-      text-decoration: none;
+      background: none;
+      border: none;
     }
-    .logs-view-all:hover { text-decoration: underline; }
+    .logs-view-all-btn:hover { text-decoration: underline; }
 
-    .terminal-body-preview {
-      font-size: 0.82rem;
+    .terminal-body {
+      background: transparent;
+      color: #38bdf8;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.84rem;
       line-height: 1.6;
-      height: 150px;
+      height: 190px;
       overflow-y: auto;
       white-space: pre-wrap;
-      color: #e2e8f0;
-      scrollbar-width: thin;
-      scrollbar-color: #334155 transparent;
+      user-select: text;
     }
-    .log-ts { color: #60a5fa; }
-    .log-success { color: #4ade80; }
 
     /* ---------------- MODALS ---------------- */
     .modal-overlay {
@@ -359,7 +383,7 @@
       max-height: 90vh;
     }
     .modal-card.modal-lg { max-width: 860px; }
-    .modal-card.modal-xl { max-width: 1080px; height: 85vh; }
+    .modal-card.modal-xl { max-width: 1040px; height: 85vh; }
     .modal-header {
       padding: 1.1rem 1.4rem;
       border-bottom: 1px solid var(--border);
@@ -368,20 +392,8 @@
       justify-content: space-between;
     }
     .modal-title { font-size: 1.05rem; font-weight: 700; }
-    .modal-close-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 1.3rem;
-      color: var(--text-muted);
-    }
-    .modal-body {
-      padding: 1.4rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .modal-close-btn { background: transparent; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); }
+    .modal-body { padding: 1.4rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
     .modal-footer {
       padding: 1rem 1.4rem;
       border-top: 1px solid var(--border);
@@ -391,7 +403,7 @@
       gap: 0.65rem;
     }
 
-    /* Form Fields */
+    /* Form */
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-main); }
     .form-control {
@@ -405,13 +417,13 @@
     /* Full Terminal */
     .full-terminal {
       background: #0b1329;
-      color: #e2e8f0;
+      color: #38bdf8;
       font-family: monospace;
       padding: 1rem;
       border-radius: var(--radius-sm);
       height: 380px;
       overflow-y: auto;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       white-space: pre-wrap;
     }
     .terminal-input-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
@@ -438,16 +450,16 @@
     .toast-error { border-left: 4px solid var(--danger); }
 
     @media (max-width: 640px) {
-      .control-buttons-grid { grid-template-columns: 1fr; }
+      .control-buttons-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
+  <!-- ================= TOP HEADER ================= -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand-section">
+      <div class="brand-section" onclick="showServersListView()">
         <div class="brand-icon">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
         </div>
@@ -456,62 +468,116 @@
           <div class="brand-subtitle">Manage Your Servers Easily</div>
         </div>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-secondary" onclick="loadServers(true)">↻ Refresh</button>
+      <div>
         <button class="btn btn-primary" onclick="openCreateModal()">+ Create Server</button>
       </div>
     </div>
   </header>
 
-  <!-- DASHBOARD STATS -->
+  <!-- ================= MAIN CONTAINER ================= -->
   <main class="main-container">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon stat-blue">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+    
+    <!-- ---------------- VIEW 1: SERVERS LIST (হোম স্ক্রিন) ---------------- -->
+    <div id="view-servers-list">
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-blue">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+          </div>
+          <div>
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-label">Total Servers</div>
+          </div>
         </div>
-        <div>
-          <div class="stat-val" id="stat-total">0</div>
-          <div class="stat-label">Total Servers</div>
+        <div class="stat-card">
+          <div class="stat-icon stat-green">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <div>
+            <div class="stat-val" id="stat-running">0</div>
+            <div class="stat-label">Running Servers</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-gray">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <div>
+            <div class="stat-val" id="stat-stopped">0</div>
+            <div class="stat-label">Stopped Servers</div>
+          </div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-green">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        </div>
-        <div>
-          <div class="stat-val" id="stat-running">0</div>
-          <div class="stat-label">Running Servers</div>
-        </div>
+
+      <!-- FILTER -->
+      <div class="filter-bar">
+        <input type="text" id="search-input" class="search-input" placeholder="Search servers..." oninput="renderServersList()" />
+        <button class="btn btn-secondary btn-sm" onclick="loadServers(true)">↻ Refresh</button>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon stat-gray">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        </div>
-        <div>
-          <div class="stat-val" id="stat-stopped">0</div>
-          <div class="stat-label">Stopped Servers</div>
-        </div>
+
+      <!-- SERVER CARDS LIST (ক্লিন ও সিম্পল) -->
+      <div id="servers-container" class="servers-grid"></div>
+
+      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
+        <h3 style="font-size:1.15rem; font-weight:700;">No servers found</h3>
+        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create a new server to start running your bot.</p>
       </div>
     </div>
 
-    <!-- FILTER BAR -->
-    <div class="filter-bar">
-      <input type="text" id="search-input" class="search-input" placeholder="Search servers..." oninput="renderDashboard()" />
-      <select id="status-filter" class="filter-select" onchange="renderDashboard()">
-        <option value="all">All Status</option>
-        <option value="running">Running</option>
-        <option value="stopped">Stopped</option>
-      </select>
+    <!-- ---------------- VIEW 2: SERVER DETAIL (সার্ভারের উপরে চাপ দিলে এটি আসবে) ---------------- -->
+    <div id="view-server-detail">
+      <!-- Back Navigation -->
+      <div class="detail-nav-header">
+        <button class="back-btn" onclick="showServersListView()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          Back to Servers
+        </button>
+      </div>
+
+      <!-- Selected Server Info Card -->
+      <div class="detail-top-card">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.65rem;">
+            <span id="detail-status-badge" class="badge"></span>
+            <span id="detail-server-name" class="detail-title">Server Name</span>
+          </div>
+          <div id="detail-server-meta" class="detail-meta-text">Python • 1 GB RAM • 1 GB Disk</div>
+        </div>
+        <div class="detail-actions-right">
+          <button class="btn btn-secondary btn-sm" onclick="openFileManager()">📁 Files</button>
+          <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙️ Settings</button>
+          <button class="btn btn-secondary btn-sm" style="color:var(--danger);" onclick="deleteCurrentServer()">🗑️ Delete</button>
+        </div>
+      </div>
+
+      <!-- 1. SERVER CONTROLS (আপনার ছবির হুবহু ডিজাইন) -->
+      <div class="controls-card">
+        <div class="controls-title">Server Controls</div>
+        <div class="controls-desc">Start, stop or restart your server</div>
+        <div class="control-buttons-row">
+          <button id="ctrl-btn-start" class="btn-ctrl btn-ctrl-start" onclick="handleStart()">
+            ▶ Start
+          </button>
+          <button id="ctrl-btn-stop" class="btn-ctrl btn-ctrl-stop" onclick="handleStop()">
+            ■ Stop
+          </button>
+          <button id="ctrl-btn-restart" class="btn-ctrl btn-ctrl-restart" onclick="handleRestart()">
+            🔄 Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. RECENT LOGS (আপনার ছবির হুবহু ডিজাইন) -->
+      <div class="logs-card">
+        <div class="logs-header-bar">
+          <span class="logs-heading">Recent Logs</span>
+          <button class="logs-view-all-btn" onclick="openFullConsoleModal()">View All</button>
+        </div>
+        <div id="terminal-recent" class="terminal-body">Loading recent logs...</div>
+      </div>
     </div>
 
-    <!-- DYNAMIC SERVERS LIST -->
-    <div id="servers-container" class="servers-list"></div>
-
-    <div id="empty-state" style="display:none; text-align:center; padding:3rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
-      <h3>No servers found</h3>
-      <p style="color:#64748b; margin-top:0.25rem;">Create a new server to start running your bot.</p>
-    </div>
   </main>
 
   <!-- ================= MODALS ================= -->
@@ -527,7 +593,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Server Name</label>
-            <input type="text" id="create-name" class="form-control" placeholder="e.g. My Telegram Bot" required />
+            <input type="text" id="create-name" class="form-control" placeholder="e.g. My Python Bot" required />
           </div>
           <div class="form-group">
             <label class="form-label">Server Type</label>
@@ -552,29 +618,29 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create')">Cancel</button>
-          <button type="submit" id="btn-submit-create" class="btn btn-primary">Create Server</button>
+          <button type="submit" class="btn btn-primary">Create Server</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Full Console Modal -->
+  <!-- Full Console Modal ("View All" ক্লিক করলে এটি আসবে) -->
   <div id="modal-console" class="modal-overlay">
     <div class="modal-card modal-lg">
       <div class="modal-header">
         <h3 class="modal-title" id="console-modal-title">Terminal Console</h3>
-        <button class="modal-close-btn" onclick="closeConsoleModal()">&times;</button>
+        <button class="modal-close-btn" onclick="closeModal('modal-console')">&times;</button>
       </div>
       <div class="modal-body">
-        <div id="terminal-content" class="full-terminal">Loading logs...</div>
+        <div id="terminal-full" class="full-terminal">Loading logs...</div>
         <form class="terminal-input-bar" onsubmit="handleCommandSubmit(event)">
-          <input type="text" id="terminal-cmd-input" class="terminal-input" placeholder="> Enter shell command..." autocomplete="off" />
+          <input type="text" id="terminal-cmd-input" class="terminal-input" placeholder="> Enter command..." autocomplete="off" />
           <button type="submit" class="btn btn-primary">Send</button>
         </form>
       </div>
       <div class="modal-footer" style="justify-content: space-between;">
-        <button type="button" class="btn btn-secondary" onclick="clearConsoleLogs()">Clear Logs</button>
-        <button type="button" class="btn btn-secondary" onclick="closeConsoleModal()">Close</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="clearConsoleLogs()">Clear Logs</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-console')">Close</button>
       </div>
     </div>
   </div>
@@ -621,7 +687,6 @@
       </div>
       <form onsubmit="handleSettingsSubmit(event)">
         <div class="modal-body">
-          <input type="hidden" id="settings-server-id" />
           <div class="form-group">
             <label class="form-label">Server Name</label>
             <input type="text" id="settings-name" class="form-control" required />
@@ -645,12 +710,11 @@
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- ================= LOGIC & SCRIPT ================= -->
+  <!-- ================= JAVASCRIPT ================= -->
   <script>
     let serversData = {};
-    let activeConsoleServerId = null;
-    let consoleInterval = null;
-    let currentFileManagerServerId = null;
+    let selectedServerId = null;
+    let liveLogInterval = null;
     let currentFileManagerPath = "";
 
     function showToast(msg, type = 'success') {
@@ -665,24 +729,46 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
+    // ---------------- NAVIGATION BETWEEN VIEWS ----------------
+    function showServersListView() {
+      selectedServerId = null;
+      if (liveLogInterval) clearInterval(liveLogInterval);
+      document.getElementById('view-server-detail').style.display = 'none';
+      document.getElementById('view-servers-list').style.display = 'block';
+      loadServers();
+    }
+
+    function openServerDetail(serverId) {
+      selectedServerId = serverId;
+      document.getElementById('view-servers-list').style.display = 'none';
+      document.getElementById('view-server-detail').style.display = 'block';
+      renderServerDetail();
+      fetchLogs();
+      if (liveLogInterval) clearInterval(liveLogInterval);
+      liveLogInterval = setInterval(fetchLogs, 3000);
+    }
+
+    // ---------------- LOAD & RENDER SERVERS ----------------
     async function loadServers(manual = false) {
       try {
         const res = await fetch('/api/servers');
         const data = await res.json();
         if (data.status === 'success') {
           serversData = data.servers || {};
-          renderDashboard();
-          if (manual) showToast('Servers refreshed');
+          renderServersList();
+          if (selectedServerId && serversData[selectedServerId]) {
+            renderServerDetail();
+          }
+          if (manual) showToast('Refreshed');
         }
       } catch (e) {
         if (manual) showToast(e.message, 'error');
       }
     }
 
-    function renderDashboard() {
+    function renderServersList() {
       const list = Object.values(serversData);
       const query = (document.getElementById('search-input').value || '').toLowerCase();
-      const statusFilter = document.getElementById('status-filter').value;
 
       let running = 0, stopped = 0;
       list.forEach(s => s.status === 'running' ? running++ : stopped++);
@@ -690,12 +776,7 @@
       document.getElementById('stat-running').textContent = running;
       document.getElementById('stat-stopped').textContent = stopped;
 
-      const filtered = list.filter(s => {
-        const matchQ = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query);
-        const matchS = statusFilter === 'all' || s.status === statusFilter;
-        return matchQ && matchS;
-      });
-
+      const filtered = list.filter(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
       const container = document.getElementById('servers-container');
       const emptyState = document.getElementById('empty-state');
 
@@ -706,110 +787,140 @@
       }
       emptyState.style.display = 'none';
 
+      // সার্ভার কার্ডের ওপর সরাসরি ক্লিক করার ব্যবস্থা
       container.innerHTML = filtered.map(server => {
         const isRunning = server.status === 'running';
         return `
-          <div class="server-card">
-            <!-- Header Row with specs and quick tools -->
-            <div class="server-top-header">
+          <div class="server-card-item" onclick="openServerDetail('${server.id}')">
+            <div class="server-item-left">
+              <div class="server-item-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
+              </div>
               <div>
-                <div class="server-identity">
-                  <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}">
-                    <span class="badge-dot"></span>
-                    ${isRunning ? 'Running' : 'Stopped'}
-                  </span>
-                  <span class="server-name-title">${escapeHtml(server.name)}</span>
-                </div>
-                <div class="server-specs-row">
-                  ${server.type} • ${server.ram} RAM • ${server.disk} Disk • PID: <strong>${server.pid || 'None'}</strong>
+                <div class="server-item-name">${escapeHtml(server.name)}</div>
+                <div class="server-item-meta">
+                  <span>${server.type}</span> • 
+                  <span>RAM: ${server.ram}</span> • 
+                  <span>Disk: ${server.disk}</span>
                 </div>
               </div>
-              <div class="server-nav-tools">
-                <button class="btn btn-secondary btn-sm" onclick="openFileManager('${server.id}')">📁 Files</button>
-                <button class="btn btn-secondary btn-sm" onclick="openSettings('${server.id}')">⚙️ Settings</button>
-                <button class="btn btn-secondary btn-sm" style="color:var(--danger);" onclick="deleteServer('${server.id}')">🗑️ Delete</button>
-              </div>
             </div>
-
-            <!-- SERVER CONTROLS (EXACT DESIGN) -->
-            <div class="controls-panel">
-              <div class="controls-title">Server Controls</div>
-              <div class="controls-subtitle">Start, stop or restart your server</div>
-              <div class="control-buttons-grid">
-                <button class="btn-ctrl btn-ctrl-start" ${isRunning ? 'disabled' : ''} onclick="startServer('${server.id}')">
-                  ▶ Start
-                </button>
-                <button class="btn-ctrl btn-ctrl-stop" ${!isRunning ? 'disabled' : ''} onclick="stopServer('${server.id}')">
-                  ■ Stop
-                </button>
-                <button class="btn-ctrl btn-ctrl-restart" onclick="restartServer('${server.id}')">
-                  🔄 Restart
-                </button>
-              </div>
-            </div>
-
-            <!-- RECENT LOGS (EXACT DESIGN) -->
-            <div class="logs-panel">
-              <div class="logs-header">
-                <span class="logs-title">Recent Logs</span>
-                <span class="logs-view-all" onclick="openConsole('${server.id}')">View All</span>
-              </div>
-              <div class="terminal-body-preview" id="log-preview-${server.id}">Fetching live logs...</div>
+            <div>
+              <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}">
+                <span class="badge-dot"></span>
+                ${isRunning ? 'Running' : 'Stopped'}
+              </span>
             </div>
           </div>
         `;
       }).join('');
-
-      // Auto update the inline logs for all displayed servers
-      filtered.forEach(s => fetchPreviewLog(s.id));
     }
 
-    async function fetchPreviewLog(id) {
+    // ---------------- DETAIL VIEW RENDER ----------------
+    function renderServerDetail() {
+      const server = serversData[selectedServerId];
+      if (!server) return;
+
+      const isRunning = server.status === 'running';
+
+      // Top info
+      document.getElementById('detail-server-name').textContent = server.name;
+      document.getElementById('detail-server-meta').textContent = `${server.type} • ${server.ram} RAM • ${server.disk} Disk • PID: ${server.pid || 'None'}`;
+      
+      const badge = document.getElementById('detail-status-badge');
+      badge.className = `badge ${isRunning ? 'badge-running' : 'badge-stopped'}`;
+      badge.innerHTML = `<span class="badge-dot"></span> ${isRunning ? 'Running' : 'Stopped'}`;
+
+      // Server Controls Button States
+      document.getElementById('ctrl-btn-start').disabled = isRunning;
+      document.getElementById('ctrl-btn-stop').disabled = !isRunning;
+    }
+
+    // ---------------- SERVER POWER CONTROLS ----------------
+    async function handleStart() {
+      if (!selectedServerId) return;
+      showToast('Starting server...');
+      const res = await fetch(`/api/start/${selectedServerId}`, { method: 'POST' });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      loadServers();
+      fetchLogs();
+    }
+
+    async function handleStop() {
+      if (!selectedServerId) return;
+      showToast('Stopping server...');
+      const res = await fetch(`/api/stop/${selectedServerId}`, { method: 'POST' });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      loadServers();
+      fetchLogs();
+    }
+
+    async function handleRestart() {
+      if (!selectedServerId) return;
+      showToast('Restarting server...');
+      const res = await fetch(`/api/restart/${selectedServerId}`, { method: 'POST' });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      loadServers();
+      fetchLogs();
+    }
+
+    async function deleteCurrentServer() {
+      if (!selectedServerId) return;
+      if (!confirm("Are you sure you want to permanently delete this server?")) return;
+      const res = await fetch(`/api/server/${selectedServerId}`, { method: 'DELETE' });
+      const data = await res.json();
+      showToast(data.message, data.status);
+      showServersListView();
+    }
+
+    // ---------------- LOGS FETCHING ----------------
+    async function fetchLogs() {
+      if (!selectedServerId) return;
       try {
-        const res = await fetch(`/api/logs/${id}`);
+        const res = await fetch(`/api/logs/${selectedServerId}`);
         const data = await res.json();
-        const el = document.getElementById(`log-preview-${id}`);
-        if (el && data.status === 'success') {
-          el.textContent = data.logs.trim() ? data.logs.split('\n').slice(-8).join('\n') : "Server output logs will appear here...";
-          el.scrollTop = el.scrollHeight;
+        if (data.status === 'success') {
+          const lines = (data.logs || '').trim() ? data.logs.split('\n').slice(-10).join('\n') : "Server initialized. Press Start to run.";
+          document.getElementById('terminal-recent').textContent = lines;
+          
+          const fullTerm = document.getElementById('terminal-full');
+          if (fullTerm) fullTerm.textContent = data.logs || 'No logs yet.';
         }
       } catch (e) {}
     }
 
-    // Server power actions
-    async function startServer(id) {
-      showToast('Starting server...');
-      const res = await fetch(`/api/start/${id}`, { method: 'POST' });
-      const data = await res.json();
-      showToast(data.message, data.status);
-      loadServers();
+    function openFullConsoleModal() {
+      const server = serversData[selectedServerId];
+      document.getElementById('console-modal-title').textContent = `Console — ${server ? server.name : ''}`;
+      openModal('modal-console');
+      fetchLogs();
     }
 
-    async function stopServer(id) {
-      showToast('Stopping server...');
-      const res = await fetch(`/api/stop/${id}`, { method: 'POST' });
-      const data = await res.json();
-      showToast(data.message, data.status);
-      loadServers();
+    async function handleCommandSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('terminal-cmd-input');
+      const cmd = input.value.trim();
+      if (!cmd || !selectedServerId) return;
+
+      await fetch('/api/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ server_id: selectedServerId, command: cmd })
+      });
+      input.value = '';
+      fetchLogs();
     }
 
-    async function restartServer(id) {
-      showToast('Restarting server...');
-      const res = await fetch(`/api/restart/${id}`, { method: 'POST' });
-      const data = await res.json();
-      showToast(data.message, data.status);
-      loadServers();
+    async function clearConsoleLogs() {
+      if (!selectedServerId) return;
+      await fetch(`/api/clear_logs/${selectedServerId}`, { method: 'POST' });
+      fetchLogs();
     }
 
-    async function deleteServer(id) {
-      if (!confirm("Are you sure you want to permanently delete this server?")) return;
-      const res = await fetch(`/api/server/${id}`, { method: 'DELETE' });
-      const data = await res.json();
-      showToast(data.message, data.status);
-      loadServers();
-    }
-
-    // Modal Operations
+    // ---------------- CREATE SERVER ----------------
     function openCreateModal() { openModal('modal-create'); }
 
     async function handleCreateServerSubmit(e) {
@@ -828,66 +939,23 @@
       const data = await res.json();
       showToast(data.message, data.status);
       closeModal('modal-create');
-      loadServers();
+      await loadServers();
+      if (data.server && data.server.id) {
+        openServerDetail(data.server.id); // সরাসরি নতুন তৈরি হওয়া সার্ভারে নিয়ে যাবে
+      }
     }
 
-    // Terminal / Console
-    function openConsole(id) {
-      activeConsoleServerId = id;
-      openModal('modal-console');
-      fetchFullLogs();
-      if (consoleInterval) clearInterval(consoleInterval);
-      consoleInterval = setInterval(fetchFullLogs, 2500);
-    }
-
-    function closeConsoleModal() {
-      closeModal('modal-console');
-      activeConsoleServerId = null;
-      if (consoleInterval) clearInterval(consoleInterval);
-    }
-
-    async function fetchFullLogs() {
-      if (!activeConsoleServerId) return;
-      const res = await fetch(`/api/logs/${activeConsoleServerId}`);
-      const data = await res.json();
-      const term = document.getElementById('terminal-content');
-      term.textContent = data.logs || 'No output recorded yet.';
-      term.scrollTop = term.scrollHeight;
-    }
-
-    async function handleCommandSubmit(e) {
-      e.preventDefault();
-      const input = document.getElementById('terminal-cmd-input');
-      const cmd = input.value.trim();
-      if (!cmd || !activeConsoleServerId) return;
-
-      await fetch('/api/command', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ server_id: activeConsoleServerId, command: cmd })
-      });
-      input.value = '';
-      fetchFullLogs();
-    }
-
-    async function clearConsoleLogs() {
-      if (!activeConsoleServerId) return;
-      await fetch(`/api/clear_logs/${activeConsoleServerId}`, { method: 'POST' });
-      fetchFullLogs();
-    }
-
-    // File Manager
-    function openFileManager(id, path = '') {
-      currentFileManagerServerId = id;
+    // ---------------- FILE MANAGER ----------------
+    function openFileManager(path = '') {
       currentFileManagerPath = path;
       openModal('modal-files');
-      loadFiles(id, path);
+      loadFiles(path);
     }
 
-    async function loadFiles(id, path = '') {
+    async function loadFiles(path = '') {
       currentFileManagerPath = path;
       document.getElementById('fileman-breadcrumbs').textContent = '/' + path;
-      const res = await fetch(`/api/files/${id}?path=${encodeURIComponent(path)}`);
+      const res = await fetch(`/api/files/${selectedServerId}?path=${encodeURIComponent(path)}`);
       const data = await res.json();
       const tbody = document.getElementById('files-table-body');
       tbody.innerHTML = (data.items || []).map(item => `
@@ -905,12 +973,12 @@
     async function promptCreateFolder() {
       const name = prompt("Folder Name:");
       if (!name) return;
-      await fetch(`/api/create_folder/${currentFileManagerServerId}`, {
+      await fetch(`/api/create_folder/${selectedServerId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ folder_name: name, path: currentFileManagerPath })
       });
-      loadFiles(currentFileManagerServerId, currentFileManagerPath);
+      loadFiles(currentFileManagerPath);
     }
 
     async function handleFileUpload(e) {
@@ -919,26 +987,25 @@
       const fd = new FormData();
       fd.append('file', file);
       fd.append('path', currentFileManagerPath);
-      await fetch(`/api/upload/${currentFileManagerServerId}`, { method: 'POST', body: fd });
-      loadFiles(currentFileManagerServerId, currentFileManagerPath);
+      await fetch(`/api/upload/${selectedServerId}`, { method: 'POST', body: fd });
+      loadFiles(currentFileManagerPath);
       e.target.value = '';
     }
 
     async function deleteFileItem(p) {
       if (!confirm("Delete this item?")) return;
-      await fetch(`/api/file/${currentFileManagerServerId}`, {
+      await fetch(`/api/file/${selectedServerId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: p })
       });
-      loadFiles(currentFileManagerServerId, currentFileManagerPath);
+      loadFiles(currentFileManagerPath);
     }
 
-    // Settings
-    function openSettings(id) {
-      const s = serversData[id];
+    // ---------------- SETTINGS ----------------
+    function openSettings() {
+      const s = serversData[selectedServerId];
       if (!s) return;
-      document.getElementById('settings-server-id').value = id;
       document.getElementById('settings-name').value = s.name;
       document.getElementById('settings-startup').value = s.startup_file || 'main.py';
       document.getElementById('settings-requirements').value = s.requirements_file || 'requirements.txt';
@@ -947,13 +1014,12 @@
 
     async function handleSettingsSubmit(e) {
       e.preventDefault();
-      const id = document.getElementById('settings-server-id').value;
       const payload = {
         name: document.getElementById('settings-name').value.trim(),
         startup_file: document.getElementById('settings-startup').value.trim(),
         requirements_file: document.getElementById('settings-requirements').value.trim()
       };
-      const res = await fetch(`/api/server/${id}/settings`, {
+      const res = await fetch(`/api/server/${selectedServerId}/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -968,6 +1034,7 @@
       return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    // ---------------- INIT ----------------
     window.addEventListener('DOMContentLoaded', () => {
       loadServers();
       setInterval(() => {
