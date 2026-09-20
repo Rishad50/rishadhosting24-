@@ -3,38 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ServerPanel — Cloud Management</title>
+  <title>My Servers</title>
   <style>
-    /* ---------------- CSS RESET & THEME VARIABLES ---------------- */
+    /* ---------------- GLOBAL CSS RESET & VARIABLES ---------------- */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     :root {
-      --bg-body: #f8fafc;
-      --surface: #ffffff;
-      --border: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --text-main: #0f172a;
+      --bg-dark: #0a0b10;
+      --card-bg: #141622;
+      --card-border: rgba(255, 255, 255, 0.07);
+      --purple: #9333ea;
+      --purple-hover: #7e22ce;
+      --purple-light: rgba(168, 85, 247, 0.15);
+      --purple-icon: #c084fc;
+      --text-white: #ffffff;
+      --text-gray: #94a3b8;
       --text-muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success: #10b981;
-      --success-light: #ecfdf5;
-      --danger: #ef4444;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.15);
+      --red: #ef4444;
+      --blue: #2563eb;
       --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --radius-md: 14px;
+      --radius-lg: 18px;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
-      background-color: var(--bg-body);
-      color: var(--text-main);
+      background-color: var(--bg-dark);
+      color: var(--text-white);
       font-family: var(--font-family);
       line-height: 1.5;
       min-height: 100vh;
@@ -43,370 +43,317 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ---------------- TOP HEADER ---------------- */
-    .app-header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 40;
-    }
-    .header-container {
-      max-width: 860px;
+    .main-wrapper {
+      max-width: 600px;
       margin: 0 auto;
-      padding: 0.9rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      cursor: pointer;
-    }
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
-    }
-    .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
-    .brand-subtitle { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
-
-    /* ---------------- BUTTONS ---------------- */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      font-family: inherit;
-      font-size: 0.86rem;
-      font-weight: 600;
-      padding: 0.55rem 1.1rem;
-      border-radius: var(--radius-md);
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      outline: none;
-      white-space: nowrap;
-    }
-    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-primary { 
-      background: var(--primary); 
-      color: #fff; 
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
-    }
-    .btn-primary:hover:not(:disabled) { 
-      background: var(--primary-hover); 
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary { 
-      background: var(--surface); 
-      color: var(--text-main); 
-      border-color: var(--border); 
-    }
-    .btn-secondary:hover:not(:disabled) { 
-      background: #f1f5f9; 
-      border-color: var(--border-hover); 
-    }
-
-    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-sm); }
-
-    /* ---------------- MAIN CONTAINER ---------------- */
-    .main-container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 1.5rem 1.25rem 3rem;
+      padding: 1.25rem 1rem 3rem;
       width: 100%;
       flex: 1;
     }
 
-    /* ---------------- VIEW 1: PREMIUM SERVERS LIST ---------------- */
+    /* ---------------- HEADER (হুবহু স্ক্রিনশট) ---------------- */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-top: 0.5rem;
+    }
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+    }
+    .btn-create {
+      background-color: var(--purple);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.55rem 1.15rem;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      letter-spacing: 0.04em;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(147, 51, 234, 0.35);
+    }
+    .btn-create:hover {
+      background-color: var(--purple-hover);
+      transform: translateY(-1px);
+    }
+
+    /* ---------------- VIEW 1: SERVERS LIST ---------------- */
     #view-servers-list { display: block; }
 
-    .section-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      padding: 0 0.25rem;
-    }
-    .section-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .servers-count-badge {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--primary);
-      background: #eff6ff;
-      padding: 0.2rem 0.6rem;
-      border-radius: 9999px;
-    }
-
-    .servers-grid {
+    .servers-list {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 1.25rem;
     }
 
-    /* PREMIUM WHITE SERVER CARD */
-    .server-card-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
+    /* SERVER CARD (হুবহু স্ক্রিনশট) */
+    .server-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 1.15rem 1.35rem;
+      padding: 1.25rem 1.25rem 1.1rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    /* Card Top Row */
+    .card-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      -webkit-tap-highlight-color: transparent;
     }
-    .server-card-item:hover, .server-card-item:active {
-      border-color: var(--border-hover);
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
-    }
-
-    .server-card-left {
+    .card-identity-box {
       display: flex;
       align-items: center;
       gap: 0.9rem;
-      min-width: 0;
     }
-    .server-item-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-md);
-      background: #eff6ff;
-      border: 1px solid #dbeafe;
+    .server-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--purple-light);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--primary);
+      color: var(--purple-icon);
       flex-shrink: 0;
     }
-    .server-item-avatar svg { width: 22px; height: 22px; }
-
-    .server-info-col {
+    .server-titles {
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
-      min-width: 0;
     }
-    .server-item-name {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .server-card-name {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
-    .server-item-id {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
-    }
-
-    /* RIGHT SIDE STATUS & ARROW */
-    .server-card-right {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .status-capsule {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.35rem 0.8rem;
-      border-radius: 9999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      border: 1px solid transparent;
-    }
-    .status-capsule.running {
-      background: #ecfdf5;
-      color: #059669;
-      border-color: #a7f3d0;
-    }
-    .status-capsule.stopped {
-      background: #f1f5f9;
-      color: #475569;
-      border-color: #e2e8f0;
-    }
-    .capsule-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: currentColor;
-    }
-    .status-capsule.running .capsule-dot {
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-      animation: livePulse 1.8s infinite;
-    }
-    @keyframes livePulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-
-    .chevron-arrow {
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      transition: transform 0.2s ease, color 0.2s ease;
-    }
-    .server-card-item:hover .chevron-arrow {
-      color: var(--primary);
-      transform: translateX(3px);
-    }
-
-    /* হেল্পফুল কার্ড: খালি ভাব দূর করার জন্য */
-    .dashboard-help-tip {
-      background: #ffffff;
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.15rem 1.35rem;
-      margin-top: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      color: var(--text-muted);
+    .server-card-id {
       font-size: 0.84rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      font-weight: 600;
     }
-    .dashboard-help-tip strong { color: var(--text-main); }
+
+    /* Status Pill */
+    .status-pill {
+      padding: 0.35rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .status-pill.online {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+    .status-pill.offline {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-gray);
+    }
+
+    /* Specs Box */
+    .specs-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      padding-top: 0.2rem;
+    }
+    .spec-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-gray);
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .spec-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .spec-label {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .spec-label svg {
+      width: 15px;
+      height: 15px;
+      color: var(--text-muted);
+    }
+    .spec-value {
+      color: #ffffff;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    /* RAM Progress Bar */
+    .ram-progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      margin-top: -0.35rem;
+      margin-bottom: 0.35rem;
+      overflow: hidden;
+    }
+    .ram-progress-fill {
+      height: 100%;
+      background: #38bdf8;
+      border-radius: 2px;
+      width: 0%;
+    }
+
+    /* Bottom Full-width Button */
+    .btn-manage {
+      background-color: var(--purple);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 16px rgba(147, 51, 234, 0.25);
+    }
+    .btn-manage:hover {
+      background-color: var(--purple-hover);
+      transform: translateY(-1px);
+    }
 
     /* ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- */
     #view-server-detail {
       display: none;
-      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: fadeIn 0.2s ease-out;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .detail-nav-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .detail-nav {
       margin-bottom: 1.25rem;
     }
     .back-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-gray);
+      font-size: 0.9rem;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      font-weight: 600;
+      gap: 0.4rem;
       cursor: pointer;
-      border: none;
-      background: #fff;
-      padding: 0.45rem 0.85rem;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border);
-      transition: all 0.15s ease;
+      padding: 0.4rem 0;
     }
-    .back-btn:hover { color: var(--primary); border-color: var(--primary); }
+    .back-btn:hover { color: #fff; }
 
     .detail-top-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.4rem;
+      padding: 1.25rem;
       margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .detail-title { font-size: 1.35rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
-    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; font-family: monospace; }
-    .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .detail-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn-tool {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-tool:hover { background: rgba(255, 255, 255, 0.1); }
 
-    /* --- Server Controls Card --- */
+    /* Server Controls Box */
     .controls-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.4rem;
+      padding: 1.25rem;
       margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-sm);
     }
     .controls-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
-      color: var(--text-main);
       margin-bottom: 0.2rem;
     }
     .controls-desc {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       margin-bottom: 1rem;
     }
     .control-buttons-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
     .btn-ctrl {
       padding: 0.75rem 1rem;
       font-size: 0.95rem;
       font-weight: 700;
       border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.45rem;
-      border: none;
-      cursor: pointer;
-      color: #ffffff;
+      gap: 0.4rem;
       transition: all 0.15s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
     }
-    .btn-ctrl-start { background-color: #10b981; }
-    .btn-ctrl-start:hover:not(:disabled) { background-color: #059669; transform: translateY(-1px); }
+    .btn-ctrl-start { background-color: var(--green); }
+    .btn-ctrl-start:hover:not(:disabled) { background-color: #16a34a; }
+    .btn-ctrl-stop { background-color: var(--red); }
+    .btn-ctrl-stop:hover:not(:disabled) { background-color: #dc2626; }
+    .btn-ctrl-restart { background-color: var(--blue); }
+    .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; }
+    .btn-ctrl:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .btn-ctrl-stop { background-color: #ef4444; }
-    .btn-ctrl-stop:hover:not(:disabled) { background-color: #dc2626; transform: translateY(-1px); }
-
-    .btn-ctrl-restart { background-color: #2563eb; }
-    .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; transform: translateY(-1px); }
-
-    /* --- Recent Logs Terminal --- */
+    /* Recent Logs */
     .logs-card {
-      background: #0b1329;
+      background: #08090e;
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 1.2rem 1.35rem;
-      box-shadow: var(--shadow-md);
-      border: 1px solid #1e293b;
+      padding: 1.2rem;
     }
     .logs-header-bar {
       display: flex;
@@ -417,7 +364,7 @@
     .logs-heading {
       font-size: 0.95rem;
       font-weight: 700;
-      color: #ffffff;
+      color: #fff;
     }
     .logs-view-all-btn {
       font-size: 0.82rem;
@@ -427,26 +374,23 @@
       background: none;
       border: none;
     }
-    .logs-view-all-btn:hover { text-decoration: underline; }
-
     .terminal-body {
       background: transparent;
       color: #38bdf8;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-family: monospace;
       font-size: 0.82rem;
       line-height: 1.6;
-      height: 190px;
+      height: 180px;
       overflow-y: auto;
       white-space: pre-wrap;
-      user-select: text;
     }
 
     /* ---------------- MODALS ---------------- */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -455,52 +399,52 @@
     }
     .modal-overlay.active { display: flex; }
     .modal-card {
-      background: var(--surface);
+      background: #141622;
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 500px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
+      max-width: 480px;
       overflow: hidden;
       max-height: 90vh;
+      display: flex;
+      flex-direction: column;
     }
     .modal-card.modal-lg { max-width: 800px; }
-    .modal-card.modal-xl { max-width: 950px; height: 85vh; }
     .modal-header {
-      padding: 1.1rem 1.35rem;
-      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
+    .modal-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
     .modal-close-btn { background: transparent; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); }
-    .modal-body { padding: 1.35rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.95rem; }
+    .modal-body { padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.95rem; }
     .modal-footer {
-      padding: 1rem 1.35rem;
-      border-top: 1px solid var(--border);
-      background: #f8fafc;
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.2);
       display: flex;
       justify-content: flex-end;
       gap: 0.65rem;
     }
 
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-main); }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-gray); }
     .form-control {
       padding: 0.65rem 0.85rem;
       font-size: 0.88rem;
-      border: 1px solid var(--border);
+      background: #0d0e15;
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-sm);
       outline: none;
+      color: #fff;
       font-family: inherit;
     }
-    .form-control:focus { border-color: var(--primary); }
+    .form-control:focus { border-color: var(--purple); }
 
     .full-terminal {
-      background: #0b1329;
+      background: #08090e;
       color: #38bdf8;
       font-family: monospace;
       padding: 1rem;
@@ -509,12 +453,13 @@
       overflow-y: auto;
       font-size: 0.84rem;
       white-space: pre-wrap;
+      border: 1px solid var(--card-border);
     }
     .terminal-input-bar { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
     .terminal-input {
       flex: 1;
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: #0d0e15;
+      border: 1px solid var(--card-border);
       color: #fff;
       padding: 0.6rem 0.85rem;
       font-size: 0.86rem;
@@ -523,93 +468,63 @@
     }
 
     .files-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; }
-    .files-table th { background: #f8fafc; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text-muted); }
-    .files-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
+    .files-table th { background: rgba(0, 0, 0, 0.25); color: #94a3b8; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--card-border); }
+    .files-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: #e2e8f0; }
 
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none; }
-    .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); padding: 0.85rem 1.15rem; font-size: 0.86rem; font-weight: 600; pointer-events: auto; }
-    .toast-success { border-left: 4px solid var(--success); }
-    .toast-error { border-left: 4px solid var(--danger); }
+    .toast { min-width: 240px; background: #1a1d2d; border: 1px solid var(--card-border); border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); padding: 0.85rem 1.15rem; font-size: 0.86rem; font-weight: 600; color: #fff; pointer-events: auto; }
+    .toast-success { border-left: 4px solid var(--green); }
+    .toast-error { border-left: 4px solid var(--red); }
 
-    @media (max-width: 640px) {
+    @media (max-width: 480px) {
       .control-buttons-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand-section" onclick="showServersListView()">
-        <div class="brand-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
-        </div>
-        <div>
-          <div class="brand-title">ServerPanel</div>
-          <div class="brand-subtitle">Manage Your Servers Easily</div>
-        </div>
-      </div>
-      <div>
-        <button class="btn btn-primary" onclick="openCreateModal()">+ Create Server</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="main-container">
+  <div class="main-wrapper">
     
-    <!-- ---------------- VIEW 1: SERVERS LIST ---------------- -->
+    <!-- ---------------- VIEW 1: SERVERS LIST (হুবহু স্ক্রিনশট) ---------------- -->
     <div id="view-servers-list">
-      <div class="section-header-row">
-        <span class="section-title">My Servers</span>
-        <span class="servers-count-badge" id="servers-count-text">1 Active</span>
+      <!-- Top Title + CREATE Button -->
+      <div class="top-header">
+        <h1 class="page-title">My Servers</h1>
+        <button class="btn-create" onclick="openCreateModal()">+ CREATE</button>
       </div>
 
-      <!-- SERVER CARDS CONTAINER -->
-      <div id="servers-container" class="servers-grid"></div>
+      <!-- Servers Cards Container -->
+      <div id="servers-container" class="servers-list"></div>
 
-      <!-- ফাঁকা ভাব দূর করার আধুনিক হেল্প বার -->
-      <div class="dashboard-help-tip">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--primary);flex-shrink:0;">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <div>সার্ভার চালু করতে বা রিয়েল-টাইম কনসোল ও ফাইল দেখতে <strong>সার্ভার কার্ডের ওপর ট্যাপ করুন</strong>।</div>
-      </div>
-
-      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:16px; border:2px dashed #cbd5e1; margin-top:1rem;">
+      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:var(--card-bg); border-radius:18px; border:1px dashed var(--card-border);">
         <h3 style="font-size:1.1rem; font-weight:700;">No servers found</h3>
-        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create your first server to get started.</p>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.35rem;">Click + CREATE to create your first bot server.</p>
       </div>
     </div>
 
-    <!-- ---------------- VIEW 2: SERVER DETAIL (কার্ডে চাপ দিলে এটি আসবে) ---------------- -->
+    <!-- ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- -->
     <div id="view-server-detail">
-      <!-- Back Navigation -->
-      <div class="detail-nav-header">
+      <div class="detail-nav">
         <button class="back-btn" onclick="showServersListView()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           Back to Servers
         </button>
       </div>
 
-      <!-- Top Info -->
+      <!-- Top Info Card -->
       <div class="detail-top-card">
         <div>
-          <div style="display:flex; align-items:center; gap:0.65rem;">
-            <span id="detail-server-name" class="detail-title">Server Name</span>
-            <span id="detail-status-badge" class="status-capsule stopped"></span>
-          </div>
-          <div id="detail-server-id" class="detail-meta-text">id_placeholder</div>
+          <div style="font-size:1.3rem; font-weight:800; text-transform:uppercase;" id="detail-server-name">SERVER NAME</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); font-family:monospace;" id="detail-server-id">#000000</div>
         </div>
         <div class="detail-actions-right">
-          <button class="btn btn-secondary btn-sm" onclick="openFileManager()">📁 Files</button>
-          <button class="btn btn-secondary btn-sm" onclick="openSettings()">⚙️ Settings</button>
-          <button class="btn btn-secondary btn-sm" style="color:var(--danger);" onclick="deleteCurrentServer()">🗑️ Delete</button>
+          <button class="btn-tool" onclick="openFileManager()">📁 Files</button>
+          <button class="btn-tool" onclick="openSettings()">⚙️ Settings</button>
+          <button class="btn-tool" style="color:var(--red);" onclick="deleteCurrentServer()">🗑️ Delete</button>
         </div>
       </div>
 
-      <!-- 1. SERVER CONTROLS (Start, Stop, Restart) -->
+      <!-- Server Controls (Start, Stop, Restart) -->
       <div class="controls-card">
         <div class="controls-title">Server Controls</div>
         <div class="controls-desc">Start, stop or restart your server</div>
@@ -626,17 +541,17 @@
         </div>
       </div>
 
-      <!-- 2. RECENT LOGS (Live Terminal) -->
+      <!-- Recent Logs -->
       <div class="logs-card">
         <div class="logs-header-bar">
           <span class="logs-heading">Recent Logs</span>
           <button class="logs-view-all-btn" onclick="openFullConsoleModal()">View All</button>
         </div>
-        <div id="terminal-recent" class="terminal-body">Loading recent logs...</div>
+        <div id="terminal-recent" class="terminal-body">Loading logs...</div>
       </div>
     </div>
 
-  </main>
+  </div>
 
   <!-- ================= MODALS ================= -->
 
@@ -644,45 +559,46 @@
   <div id="modal-create" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 class="modal-title">Create New Server</h3>
+        <h3 class="modal-title">Create Server</h3>
         <button class="modal-close-btn" onclick="closeModal('modal-create')">&times;</button>
       </div>
       <form onsubmit="handleCreateServerSubmit(event)">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label">Server Name</label>
-            <input type="text" id="create-name" class="form-control" placeholder="e.g. RISHAD" required />
+            <label class="form-label">SERVER NAME</label>
+            <input type="text" id="create-name" class="form-control" placeholder="e.g. FLEX POLL MAKER" required />
           </div>
           <div class="form-group">
-            <label class="form-label">Server Type</label>
+            <label class="form-label">SERVER TYPE</label>
             <input type="text" id="create-type" class="form-control" value="Python" readonly />
           </div>
           <div class="form-group">
-            <label class="form-label">Allocated RAM</label>
+            <label class="form-label">ALLOCATED RAM</label>
             <select id="create-ram" class="form-control">
-              <option value="512 MB">512 MB</option>
-              <option value="1 GB" selected>1 GB</option>
-              <option value="2 GB">2 GB</option>
+              <option value="1 GB">1024 MB (1 GB)</option>
+              <option value="2 GB">2048 MB (2 GB)</option>
+              <option value="4 GB">4096 MB (4 GB)</option>
+              <option value="8 GB" selected>8192 MB (8 GB)</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Allocated Disk</label>
+            <label class="form-label">ALLOCATED DISK</label>
             <select id="create-disk" class="form-control">
-              <option value="1 GB" selected>1 GB</option>
-              <option value="2 GB">2 GB</option>
-              <option value="5 GB">5 GB</option>
+              <option value="5 GB">5120 MB (5 GB)</option>
+              <option value="10 GB">10240 MB (10 GB)</option>
+              <option value="20 GB" selected>20480 MB (20 GB)</option>
             </select>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Create Server</button>
+          <button type="button" class="btn-tool" onclick="closeModal('modal-create')">Cancel</button>
+          <button type="submit" class="btn-create" style="border-radius:var(--radius-sm);">Create</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal: Full Console ("View All" চাপলে আসবে) -->
+  <!-- Modal: Full Console -->
   <div id="modal-console" class="modal-overlay">
     <div class="modal-card modal-lg">
       <div class="modal-header">
@@ -692,30 +608,30 @@
       <div class="modal-body">
         <div id="terminal-full" class="full-terminal">Loading logs...</div>
         <form class="terminal-input-bar" onsubmit="handleCommandSubmit(event)">
-          <input type="text" id="terminal-cmd-input" class="terminal-input" placeholder="> Enter command..." autocomplete="off" />
-          <button type="submit" class="btn btn-primary">Send</button>
+          <input type="text" id="terminal-cmd-input" class="terminal-input" placeholder="> Enter shell command..." autocomplete="off" />
+          <button type="submit" class="btn-create" style="border-radius:var(--radius-sm); padding:0.6rem 1rem;">Send</button>
         </form>
       </div>
       <div class="modal-footer" style="justify-content: space-between;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="clearConsoleLogs()">Clear Logs</button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-console')">Close</button>
+        <button type="button" class="btn-tool" onclick="clearConsoleLogs()">Clear Logs</button>
+        <button type="button" class="btn-tool" onclick="closeModal('modal-console')">Close</button>
       </div>
     </div>
   </div>
 
   <!-- Modal: File Manager -->
   <div id="modal-files" class="modal-overlay">
-    <div class="modal-card modal-xl">
+    <div class="modal-card modal-lg">
       <div class="modal-header">
         <h3 class="modal-title" id="fileman-modal-title">File Manager</h3>
         <button class="modal-close-btn" onclick="closeModal('modal-files')">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.6rem; border-radius:6px; border:1px solid #e2e8f0;">
-          <div id="fileman-breadcrumbs" style="font-family:monospace; font-size:0.85rem;">/</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#08090e; padding:0.6rem; border-radius:6px; border:1px solid var(--card-border);">
+          <div id="fileman-breadcrumbs" style="font-family:monospace; font-size:0.85rem; color:#38bdf8;">/</div>
           <div style="display:flex; gap:0.5rem;">
-            <button class="btn btn-secondary btn-sm" onclick="promptCreateFolder()">+ Folder</button>
-            <label class="btn btn-primary btn-sm" style="cursor:pointer; margin:0;">
+            <button class="btn-tool" onclick="promptCreateFolder()">+ Folder</button>
+            <label class="btn-create" style="cursor:pointer; margin:0; border-radius:var(--radius-sm); padding:0.4rem 0.8rem; font-size:0.8rem;">
               Upload
               <input type="file" id="fileman-upload-input" style="display:none;" onchange="handleFileUpload(event)" />
             </label>
@@ -731,7 +647,7 @@
         </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-files')">Close</button>
+        <button type="button" class="btn-tool" onclick="closeModal('modal-files')">Close</button>
       </div>
     </div>
   </div>
@@ -740,27 +656,27 @@
   <div id="modal-settings" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 class="modal-title">Server Settings</h3>
+        <h3 class="modal-title">Settings</h3>
         <button class="modal-close-btn" onclick="closeModal('modal-settings')">&times;</button>
       </div>
       <form onsubmit="handleSettingsSubmit(event)">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label">Server Name</label>
+            <label class="form-label">SERVER NAME</label>
             <input type="text" id="settings-name" class="form-control" required />
           </div>
           <div class="form-group">
-            <label class="form-label">Startup File</label>
+            <label class="form-label">STARTUP FILE</label>
             <input type="text" id="settings-startup" class="form-control" required />
           </div>
           <div class="form-group">
-            <label class="form-label">Requirements File</label>
+            <label class="form-label">REQUIREMENTS FILE</label>
             <input type="text" id="settings-requirements" class="form-control" required />
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-settings')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn-tool" onclick="closeModal('modal-settings')">Cancel</button>
+          <button type="submit" class="btn-create" style="border-radius:var(--radius-sm);">Save</button>
         </div>
       </form>
     </div>
@@ -828,11 +744,6 @@
       const list = Object.values(serversData);
       const container = document.getElementById('servers-container');
       const emptyState = document.getElementById('empty-state');
-      const countBadge = document.getElementById('servers-count-text');
-
-      if (countBadge) {
-        countBadge.textContent = `${list.length} ${list.length === 1 ? 'Server' : 'Servers'}`;
-      }
 
       if (list.length === 0) {
         container.innerHTML = '';
@@ -841,39 +752,87 @@
       }
       emptyState.style.display = 'none';
 
-      // উচ্চমানের সাদা কার্ড ডিজাইন
+      // আপনার স্ক্রিনশটের হুবহু লেআউট
       container.innerHTML = list.map(server => {
         const isRunning = server.status === 'running';
-        const statusText = isRunning ? 'Running' : 'Stopped';
-        const statusClass = isRunning ? 'running' : 'stopped';
+        const statusText = isRunning ? 'Online' : 'Offline';
+        const statusClass = isRunning ? 'online' : 'offline';
+
+        // RAM এবং Disk সাইজ হিসাব
+        const ramLimitMB = parseMB(server.ram, 8192);
+        const diskLimitMB = parseMB(server.disk, 20480);
+        const currentRAM = isRunning ? Math.floor(ramLimitMB * 0.06) : 0;
+        const currentDisk = isRunning ? '0.17' : '0';
+        const ramPercentage = isRunning ? Math.max(8, Math.floor((currentRAM / ramLimitMB) * 100)) : 0;
+
+        // ID থেকে শুধু সংখ্যা বের করা বা # ফরম্যাট
+        const numericId = server.id.replace(/[^0-9]/g, '') || server.id;
 
         return `
-          <div class="server-card-item" onclick="openServerDetail('${server.id}')">
-            <div class="server-card-left">
-              <div class="server-item-avatar">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-                </svg>
+          <div class="server-card">
+            <!-- Top Row: Icon, Titles, Status -->
+            <div class="card-top-row">
+              <div class="card-identity-box">
+                <div class="server-icon-box">
+                  <svg fill="currentColor" viewBox="0 0 24 24" style="width:24px;height:24px;">
+                    <path d="M4 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm0 7a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm0 7a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM7 6h.01M7 13h.01M7 20h.01M10 6h.01M10 13h.01M10 20h.01"/>
+                  </svg>
+                </div>
+                <div class="server-titles">
+                  <div class="server-card-name">${escapeHtml(server.name)}</div>
+                  <div class="server-card-id">#${numericId}</div>
+                </div>
               </div>
-              <div class="server-info-col">
-                <div class="server-item-name">${escapeHtml(server.name)}</div>
-                <div class="server-item-id">${escapeHtml(server.id)}</div>
-              </div>
-            </div>
-            <div class="server-card-right">
-              <span class="status-capsule ${statusClass}">
-                <span class="capsule-dot"></span>
+              <div class="status-pill ${statusClass}">
                 ${statusText}
-              </span>
-              <div class="chevron-arrow">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7" />
-                </svg>
               </div>
             </div>
+
+            <!-- Specs Rows (CPU, RAM, DISK) -->
+            <div class="specs-box">
+              <div class="spec-item">
+                <div class="spec-label">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                  CPU
+                </div>
+                <div class="spec-value">0%</div>
+              </div>
+
+              <div class="spec-item" style="border-bottom:none; padding-bottom:0.25rem;">
+                <div class="spec-label">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                  RAM
+                </div>
+                <div class="spec-value">${currentRAM} / ${ramLimitMB} MB</div>
+              </div>
+              <!-- RAM Progress Bar -->
+              <div class="ram-progress-track">
+                <div class="ram-progress-fill" style="width: ${ramPercentage}%;"></div>
+              </div>
+
+              <div class="spec-item">
+                <div class="spec-label">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                  DISK
+                </div>
+                <div class="spec-value">${currentDisk} / ${diskLimitMB} MB</div>
+              </div>
+            </div>
+
+            <!-- Full width Manage button -->
+            <button class="btn-manage" onclick="openServerDetail('${server.id}')">
+              Manage server →
+            </button>
           </div>
         `;
       }).join('');
+    }
+
+    function parseMB(str, defaultVal) {
+      if (!str) return defaultVal;
+      const num = parseInt(str);
+      if (str.toLowerCase().includes('gb')) return num * 1024;
+      return num || defaultVal;
     }
 
     // ---------------- DETAIL VIEW ----------------
@@ -882,15 +841,10 @@
       if (!server) return;
 
       const isRunning = server.status === 'running';
-      const statusText = isRunning ? 'Running' : 'Stopped';
-      const statusClass = isRunning ? 'running' : 'stopped';
+      const numericId = server.id.replace(/[^0-9]/g, '') || server.id;
 
       document.getElementById('detail-server-name').textContent = server.name;
-      document.getElementById('detail-server-id').textContent = server.id;
-      
-      const badge = document.getElementById('detail-status-badge');
-      badge.className = `status-capsule ${statusClass}`;
-      badge.innerHTML = `<span class="capsule-dot"></span> ${statusText}`;
+      document.getElementById('detail-server-id').textContent = `#${numericId}`;
 
       document.getElementById('ctrl-btn-start').disabled = isRunning;
       document.getElementById('ctrl-btn-stop').disabled = !isRunning;
@@ -929,7 +883,7 @@
 
     async function deleteCurrentServer() {
       if (!selectedServerId) return;
-      if (!confirm("Are you sure you want to permanently delete this server?")) return;
+      if (!confirm("Are you sure you want to delete this server?")) return;
       const res = await fetch(`/api/server/${selectedServerId}`, { method: 'DELETE' });
       const data = await res.json();
       showToast(data.message, data.status);
@@ -1024,7 +978,7 @@
           <td>${item.is_dir ? '-' : item.size + ' B'}</td>
           <td>${item.modified}</td>
           <td style="text-align:right;">
-            <button class="btn btn-secondary btn-sm" onclick="deleteFileItem('${path ? path + '/' + item.name : item.name}')">Del</button>
+            <button class="btn-tool" onclick="deleteFileItem('${path ? path + '/' + item.name : item.name}')">Del</button>
           </td>
         </tr>
       `).join('');
