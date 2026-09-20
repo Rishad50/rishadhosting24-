@@ -117,62 +117,9 @@
       flex: 1;
     }
 
-    /* ---------------- VIEW 1: SERVERS LIST VIEW ---------------- */
+    /* ---------------- VIEW 1: SERVERS LIST ---------------- */
     #view-servers-list { display: block; }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.85rem;
-      margin-bottom: 1.25rem;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 0.9rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .stat-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .stat-blue { background: #eff6ff; color: var(--primary); }
-    .stat-green { background: #ecfdf5; color: var(--success); }
-    .stat-gray { background: #f1f5f9; color: var(--text-muted); }
-    .stat-val { font-size: 1.35rem; font-weight: 700; line-height: 1.1; }
-    .stat-label { font-size: 0.74rem; font-weight: 500; color: var(--text-muted); }
-
-    .filter-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0.65rem 0.85rem;
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.65rem;
-    }
-    .search-input {
-      padding: 0.45rem 0.75rem;
-      font-size: 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      outline: none;
-      flex: 1;
-      max-width: 300px;
-    }
-
-    /* --- MOBILE RESPONSIVE SERVER CARD --- */
     .servers-grid {
       display: flex;
       flex-direction: column;
@@ -255,7 +202,7 @@
     .badge-stopped { background: #f1f5f9; color: #64748b; }
     .badge-dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; }
 
-    /* ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- */
+    /* ---------------- VIEW 2: SERVER DETAIL ---------------- */
     #view-server-detail {
       display: none;
       animation: fadeIn 0.15s ease-out;
@@ -301,7 +248,7 @@
     .detail-meta-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
     .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    /* --- Server Controls Card (Start, Stop, Restart) --- */
+    /* --- Server Controls Card --- */
     .controls-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -479,7 +426,6 @@
     .toast-error { border-left: 4px solid var(--danger); }
 
     @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr; }
       .control-buttons-row { grid-template-columns: 1fr; }
     }
   </style>
@@ -507,46 +453,9 @@
   <!-- MAIN CONTAINER -->
   <main class="main-container">
     
-    <!-- ---------------- VIEW 1: SERVERS LIST (হোম স্ক্রিন) ---------------- -->
+    <!-- ---------------- VIEW 1: SERVERS LIST (হোম স্ক্রিন - কার্ড ছাড়া বাকি সব সরানো হয়েছে) ---------------- -->
     <div id="view-servers-list">
-      <!-- STATS -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon stat-blue">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-          </div>
-          <div>
-            <div class="stat-val" id="stat-total">0</div>
-            <div class="stat-label">Total Servers</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon stat-green">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          </div>
-          <div>
-            <div class="stat-val" id="stat-running">0</div>
-            <div class="stat-label">Running Servers</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon stat-gray">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          </div>
-          <div>
-            <div class="stat-val" id="stat-stopped">0</div>
-            <div class="stat-label">Stopped Servers</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- FILTER & SEARCH -->
-      <div class="filter-bar">
-        <input type="text" id="search-input" class="search-input" placeholder="Search servers..." oninput="renderServersList()" />
-        <button class="btn btn-secondary btn-sm" onclick="loadServers(true)">↻ Refresh</button>
-      </div>
-
-      <!-- SERVER CARDS (RAM এবং Disk ছাড়া পরিচ্ছন্ন তালিকা) -->
+      <!-- SERVER CARDS -->
       <div id="servers-container" class="servers-grid"></div>
 
       <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
@@ -798,27 +707,18 @@
 
     function renderServersList() {
       const list = Object.values(serversData);
-      const query = (document.getElementById('search-input').value || '').toLowerCase();
-
-      let running = 0, stopped = 0;
-      list.forEach(s => s.status === 'running' ? running++ : stopped++);
-      document.getElementById('stat-total').textContent = list.length;
-      document.getElementById('stat-running').textContent = running;
-      document.getElementById('stat-stopped').textContent = stopped;
-
-      const filtered = list.filter(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
       const container = document.getElementById('servers-container');
       const emptyState = document.getElementById('empty-state');
 
-      if (filtered.length === 0) {
+      if (list.length === 0) {
         container.innerHTML = '';
         emptyState.style.display = 'block';
         return;
       }
       emptyState.style.display = 'none';
 
-      // এখানে RAM এবং Disk সম্পূর্ণ বাদ দিয়ে শুধু Python রাখা হয়েছে
-      container.innerHTML = filtered.map(server => {
+      // শুধুমাত্র পরিষ্কার সার্ভার কার্ড তালিকা
+      container.innerHTML = list.map(server => {
         const isRunning = server.status === 'running';
         return `
           <div class="server-card-item" onclick="openServerDetail('${server.id}')">
