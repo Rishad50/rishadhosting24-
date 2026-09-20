@@ -1,822 +1,1535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Servers</title>
-  
-  <!-- Google Fonts: আপনার দেওয়া ফন্ট -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ServerPanel — Professional Server Management</title>
   <style>
-    /* ==========================================================
-       আপনার দেওয়া হুবহু Text Size এবং Exact Color কোড
-       ========================================================== */
-    :root {
-      /* Font Sizes */
-      --header-title-size: 26px;     /* 'My Servers' */
-      --create-btn-size: 15px;       /* '+ CREATE' */
-      --server-title-size: 19px;     /* 'Testing' */
-      --server-id-size: 13.5px;      /* 'testing_1779785743' */
-      --status-badge-size: 11.5px;   /* 'OFFLINE' */
-
-      /* Exact Colors */
-      --bg-color: #000000;           /* সম্পূর্ণ পিচ ব্ল্যাক ব্যাকগ্রাউন্ড */
-      --card-bg: #0e0f13;            /* কার্ডের আসল ডার্ক গ্রে কালার */
-      --card-border: #1a1b22;        /* কার্ডের চারপাশের সূক্ষ্ম বর্ডার */
-      --purple-btn: #9d5cd2;         /* পারফেক্ট পার্পল কালার */
-      --text-white: #ffffff;         /* হেডিং ও টাইটেলের জন্য */
-      --text-muted: #5e606b;         /* আইডি এবং অফলাইন টেক্সটের ছাই রঙ */
-      --badge-bg: #1a1b22;           /* অফলাইন ব্যাজের ব্যাকগ্রাউন্ড */
-
-      /* Online Green Colors */
-      --online-green: #22c55e;
-      --badge-online-bg: #11241a;
-    }
-
-    * {
+    /* ---------------- CSS RESET & THEME VARIABLES ---------------- */
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
     }
-
+    :root {
+      --bg-body: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #8b5cf6;
+      --purple-hover: #7c3aed;
+      --gray-badge: #64748b;
+      --gray-badge-light: #f1f5f9;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
     body {
-      background-color: var(--bg-color);
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      color: var(--text-white);
-      display: flex;
-      justify-content: center;
-      padding: 30px 16px;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.5;
       min-height: 100vh;
-    }
-
-    /* স্ক্রিনের উইডথ ও কন্টেইনার */
-    .wrapper {
-      width: 100%;
-      max-width: 480px; /* মোবাইল রেশিও অনুযায়ী */
-    }
-
-    /* TOAST */
-    #toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
-    .toast {
-      padding: 12px 18px;
-      border-radius: 12px;
-      background: #14151c;
-      border-left: 4px solid var(--purple-btn);
-      color: #fff;
-      font-size: 13.5px;
-      font-weight: 700;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      pointer-events: auto;
     }
 
-    /* ১. হেডার পার্ট */
-    .header-row {
+    /* ---------------- HEADER ---------------- */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .header-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
-
-    .title {
-      font-size: var(--header-title-size);
-      font-weight: 800;
-      letter-spacing: -0.3px;
-    }
-
-    /* '+ CREATE' বাটন */
-    .create-button {
-      background-color: var(--purple-btn);
-      color: #ffffff;
-      border: none;
-      outline: none;
-      padding: 10px 20px;
-      border-radius: 16px;
-      font-size: var(--create-btn-size);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      cursor: pointer;
+    .brand-section {
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: opacity 0.15s ease, transform 0.1s ease;
+      gap: 0.85rem;
     }
-
-    .create-button:hover { opacity: 0.9; }
-    .create-button:active { transform: scale(0.97); }
-
-    .plus-symbol {
-      font-size: 19px;
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+    }
+    .brand-icon svg { width: 24px; height: 24px; }
+    .brand-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      line-height: 1;
-      margin-top: -1px;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+    .brand-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
     }
 
-    /* ২. সার্ভার কার্ড লিস্ট */
+    /* ---------------- BUTTONS ---------------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 0.95rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      outline: none;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+    .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
+    .btn-secondary:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #059669; }
+
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
+
+    .btn-purple { background: var(--purple); color: #fff; }
+    .btn-purple:hover:not(:disabled) { background: var(--purple-hover); }
+
+    .btn-dark { background: #1e293b; color: #fff; }
+    .btn-dark:hover:not(:disabled) { background: #0f172a; }
+
+    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
+
+    /* ---------------- CONTAINER & STATS ---------------- */
+    .main-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.75rem 1.5rem 3rem;
+      width: 100%;
+      flex: 1;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stat-icon-wrapper svg { width: 24px; height: 24px; }
+    .stat-blue { background: #eff6ff; color: var(--primary); }
+    .stat-green { background: var(--success-light); color: var(--success); }
+    .stat-gray { background: var(--gray-badge-light); color: var(--gray-badge); }
+    .stat-info-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    .stat-info-val { font-size: 1.65rem; font-weight: 700; color: var(--text-main); line-height: 1.1; }
+
+    /* ---------------- SERVERS SECTION ---------------- */
+    .section-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      padding: 0.48rem 0.85rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      min-width: 220px;
+      background: #fff;
+    }
+    .search-input:focus { border-color: var(--border-focus); }
+    .filter-select {
+      padding: 0.48rem 0.85rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    /* ---------------- SERVER LIST & CARDS ---------------- */
     .servers-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 0.9rem;
     }
-
-    /* আপনার দেওয়া হুবহু সার্ভার কার্ড (কোনো CPU, RAM বা DISK ছাড়া) */
     .server-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-
-    .server-card:hover {
-      transform: translateY(-2px);
-      border-color: #2b2c38;
-    }
-
-    /* বাম পাশের সার্ভার ইনফো */
-    .server-info {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.35rem;
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 1rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-
-    .server-name {
-      font-size: var(--server-title-size);
-      font-weight: 800;
-      color: var(--text-white);
-      line-height: 1.2;
+    .server-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-md);
     }
-
-    .server-id {
-      font-family: 'Roboto Mono', ui-monospace, monospace;
-      font-size: var(--server-id-size);
-      color: var(--text-muted);
-      letter-spacing: -0.3px;
+    .server-main-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
-
-    /* ৩. অফলাইন / অনলাইন ব্যাজ (ডান পাশে) */
-    .offline-badge {
-      background-color: var(--badge-bg);
-      padding: 6px 14px;
-      border-radius: 30px;
+    .server-title-group {
       display: flex;
       align-items: center;
-      gap: 6px;
-      user-select: none;
+      gap: 0.65rem;
     }
-    .offline-badge.online {
-      background-color: var(--badge-online-bg);
-    }
-
-    .offline-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--text-muted);
-    }
-    .offline-badge.online .offline-dot {
-      background-color: var(--online-green);
-    }
-
-    .offline-text {
-      font-size: var(--status-badge-size);
-      font-weight: 800;
-      color: var(--text-muted);
-      letter-spacing: 0.6px;
-      line-height: 1;
-    }
-    .offline-badge.online .offline-text {
-      color: var(--online-green);
-    }
-
-    /* ==========================================================
-       ম্যানেজমেন্ট ভিউ (সার্ভার কার্ডে ক্লিক করলে যা ওপেন হবে)
-       ========================================================== */
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-
-    .panel-box {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .tab-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-      overflow-x: auto;
-    }
-    .tab-btn {
-      background: #14151d;
-      color: var(--text-muted);
-      border: 1px solid var(--card-border);
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 13px;
+    .server-name {
+      font-size: 1.05rem;
       font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
+      color: var(--text-main);
     }
-    .tab-btn.active {
-      background: var(--purple-btn);
-      color: #fff;
-      border-color: var(--purple-btn);
-    }
-
-    .action-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-    .btn-action {
-      padding: 11px;
-      border-radius: 12px;
-      border: none;
-      font-weight: 800;
-      font-size: 13px;
-      cursor: pointer;
-      color: #fff;
-    }
-    .btn-start { background: #16a34a; }
-    .btn-stop { background: #dc2626; }
-    .btn-restart { background: #7c3aed; }
-
-    /* টার্মিনাল */
-    .terminal {
-      background: #050508;
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      height: 380px;
-      padding: 14px;
-      color: #22c55e;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 12.5px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      line-height: 1.45;
-    }
-    .cmd-bar {
+    .server-meta-tags {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
     }
-    .cmd-input {
-      flex-grow: 1;
-      background: #08080d;
-      border: 1px solid var(--card-border);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 12px;
-      outline: none;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 13px;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-running { background: var(--success-light); color: var(--success); }
+    .badge-stopped { background: var(--gray-badge-light); color: var(--gray-badge); }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
+
+    .server-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.85rem;
+      border-top: 1px solid #f1f5f9;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .server-tech-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .server-tech-info strong { color: var(--text-main); }
+    .server-actions-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
     }
 
-    /* ফাইল ম্যানেজার */
-    .file-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 10px;
+    /* ---------------- EMPTY STATE ---------------- */
+    .empty-state-box {
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 3.5rem 1.5rem;
+      text-align: center;
     }
-    .file-table th, .file-table td {
-      padding: 10px 6px;
-      text-align: left;
-      border-bottom: 1px solid #161720;
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      color: #94a3b8;
     }
-    .file-table th { color: var(--text-muted); font-size: 12px; }
-    .file-click { cursor: pointer; color: #fff; font-weight: 600; }
-    .file-click:hover { color: var(--purple-btn); }
+    .empty-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .empty-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
 
-    /* মোডাল */
+    /* ---------------- MODALS ---------------- */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(5px);
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
-      padding: 16px;
+      padding: 1rem;
+      z-index: 50;
     }
-    .modal-overlay.open { display: flex; }
+    .modal-overlay.active { display: flex; }
     .modal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 440px;
-      padding: 24px;
+      max-width: 520px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-height: 90vh;
+      animation: modalFadeIn 0.2s ease-out;
     }
-    .input-field {
-      width: 100%;
-      background: #08080c;
-      border: 1px solid var(--card-border);
-      padding: 11px 14px;
-      border-radius: 12px;
-      color: #fff;
-      margin: 8px 0 16px 0;
-      outline: none;
-      font-size: 14px;
+    .modal-card.modal-lg { max-width: 860px; }
+    .modal-card.modal-xl { max-width: 1080px; height: 85vh; }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
     }
-    .input-field:focus { border-color: var(--purple-btn); }
-    .btn-secondary {
-      background: #191a24;
-      color: #fff;
+    .modal-header {
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 1.05rem; font-weight: 700; }
+    .modal-close-btn {
+      background: transparent;
       border: none;
-      padding: 10px 18px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 13px;
       cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 0.25rem;
+    }
+    .modal-close-btn:hover { color: var(--text-main); }
+    .modal-body {
+      padding: 1.4rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-footer {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.65rem;
+    }
+
+    /* Form Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .form-control {
+      padding: 0.55rem 0.85rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      font-family: inherit;
+    }
+    .form-control:focus { border-color: var(--border-focus); }
+
+    /* ---------------- CONSOLE / TERMINAL MODAL ---------------- */
+    .terminal-body {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      height: 380px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      user-select: text;
+    }
+    .terminal-input-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+    }
+    .terminal-input {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      font-family: monospace;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+    .terminal-input:focus { border-color: #60a5fa; }
+
+    /* ---------------- FILE MANAGER MODAL ---------------- */
+    .fileman-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: #f8fafc;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      overflow-x: auto;
+    }
+    .fileman-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .files-table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      min-height: 280px;
+      max-height: 420px;
+    }
+    .files-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    .files-table th {
+      background: #f8fafc;
+      padding: 0.65rem 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .files-table td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .files-table tr:hover td { background: #fbfcfe; }
+    .file-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    .file-name-cell:hover { color: var(--primary); text-decoration: underline; }
+    .file-name-cell svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ---------------- FILE EDITOR ---------------- */
+    .file-editor-area {
+      width: 100%;
+      height: 380px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Courier, monospace;
+      font-size: 0.85rem;
+      padding: 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      resize: vertical;
+      background: #ffffff;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .file-editor-area:focus { border-color: var(--border-focus); }
+
+    /* ---------------- TOAST NOTIFICATIONS ---------------- */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      min-width: 260px;
+      max-width: 380px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-main);
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    @keyframes toastIn {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast-success { border-left: 4px solid var(--success); }
+    .toast-error { border-left: 4px solid var(--danger); }
+    .toast-icon { flex-shrink: 0; font-size: 1rem; }
+    .toast-success .toast-icon { color: var(--success); }
+    .toast-error .toast-icon { color: var(--danger); }
+
+    /* ---------------- RESPONSIVE MEDIA QUERIES ---------------- */
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; align-items: stretch; }
+      .header-actions { justify-content: flex-start; overflow-x: auto; padding-bottom: 0.25rem; }
+      .server-main-row, .server-bottom-row { flex-direction: column; align-items: stretch; }
+      .server-actions-cluster { justify-content: flex-start; overflow-x: auto; padding-bottom: 0.25rem; }
+      .filter-group { width: 100%; }
+      .search-input { width: 100%; min-width: 100%; }
+      .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div id="toast-container"></div>
-
-  <div class="wrapper">
-
-    <!-- ================= ১. MY SERVERS (হুবহু আপনার দেওয়া ডিজাইন) ================= -->
-    <div id="view-home" class="view-section active">
-      <div class="header-row">
-        <h1 class="title">My Servers</h1>
-        <button class="create-button" onclick="openCreateModal()">
-          <span class="plus-symbol">+</span> CREATE
+  <!-- ================= TOP HEADER ================= -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">ServerPanel</div>
+          <div class="brand-subtitle">Manage Your Servers Easily</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="loadServers(true)">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          Refresh
+        </button>
+        <button class="btn btn-primary" onclick="openCreateModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          + Create Server
         </button>
       </div>
+    </div>
+  </header>
 
-      <div id="servers-container" class="servers-list">
-        <!-- সার্ভার কার্ড জাভাস্ক্রিপ্ট দিয়ে এখানে লোড হবে -->
+  <!-- ================= MAIN DASHBOARD ================= -->
+  <main class="main-container">
+    
+    <!-- STATS CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper stat-blue">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+        </div>
+        <div>
+          <div class="stat-info-label">Total Servers</div>
+          <div class="stat-info-val" id="stat-total">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper stat-green">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <div>
+          <div class="stat-info-label">Running</div>
+          <div class="stat-info-val" id="stat-running">0</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrapper stat-gray">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <div>
+          <div class="stat-info-label">Stopped</div>
+          <div class="stat-info-val" id="stat-stopped">0</div>
+        </div>
       </div>
     </div>
 
-
-    <!-- ================= ২. SERVER DETAILS & CONTROLS ================= -->
-    <div id="view-dashboard" class="view-section">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <button class="btn-secondary" onclick="backToHome()">← Back to Servers</button>
-        <span id="nav-server-title" style="font-weight: 800; font-size: 15px;"></span>
+    <!-- SERVERS LIST SECTION -->
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <h2 class="section-title">My Servers</h2>
       </div>
-
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('tab-overview')">Overview</button>
-        <button class="tab-btn" onclick="switchTab('tab-console')">Console</button>
-        <button class="tab-btn" onclick="switchTab('tab-files')">Files</button>
-        <button class="tab-btn" onclick="switchTab('tab-settings')">Settings</button>
+      <div class="filter-group">
+        <input type="text" id="search-input" class="search-input" placeholder="Search servers..." oninput="handleSearchFilter()" />
+        <select id="status-filter" class="filter-select" onchange="handleSearchFilter()">
+          <option value="all">All Status</option>
+          <option value="running">Running</option>
+          <option value="stopped">Stopped</option>
+        </select>
       </div>
-
-      <!-- OVERVIEW -->
-      <div id="tab-overview" class="tab-content">
-        <div class="panel-box">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="server-info">
-              <div class="server-name" id="d-name">Server</div>
-              <div class="server-id" id="d-id">id</div>
-            </div>
-            <div id="d-badge" class="offline-badge">
-              <span class="offline-dot"></span>
-              <span id="d-status-text" class="offline-text">OFFLINE</span>
-            </div>
-          </div>
-
-          <div class="action-grid">
-            <button class="btn-action btn-start" onclick="power('start')">Start</button>
-            <button class="btn-action btn-stop" onclick="power('stop')">Stop</button>
-            <button class="btn-action btn-restart" onclick="power('restart')">Restart</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONSOLE -->
-      <div id="tab-console" class="tab-content" style="display: none;">
-        <div class="panel-box" style="padding: 14px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 12px; color: var(--text-muted); font-weight: 800;">LIVE TERMINAL</span>
-            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="clearLogs()">Clear</button>
-          </div>
-          <div id="terminal" class="terminal">Loading logs...</div>
-          <form class="cmd-bar" onsubmit="sendCmd(event)">
-            <input type="text" id="cmd-input" class="cmd-input" placeholder="Type command..." autocomplete="off">
-            <button type="submit" class="create-button" style="padding: 0 16px; border-radius: 12px;">Send</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- FILES -->
-      <div id="tab-files" class="tab-content" style="display: none;">
-        <div class="panel-box">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span id="fm-current-path" style="font-size: 12px; color: var(--purple-btn); font-family: 'Roboto Mono', monospace;">root</span>
-            <div style="display: flex; gap: 6px;">
-              <input type="file" id="fm-upload" style="display: none;" onchange="uploadFile(event)">
-              <button class="btn-secondary" style="font-size: 12px;" onclick="document.getElementById('fm-upload').click()">↑ Upload</button>
-              <button class="btn-secondary" style="font-size: 12px;" onclick="newFolderPrompt()">+ Folder</button>
-            </div>
-          </div>
-
-          <table class="file-table">
-            <thead>
-              <tr><th>Name</th><th>Size</th><th style="text-align: right;">Action</th></tr>
-            </thead>
-            <tbody id="files-list"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div id="tab-settings" class="tab-content" style="display: none;">
-        <div class="panel-box">
-          <h3 style="margin-bottom: 14px; font-size: 16px;">Server Settings</h3>
-          <form onsubmit="saveSettings(event)">
-            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Server Name</label>
-            <input type="text" id="s-name" class="input-field" required>
-
-            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Startup Script</label>
-            <input type="text" id="s-startup" class="input-field" required>
-
-            <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">Requirements File</label>
-            <input type="text" id="s-reqs" class="input-field" required>
-
-            <button type="submit" class="create-button" style="width: 100%; justify-content: center;">Save Changes</button>
-          </form>
-
-          <hr style="border: none; border-top: 1px solid var(--card-border); margin: 24px 0 16px 0;">
-
-          <button class="btn-secondary" style="background: #dc2626; width: 100%; font-weight: 800;" onclick="deleteCurrentServer()">
-            Delete Server Permanently
-          </button>
-        </div>
-      </div>
-
     </div>
 
-  </div>
+    <!-- CONTAINER FOR DYNAMIC SERVER CARDS -->
+    <div id="servers-container" class="servers-list">
+      <!-- Injected via JavaScript -->
+    </div>
 
-  <!-- MODAL: CREATE SERVER -->
+    <!-- EMPTY STATE -->
+    <div id="empty-state" class="empty-state-box" style="display: none;">
+      <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+      </svg>
+      <h3 class="empty-title">No servers found</h3>
+      <p class="empty-desc">Create your first server or adjust your filter to get started.</p>
+      <button class="btn btn-primary" onclick="openCreateModal()">+ Create Server</button>
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: CREATE SERVER ================= -->
   <div id="modal-create" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 12px; font-size: 18px;">Create New Server</h3>
-      <form onsubmit="handleCreate(event)">
-        <label style="font-size: 12px; color: var(--text-muted); font-weight: 700;">SERVER NAME</label>
-        <input type="text" id="c-name" class="input-field" placeholder="e.g. Testing" required>
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" class="btn-secondary" onclick="closeCreateModal()">Cancel</button>
-          <button type="submit" class="create-button">
-            <span class="plus-symbol">+</span> CREATE
-          </button>
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Server</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-create')">&times;</button>
+      </div>
+      <form id="create-server-form" onsubmit="handleCreateServerSubmit(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="create-name">Server Name</label>
+            <input type="text" id="create-name" class="form-control" placeholder="e.g. My Python Bot" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="create-type">Server Type</label>
+            <input type="text" id="create-type" class="form-control" value="Python" readonly />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="create-ram">Allocated RAM</label>
+            <select id="create-ram" class="form-control">
+              <option value="512 MB">512 MB</option>
+              <option value="1 GB" selected>1 GB</option>
+              <option value="2 GB">2 GB</option>
+              <option value="4 GB">4 GB</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="create-disk">Allocated Disk</label>
+            <select id="create-disk" class="form-control">
+              <option value="1 GB" selected>1 GB</option>
+              <option value="2 GB">2 GB</option>
+              <option value="5 GB">5 GB</option>
+              <option value="10 GB">10 GB</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create')">Cancel</button>
+          <button type="submit" id="btn-submit-create" class="btn btn-primary">Create Server</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: FILE EDITOR -->
-  <div id="modal-editor" class="modal-overlay">
-    <div class="modal-card" style="max-width: 600px;">
-      <h3 id="edit-filename" style="margin-bottom: 12px; font-size: 16px;">Edit File</h3>
-      <textarea id="edit-content" class="input-field" style="height: 320px; font-family: 'Roboto Mono', monospace; font-size: 13px;"></textarea>
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" class="btn-secondary" onclick="closeEditorModal()">Cancel</button>
-        <button type="button" class="create-button" onclick="saveEditedFile()">Save</button>
+  <!-- ================= MODAL: CONSOLE / LOGS ================= -->
+  <div id="modal-console" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="console-modal-title">Console</h3>
+        <button class="modal-close-btn" onclick="closeConsoleModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="terminal-content" class="terminal-body">Loading real-time logs...</div>
+        <form class="terminal-input-bar" onsubmit="handleCommandSubmit(event)">
+          <input type="text" id="terminal-cmd-input" class="terminal-input" placeholder="> Enter command..." autocomplete="off" />
+          <button type="submit" id="btn-send-cmd" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="clearConsoleLogs()">Clear Logs</button>
+        <button type="button" class="btn btn-secondary" onclick="closeConsoleModal()">Close</button>
       </div>
     </div>
   </div>
 
-  <script>
-    let ACTIVE_ID = null;
-    let FM_PATH = "";
-    let EDIT_PATH = "";
-    let LOG_TIMER = null;
+  <!-- ================= MODAL: FILE MANAGER ================= -->
+  <div id="modal-files" class="modal-overlay">
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <h3 class="modal-title" id="fileman-modal-title">File Manager</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-files')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Top Toolbar -->
+        <div class="fileman-topbar">
+          <div class="breadcrumbs" id="fileman-breadcrumbs">/</div>
+          <div class="fileman-actions">
+            <button class="btn btn-secondary btn-sm" onclick="loadFiles(currentFileManagerServerId, currentFileManagerPath)">
+              ↻ Refresh
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="promptCreateFolder()">
+              + New Folder
+            </button>
+            <label class="btn btn-primary btn-sm" style="margin: 0; cursor: pointer;">
+              ↑ Upload File
+              <input type="file" id="fileman-upload-input" style="display: none;" onchange="handleFileUpload(event)" />
+            </label>
+          </div>
+        </div>
 
-    function showToast(msg, isErr = false) {
-      const c = document.getElementById("toast-container");
-      const t = document.createElement("div");
-      t.className = "toast";
-      if (isErr) t.style.borderLeftColor = "#ef4444";
-      t.innerText = msg;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 3200);
+        <!-- Files Table -->
+        <div class="files-table-wrapper">
+          <table class="files-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Last Modified</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="files-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-files')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: FILE EDITOR ================= -->
+  <div id="modal-editor" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="editor-modal-title">Edit File</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-editor')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="file-editor-text" class="file-editor-area" spellcheck="false"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-editor')">Cancel</button>
+        <button type="button" id="btn-save-file" class="btn btn-primary" onclick="saveActiveFile()">Save File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: SETTINGS ================= -->
+  <div id="modal-settings" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Server Settings</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-settings')">&times;</button>
+      </div>
+      <form id="settings-form" onsubmit="handleSettingsSubmit(event)">
+        <div class="modal-body">
+          <input type="hidden" id="settings-server-id" />
+          <div class="form-group">
+            <label class="form-label" for="settings-name">Server Name</label>
+            <input type="text" id="settings-name" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="settings-startup">Startup File</label>
+            <input type="text" id="settings-startup" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="settings-requirements">Requirements File</label>
+            <input type="text" id="settings-requirements" class="form-control" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-settings')">Cancel</button>
+          <button type="submit" id="btn-save-settings" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DELETE CONFIRMATION ================= -->
+  <div id="modal-delete" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--danger);">Delete Server?</h3>
+        <button class="modal-close-btn" onclick="closeModal('modal-delete')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently delete <strong id="delete-server-name"></strong>?</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">This action will terminate any running processes and permanently delete all server files inside its directory. This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-delete')">Cancel</button>
+        <button type="button" id="btn-confirm-delete" class="btn btn-danger" onclick="executeDeleteServer()">Delete Server</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    // Global state
+    let serversData = {};
+    let activeConsoleServerId = null;
+    let consoleInterval = null;
+    let currentFileManagerServerId = null;
+    let currentFileManagerPath = "";
+    let editingFilePath = "";
+    let serverPendingDeleteId = null;
+
+    // ---------------- NOTIFICATIONS (TOASTS) ----------------
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      const icon = type === 'success' ? '✓' : '✕';
+      toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
     }
 
-    async function loadServers() {
+    // ---------------- MODAL HELPERS ----------------
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // ---------------- CORE DATA LOAD & RENDER ----------------
+    async function loadServers(manualTrigger = false) {
       try {
-        const res = await fetch("/api/servers");
+        const res = await fetch('/api/servers');
+        if (!res.ok) throw new Error('Failed to fetch server data');
         const data = await res.json();
-        if (data.status === "success") {
-          renderCards(data.servers);
+        if (data.status === 'success') {
+          serversData = data.servers || {};
+          renderDashboard();
+          if (manualTrigger) showToast('Servers refreshed');
         }
-      } catch (e) {
-        showToast("Connection error", true);
+      } catch (err) {
+        if (manualTrigger) showToast(err.message, 'error');
       }
     }
 
-    /* হুবহু আপনার দেওয়া HTML অনুযায়ী কার্ড রেন্ডার হবে */
-    function renderCards(servers) {
-      const container = document.getElementById("servers-container");
-      container.innerHTML = "";
+    function renderDashboard() {
+      const serverList = Object.values(serversData);
+      
+      // Update statistics
+      let total = serverList.length;
+      let running = 0;
+      let stopped = 0;
 
-      const keys = Object.keys(servers);
-      if (keys.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; padding: 40px 16px; color: var(--text-muted); border: 1px dashed var(--card-border); border-radius: 20px;">
-            <p style="font-weight: 700;">No servers created yet.</p>
-          </div>
-        `;
+      serverList.forEach(s => {
+        if (s.status === 'running') running++;
+        else stopped++;
+      });
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-running').textContent = running;
+      document.getElementById('stat-stopped').textContent = stopped;
+
+      handleSearchFilter();
+    }
+
+    function handleSearchFilter() {
+      const query = (document.getElementById('search-input').value || '').toLowerCase();
+      const filterStatus = document.getElementById('status-filter').value;
+      const container = document.getElementById('servers-container');
+      const emptyState = document.getElementById('empty-state');
+
+      const serverList = Object.values(serversData);
+      const filtered = serverList.filter(s => {
+        const matchesQuery = s.name.toLowerCase().includes(query) ||
+                             s.id.toLowerCase().includes(query) ||
+                             (s.type && s.type.toLowerCase().includes(query));
+        const matchesStatus = (filterStatus === 'all') || (s.status === filterStatus);
+        return matchesQuery && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
         return;
       }
 
-      keys.forEach(id => {
-        const s = servers[id];
-        const isOnline = s.status === "running";
+      emptyState.style.display = 'none';
+      container.innerHTML = filtered.map(server => {
+        const isRunning = server.status === 'running';
+        const badgeClass = isRunning ? 'badge-running' : 'badge-stopped';
+        const statusText = isRunning ? 'Running' : 'Stopped';
 
-        const card = document.createElement("div");
-        card.className = "server-card";
-        card.onclick = () => openDashboard(s.id); // কার্ডে ক্লিক করলে ড্যাশবোর্ড ওপেন হবে
+        return `
+          <div class="server-card" id="card-${server.id}">
+            <div class="server-main-row">
+              <div>
+                <div class="server-title-group">
+                  <span class="badge ${badgeClass}">
+                    <span class="badge-dot"></span>
+                    ${statusText}
+                  </span>
+                  <span class="server-name">${escapeHtml(server.name)}</span>
+                </div>
+                <div class="server-meta-tags">
+                  <span>${escapeHtml(server.type || 'Python')}</span>
+                  <span>•</span>
+                  <span>RAM: ${escapeHtml(server.ram || '1 GB')}</span>
+                  <span>•</span>
+                  <span>Disk: ${escapeHtml(server.disk || '1 GB')}</span>
+                  <span>•</span>
+                  <span>Created: ${escapeHtml(server.created_at || 'N/A')}</span>
+                </div>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); font-family: monospace;">
+                ID: ${server.id}
+              </div>
+            </div>
 
-        card.innerHTML = `
-          <div class="server-info">
-            <div class="server-name">${escapeHtml(s.name)}</div>
-            <div class="server-id">${escapeHtml(s.id)}</div>
-          </div>
-
-          <div class="offline-badge ${isOnline ? 'online' : ''}">
-            <span class="offline-dot"></span>
-            <span class="offline-text">${isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+            <div class="server-bottom-row">
+              <div class="server-tech-info">
+                <span>PID: <strong>${server.pid ? server.pid : 'None'}</strong></span>
+                <span>Startup: <strong>${escapeHtml(server.startup_file || 'main.py')}</strong></span>
+              </div>
+              <div class="server-actions-cluster">
+                ${
+                  isRunning
+                    ? `<button class="btn btn-danger btn-sm" onclick="stopServer('${server.id}')">Stop</button>`
+                    : `<button class="btn btn-success btn-sm" onclick="startServer('${server.id}')">Start</button>`
+                }
+                <button class="btn btn-secondary btn-sm" onclick="restartServer('${server.id}')">Restart</button>
+                <button class="btn btn-dark btn-sm" onclick="openConsole('${server.id}')">Console</button>
+                <button class="btn btn-purple btn-sm" onclick="openFileManager('${server.id}')">Files</button>
+                <button class="btn btn-secondary btn-sm" onclick="openSettings('${server.id}')">Settings</button>
+                <button class="btn btn-secondary btn-sm" style="color: var(--danger);" onclick="promptDeleteServer('${server.id}')">Delete</button>
+              </div>
+            </div>
           </div>
         `;
-        container.appendChild(card);
-      });
+      }).join('');
     }
 
-    // Dashboard Controller
-    async function openDashboard(id) {
-      ACTIVE_ID = id;
-      document.getElementById("view-home").classList.remove("active");
-      document.getElementById("view-dashboard").classList.add("active");
-      switchTab('tab-overview');
-      refreshDashboard();
-    }
-
-    function backToHome() {
-      if (LOG_TIMER) clearInterval(LOG_TIMER);
-      document.getElementById("view-dashboard").classList.remove("active");
-      document.getElementById("view-home").classList.add("active");
-      loadServers();
-    }
-
-    async function refreshDashboard() {
-      if (!ACTIVE_ID) return;
-      const res = await fetch(`/api/server/${ACTIVE_ID}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        const s = data.server;
-        document.getElementById("nav-server-title").innerText = s.name;
-        document.getElementById("d-name").innerText = s.name;
-        document.getElementById("d-id").innerText = s.id;
-
-        const isOnline = s.status === "running";
-        const badge = document.getElementById("d-badge");
-        badge.className = `offline-badge ${isOnline ? 'online' : ''}`;
-        document.getElementById("d-status-text").innerText = isOnline ? "ONLINE" : "OFFLINE";
-
-        document.getElementById("s-name").value = s.name;
-        document.getElementById("s-startup").value = s.startup_file;
-        document.getElementById("s-reqs").value = s.requirements_file;
+    // ---------------- SERVER POWER ACTIONS ----------------
+    async function startServer(id) {
+      try {
+        const res = await fetch(`/api/start/${id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          await loadServers();
+        } else {
+          showToast(data.message || 'Could not start server', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
       }
     }
 
-    async function power(action) {
-      if (!ACTIVE_ID) return;
-      const res = await fetch(`/api/${action}/${ACTIVE_ID}`, { method: "POST" });
-      const data = await res.json();
-      showToast(data.message, data.status !== "success");
-      refreshDashboard();
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
-      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-      document.getElementById(tabId).style.display = "block";
-
-      const btn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick").includes(tabId));
-      if (btn) btn.classList.add("active");
-
-      if (LOG_TIMER) clearInterval(LOG_TIMER);
-
-      if (tabId === 'tab-console') {
-        fetchLogs();
-        LOG_TIMER = setInterval(fetchLogs, 2500);
-      } else if (tabId === 'tab-files') {
-        FM_PATH = "";
-        loadFiles("");
+    async function stopServer(id) {
+      try {
+        const res = await fetch(`/api/stop/${id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          await loadServers();
+        } else {
+          showToast(data.message || 'Could not stop server', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
       }
     }
 
-    // Console
-    async function fetchLogs() {
-      if (!ACTIVE_ID) return;
-      const res = await fetch(`/api/logs/${ACTIVE_ID}`);
-      const data = await res.json();
-      if (data.status === "success") {
-        const t = document.getElementById("terminal");
-        t.innerText = data.logs || "Console ready.";
-        t.scrollTop = t.scrollHeight;
+    async function restartServer(id) {
+      try {
+        showToast('Restarting server...');
+        const res = await fetch(`/api/restart/${id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Server restarted successfully');
+          await loadServers();
+        } else {
+          showToast(data.message || 'Failed to restart server', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
       }
     }
 
-    async function clearLogs() {
-      if (!ACTIVE_ID) return;
-      await fetch(`/api/clear_logs/${ACTIVE_ID}`, { method: "POST" });
-      fetchLogs();
+    // ---------------- CREATE SERVER ----------------
+    function openCreateModal() {
+      document.getElementById('create-server-form').reset();
+      document.getElementById('create-type').value = "Python";
+      document.getElementById('create-ram').value = "1 GB";
+      document.getElementById('create-disk').value = "1 GB";
+      openModal('modal-create');
     }
 
-    async function sendCmd(e) {
+    async function handleCreateServerSubmit(e) {
       e.preventDefault();
-      const input = document.getElementById("cmd-input");
-      const cmd = input.value.trim();
-      if (!cmd || !ACTIVE_ID) return;
-      input.value = "";
+      const btn = document.getElementById('btn-submit-create');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
 
-      await fetch("/api/command", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ server_id: ACTIVE_ID, command: cmd })
-      });
-      fetchLogs();
+      const payload = {
+        name: document.getElementById('create-name').value.trim(),
+        type: document.getElementById('create-type').value.trim(),
+        ram: document.getElementById('create-ram').value,
+        disk: document.getElementById('create-disk').value
+      };
+
+      try {
+        const res = await fetch('/api/create_server', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          closeModal('modal-create');
+          await loadServers();
+        } else {
+          showToast(data.message || 'Creation failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Server';
+      }
     }
 
-    // Files
-    async function loadFiles(path = "") {
-      FM_PATH = path;
-      document.getElementById("fm-current-path").innerText = path ? `root/${path}` : "root";
-      const res = await fetch(`/api/files/${ACTIVE_ID}?path=${encodeURIComponent(path)}`);
-      const data = await res.json();
-      const tbody = document.getElementById("files-list");
-      tbody.innerHTML = "";
+    // ---------------- DELETE SERVER ----------------
+    function promptDeleteServer(id) {
+      const server = serversData[id];
+      if (!server) return;
+      serverPendingDeleteId = id;
+      document.getElementById('delete-server-name').textContent = server.name;
+      openModal('modal-delete');
+    }
 
-      if (path) {
-        const parent = path.includes("/") ? path.substring(0, path.lastIndexOf("/")) : "";
-        tbody.innerHTML += `<tr><td colspan="3"><span class="file-click" onclick="loadFiles('${parent}')">📁 .. (Back)</span></td></tr>`;
+    async function executeDeleteServer() {
+      if (!serverPendingDeleteId) return;
+      const btn = document.getElementById('btn-confirm-delete');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+
+      try {
+        const res = await fetch(`/api/server/${serverPendingDeleteId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          closeModal('modal-delete');
+          await loadServers();
+        } else {
+          showToast(data.message || 'Failed to delete server', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Delete Server';
+        serverPendingDeleteId = null;
+      }
+    }
+
+    // ---------------- CONSOLE & COMMANDS ----------------
+    function openConsole(id) {
+      const server = serversData[id];
+      activeConsoleServerId = id;
+      document.getElementById('console-modal-title').textContent = `Console — ${server ? server.name : id}`;
+      openModal('modal-console');
+      fetchLogs();
+      if (consoleInterval) clearInterval(consoleInterval);
+      consoleInterval = setInterval(fetchLogs, 3000);
+    }
+
+    function closeConsoleModal() {
+      closeModal('modal-console');
+      activeConsoleServerId = null;
+      if (consoleInterval) {
+        clearInterval(consoleInterval);
+        consoleInterval = null;
+      }
+    }
+
+    async function fetchLogs() {
+      if (!activeConsoleServerId) return;
+      try {
+        const res = await fetch(`/api/logs/${activeConsoleServerId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          const terminal = document.getElementById('terminal-content');
+          terminal.textContent = data.logs || 'No logs recorded yet.';
+          terminal.scrollTop = terminal.scrollHeight;
+        }
+      } catch (err) {
+        console.error("Log error:", err);
+      }
+    }
+
+    async function handleCommandSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('terminal-cmd-input');
+      const command = input.value.trim();
+      if (!command || !activeConsoleServerId) return;
+
+      const btn = document.getElementById('btn-send-cmd');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ server_id: activeConsoleServerId, command })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          input.value = '';
+          fetchLogs();
+        } else {
+          showToast(data.message || 'Command failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function clearConsoleLogs() {
+      if (!activeConsoleServerId) return;
+      try {
+        const res = await fetch(`/api/clear_logs/${activeConsoleServerId}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Logs cleared');
+          fetchLogs();
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // ---------------- FILE MANAGER ----------------
+    function openFileManager(id, path = '') {
+      currentFileManagerServerId = id;
+      currentFileManagerPath = path;
+      const server = serversData[id];
+      document.getElementById('fileman-modal-title').textContent = `File Manager — ${server ? server.name : id}`;
+      openModal('modal-files');
+      loadFiles(id, path);
+    }
+
+    async function loadFiles(id, path = '') {
+      currentFileManagerPath = path;
+      updateBreadcrumbs();
+      const tbody = document.getElementById('files-table-body');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading files...</td></tr>';
+
+      try {
+        const res = await fetch(`/api/files/${id}?path=${encodeURIComponent(path)}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          renderFilesTable(data.items || []);
+        } else {
+          showToast(data.message || 'Failed to load files', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function updateBreadcrumbs() {
+      const container = document.getElementById('fileman-breadcrumbs');
+      const parts = currentFileManagerPath.split('/').filter(Boolean);
+      let html = `<span style="cursor: pointer; text-decoration: underline;" onclick="loadFiles(currentFileManagerServerId, '')">root</span>`;
+      
+      let accum = '';
+      parts.forEach((part, idx) => {
+        accum += (idx === 0 ? '' : '/') + part;
+        html += ` / <span style="cursor: pointer; text-decoration: underline;" onclick="loadFiles(currentFileManagerServerId, '${accum}')">${escapeHtml(part)}</span>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderFilesTable(items) {
+      const tbody = document.getElementById('files-table-body');
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Directory is empty.</td></tr>';
+        return;
       }
 
-      data.files.forEach(f => {
-        const p = path ? `${path}/${f.name}` : f.name;
-        tbody.innerHTML += `
+      tbody.innerHTML = items.map(item => {
+        const itemRelPath = currentFileManagerPath ? `${currentFileManagerPath}/${item.name}` : item.name;
+        const sizeStr = item.is_dir ? '-' : formatBytes(item.size);
+        const isZip = item.name.toLowerCase().endsWith('.zip');
+
+        return `
           <tr>
-            <td><span class="file-click" onclick="${f.is_dir ? `loadFiles('${p}')` : `editFile('${p}')`}">${f.is_dir ? '📁' : '📄'} ${escapeHtml(f.name)}</span></td>
-            <td style="color: var(--text-muted); font-family: 'Roboto Mono', monospace;">${f.is_dir ? '-' : formatBytes(f.size)}</td>
+            <td>
+              <div class="file-name-cell" onclick="${item.is_dir ? `loadFiles(currentFileManagerServerId, '${itemRelPath}')` : `openFileEditor('${itemRelPath}')`}">
+                ${item.is_dir 
+                  ? `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`
+                  : `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`
+                }
+                <span>${escapeHtml(item.name)}</span>
+              </div>
+            </td>
+            <td>${sizeStr}</td>
+            <td>${item.modified}</td>
             <td style="text-align: right;">
-              ${!f.is_dir ? `<button class="btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="editFile('${p}')">Edit</button>` : ''}
-              <button class="btn-secondary" style="padding: 2px 8px; font-size: 11px; color: #ef4444;" onclick="deleteFile('${p}')">✕</button>
+              <div style="display: inline-flex; gap: 0.35rem;">
+                ${isZip ? `<button class="btn btn-secondary btn-sm" onclick="extractZipArchive('${itemRelPath}')">Extract</button>` : ''}
+                <button class="btn btn-secondary btn-sm" onclick="promptRenameItem('${itemRelPath}', '${escapeHtml(item.name)}')">Rename</button>
+                <button class="btn btn-secondary btn-sm" style="color: var(--danger);" onclick="deleteFileItem('${itemRelPath}')">Delete</button>
+              </div>
             </td>
           </tr>
         `;
-      });
+      }).join('');
     }
 
-    async function editFile(p) {
-      EDIT_PATH = p;
-      const res = await fetch(`/api/file/${ACTIVE_ID}?path=${encodeURIComponent(p)}`);
-      const d = await res.json();
-      if (d.status === "success") {
-        document.getElementById("edit-filename").innerText = `Edit: ${p}`;
-        document.getElementById("edit-content").value = d.content;
-        document.getElementById("modal-editor").classList.add("open");
+    async function promptCreateFolder() {
+      const folderName = prompt("Enter folder name:");
+      if (!folderName) return;
+
+      try {
+        const res = await fetch(`/api/create_folder/${currentFileManagerServerId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folder_name: folderName, path: currentFileManagerPath })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Folder created');
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Error creating folder', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
       }
     }
 
-    async function saveEditedFile() {
-      const content = document.getElementById("edit-content").value;
-      const res = await fetch(`/api/file/${ACTIVE_ID}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: EDIT_PATH, content: content })
-      });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      closeEditorModal();
-      loadFiles(FM_PATH);
-    }
-
-    async function uploadFile(e) {
+    async function handleFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("path", FM_PATH);
-      const res = await fetch(`/api/upload/${ACTIVE_ID}`, { method: "POST", body: fd });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      loadFiles(FM_PATH);
-      e.target.value = "";
-    }
 
-    async function newFolderPrompt() {
-      const name = prompt("Folder Name:");
-      if (!name) return;
-      const res = await fetch(`/api/create_folder/${ACTIVE_ID}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: FM_PATH, name: name })
-      });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      loadFiles(FM_PATH);
-    }
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('path', currentFileManagerPath);
 
-    async function deleteFile(p) {
-      if (!confirm(`Delete ${p}?`)) return;
-      const res = await fetch(`/api/file/${ACTIVE_ID}?path=${encodeURIComponent(p)}`, { method: "DELETE" });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      loadFiles(FM_PATH);
-    }
+      showToast(`Uploading ${file.name}...`);
 
-    function closeEditorModal() { document.getElementById("modal-editor").classList.remove("open"); }
-
-    // Settings
-    async function saveSettings(e) {
-      e.preventDefault();
-      const res = await fetch(`/api/server/${ACTIVE_ID}/settings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: document.getElementById("s-name").value.trim(),
-          startup_file: document.getElementById("s-startup").value.trim(),
-          requirements_file: document.getElementById("s-reqs").value.trim()
-        })
-      });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      refreshDashboard();
-    }
-
-    async function deleteCurrentServer() {
-      if (!confirm("Are you sure? All files and logs will be erased.")) return;
-      const res = await fetch(`/api/server/${ACTIVE_ID}`, { method: "DELETE" });
-      const d = await res.json();
-      showToast(d.message, d.status !== "success");
-      backToHome();
-    }
-
-    // Modal
-    function openCreateModal() { document.getElementById("modal-create").classList.add("open"); }
-    function closeCreateModal() { document.getElementById("modal-create").classList.remove("open"); }
-
-    async function handleCreate(e) {
-      e.preventDefault();
-      const name = document.getElementById("c-name").value.trim();
-      if (!name) return;
-
-      const res = await fetch("/api/create_server", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name })
-      });
-      const d = await res.json();
-      if (d.status === "success") {
-        showToast(d.message);
-        closeCreateModal();
-        document.getElementById("c-name").value = "";
-        loadServers();
-      } else {
-        showToast(d.message, true);
+      try {
+        const res = await fetch(`/api/upload/${currentFileManagerServerId}`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        e.target.value = '';
       }
     }
 
-    function escapeHtml(s) {
-      return (s || "").replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
-    }
-    function formatBytes(b) {
-      if (!b) return '0 B';
-      const k = 1024, sizes = ['B', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(b) / Math.log(k));
-      return parseFloat((b / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    async function promptRenameItem(oldPath, oldName) {
+      const newName = prompt("Enter new name:", oldName);
+      if (!newName || newName === oldName) return;
+
+      try {
+        const res = await fetch(`/api/rename/${currentFileManagerServerId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ old_path: oldPath, new_name: newName })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Rename failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
     }
 
-    window.addEventListener("DOMContentLoaded", loadServers);
+    async function extractZipArchive(path) {
+      showToast('Extracting ZIP archive...');
+      try {
+        const res = await fetch(`/api/extract/${currentFileManagerServerId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Extraction failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function deleteFileItem(path) {
+      if (!confirm(`Are you sure you want to delete '${path}'?`)) return;
+
+      try {
+        const res = await fetch(`/api/file/${currentFileManagerServerId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Delete failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // ---------------- FILE EDITOR ----------------
+    async function openFileEditor(path) {
+      editingFilePath = path;
+      document.getElementById('editor-modal-title').textContent = `Editing: ${path}`;
+      document.getElementById('file-editor-text').value = 'Loading file content...';
+      openModal('modal-editor');
+
+      try {
+        const res = await fetch(`/api/file/${currentFileManagerServerId}?path=${encodeURIComponent(path)}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          document.getElementById('file-editor-text').value = data.content;
+        } else {
+          showToast(data.message || 'Could not read file', 'error');
+          closeModal('modal-editor');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+        closeModal('modal-editor');
+      }
+    }
+
+    async function saveActiveFile() {
+      const btn = document.getElementById('btn-save-file');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const content = document.getElementById('file-editor-text').value;
+
+      try {
+        const res = await fetch(`/api/file/${currentFileManagerServerId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: editingFilePath, content })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('File saved successfully');
+          closeModal('modal-editor');
+          loadFiles(currentFileManagerServerId, currentFileManagerPath);
+        } else {
+          showToast(data.message || 'Failed to save file', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save File';
+      }
+    }
+
+    // ---------------- SETTINGS MODAL ----------------
+    async function openSettings(id) {
+      const server = serversData[id];
+      if (!server) return;
+
+      document.getElementById('settings-server-id').value = id;
+      document.getElementById('settings-name').value = server.name;
+      document.getElementById('settings-startup').value = server.startup_file || 'main.py';
+      document.getElementById('settings-requirements').value = server.requirements_file || 'requirements.txt';
+      openModal('modal-settings');
+    }
+
+    async function handleSettingsSubmit(e) {
+      e.preventDefault();
+      const serverId = document.getElementById('settings-server-id').value;
+      const btn = document.getElementById('btn-save-settings');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const payload = {
+        name: document.getElementById('settings-name').value.trim(),
+        startup_file: document.getElementById('settings-startup').value.trim(),
+        requirements_file: document.getElementById('settings-requirements').value.trim()
+      };
+
+      try {
+        const res = await fetch(`/api/server/${serverId}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message);
+          closeModal('modal-settings');
+          await loadServers();
+        } else {
+          showToast(data.message || 'Failed to update settings', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      }
+    }
+
+    // ---------------- UTILITIES ----------------
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // ---------------- INITIALIZATION & AUTO-REFRESH ----------------
+    window.addEventListener('DOMContentLoaded', () => {
+      loadServers();
+      // Polling every 5 seconds without disturbing active open modals
+      setInterval(() => {
+        const activeModal = document.querySelector('.modal-overlay.active');
+        // If user is actively typing in the editor or console, preserve their focus
+        if (!activeModal || activeModal.id === 'modal-console') {
+          loadServers();
+        }
+      }, 5000);
+    });
   </script>
 </body>
 </html>
