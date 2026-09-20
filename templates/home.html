@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ServerPanel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ServerPanel — Cloud Management</title>
   <style>
     /* ---------------- CSS RESET & THEME VARIABLES ---------------- */
     *, *::before, *::after {
@@ -15,7 +15,7 @@
       --bg-body: #f8fafc;
       --surface: #ffffff;
       --border: #e2e8f0;
-      --border-focus: #3b82f6;
+      --border-hover: #cbd5e1;
       --text-main: #0f172a;
       --text-muted: #64748b;
       --primary: #2563eb;
@@ -26,9 +26,10 @@
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
-      --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
-      --shadow-hover: 0 10px 25px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
-      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -44,18 +45,16 @@
 
     /* ---------------- TOP HEADER ---------------- */
     .app-header {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 40;
     }
     .header-container {
-      max-width: 960px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 0.85rem 1.25rem;
+      padding: 0.9rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -68,18 +67,18 @@
       cursor: pointer;
     }
     .brand-icon {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
     }
     .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); }
+    .brand-title { font-size: 1.15rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
     .brand-subtitle { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
 
     /* ---------------- BUTTONS ---------------- */
@@ -92,7 +91,7 @@
       font-size: 0.86rem;
       font-weight: 600;
       padding: 0.55rem 1.1rem;
-      border-radius: 9999px;
+      border-radius: var(--radius-md);
       border: 1px solid transparent;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -100,26 +99,33 @@
       white-space: nowrap;
     }
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .btn-primary { 
-      background: linear-gradient(135deg, #2563eb, #1d4ed8); 
+      background: var(--primary); 
       color: #fff; 
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     }
     .btn-primary:hover:not(:disabled) { 
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      background: var(--primary-hover); 
       transform: translateY(-1px);
     }
 
-    .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
-    .btn-secondary:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-secondary { 
+      background: var(--surface); 
+      color: var(--text-main); 
+      border-color: var(--border); 
+    }
+    .btn-secondary:hover:not(:disabled) { 
+      background: #f1f5f9; 
+      border-color: var(--border-hover); 
+    }
 
-    .btn-sm { padding: 0.38rem 0.85rem; font-size: 0.8rem; border-radius: var(--radius-sm); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-sm); }
 
     /* ---------------- MAIN CONTAINER ---------------- */
     .main-container {
-      max-width: 960px;
+      max-width: 860px;
       margin: 0 auto;
       padding: 1.5rem 1.25rem 3rem;
       width: 100%;
@@ -129,97 +135,102 @@
     /* ---------------- VIEW 1: PREMIUM SERVERS LIST ---------------- */
     #view-servers-list { display: block; }
 
-    .list-headline {
+    .section-header-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.1rem;
+      margin-bottom: 1rem;
       padding: 0 0.25rem;
     }
-    .list-title {
-      font-size: 0.95rem;
+    .section-title {
+      font-size: 0.82rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
+    }
+    .servers-count-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: #eff6ff;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
     }
 
     .servers-grid {
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
+      gap: 0.85rem;
     }
 
-    /* PREMIUM SERVER CARD */
+    /* PREMIUM WHITE SERVER CARD */
     .server-card-item {
       background: var(--surface);
-      border: 1px solid rgba(226, 232, 240, 0.8);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 1.15rem 1.35rem;
-      box-shadow: var(--shadow-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
     }
-    /* Left accent indicator */
-    .server-card-item::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 5px;
-      background: #cbd5e1;
-      transition: background 0.2s ease;
-    }
-    .server-card-item.is-running::before {
-      background: linear-gradient(180deg, #10b981, #059669);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    }
     .server-card-item:hover, .server-card-item:active {
-      border-color: #cbd5e1;
+      border-color: var(--border-hover);
       box-shadow: var(--shadow-hover);
       transform: translateY(-2px);
     }
 
+    .server-card-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+    .server-item-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: #eff6ff;
+      border: 1px solid #dbeafe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .server-item-avatar svg { width: 22px; height: 22px; }
+
     .server-info-col {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.2rem;
       min-width: 0;
-      padding-left: 0.25rem;
     }
     .server-item-name {
       font-size: 1.15rem;
       font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.02em;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      line-height: 1.2;
     }
-    .server-item-id-badge {
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.78rem;
-      color: #64748b;
+    .server-item-id {
+      font-size: 0.82rem;
+      color: var(--text-muted);
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      background: #f1f5f9;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
-      width: fit-content;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-weight: 500;
-      border: 1px solid #e2e8f0;
     }
 
-    /* RIGHT SIDE BADGE & CHEVRON */
+    /* RIGHT SIDE STATUS & ARROW */
     .server-card-right {
       display: flex;
       align-items: center;
@@ -227,8 +238,7 @@
       flex-shrink: 0;
     }
 
-    /* STATUS PILL WITH LIVE PULSING DOT */
-    .status-badge {
+    .status-capsule {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
@@ -236,45 +246,59 @@
       border-radius: 9999px;
       font-size: 0.78rem;
       font-weight: 600;
-      letter-spacing: 0.02em;
       border: 1px solid transparent;
     }
-    .status-badge.running {
+    .status-capsule.running {
       background: #ecfdf5;
       color: #059669;
       border-color: #a7f3d0;
     }
-    .status-badge.stopped {
-      background: #f8fafc;
-      color: #64748b;
+    .status-capsule.stopped {
+      background: #f1f5f9;
+      color: #475569;
       border-color: #e2e8f0;
     }
-    .pulse-dot {
+    .capsule-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       background-color: currentColor;
     }
-    .status-badge.running .pulse-dot {
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+    .status-capsule.running .capsule-dot {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
       animation: livePulse 1.8s infinite;
     }
     @keyframes livePulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
       70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    .chevron-icon {
-      color: #cbd5e1;
-      transition: transform 0.2s ease, color 0.2s ease;
+    .chevron-arrow {
+      color: #94a3b8;
       display: flex;
       align-items: center;
+      transition: transform 0.2s ease, color 0.2s ease;
     }
-    .server-card-item:hover .chevron-icon {
+    .server-card-item:hover .chevron-arrow {
       color: var(--primary);
       transform: translateX(3px);
     }
+
+    /* হেল্পফুল কার্ড: খালি ভাব দূর করার জন্য */
+    .dashboard-help-tip {
+      background: #ffffff;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.35rem;
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+    .dashboard-help-tip strong { color: var(--text-main); }
 
     /* ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- */
     #view-server-detail {
@@ -301,12 +325,14 @@
       font-weight: 600;
       cursor: pointer;
       border: none;
-      background: none;
-      padding: 0.4rem 0.6rem;
-      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
       transition: all 0.15s ease;
     }
-    .back-btn:hover { color: var(--primary); background: #eff6ff; }
+    .back-btn:hover { color: var(--primary); border-color: var(--primary); }
 
     .detail-top-card {
       background: var(--surface);
@@ -314,7 +340,7 @@
       border-radius: var(--radius-lg);
       padding: 1.25rem 1.4rem;
       margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-subtle);
+      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -322,17 +348,17 @@
       gap: 1rem;
     }
     .detail-title { font-size: 1.35rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
-    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem; font-family: monospace; }
+    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; font-family: monospace; }
     .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
     /* --- Server Controls Card --- */
     .controls-card {
-      background: #ffffff;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 1.25rem 1.4rem;
       margin-bottom: 1.25rem;
-      box-shadow: var(--shadow-subtle);
+      box-shadow: var(--shadow-sm);
     }
     .controls-title {
       font-size: 1.05rem;
@@ -353,7 +379,7 @@
     .btn-ctrl {
       padding: 0.75rem 1rem;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -363,7 +389,7 @@
       cursor: pointer;
       color: #ffffff;
       transition: all 0.15s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
     }
     .btn-ctrl-start { background-color: #10b981; }
     .btn-ctrl-start:hover:not(:disabled) { background-color: #059669; transform: translateY(-1px); }
@@ -379,7 +405,7 @@
       background: #0b1329;
       border-radius: var(--radius-lg);
       padding: 1.2rem 1.35rem;
-      box-shadow: var(--shadow-subtle);
+      box-shadow: var(--shadow-md);
       border: 1px solid #1e293b;
     }
     .logs-header-bar {
@@ -392,9 +418,6 @@
       font-size: 0.95rem;
       font-weight: 700;
       color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
     }
     .logs-view-all-btn {
       font-size: 0.82rem;
@@ -436,7 +459,7 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 500px;
-      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
       border: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -452,7 +475,7 @@
       align-items: center;
       justify-content: space-between;
     }
-    .modal-title { font-size: 1.05rem; font-weight: 700; }
+    .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); }
     .modal-close-btn { background: transparent; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); }
     .modal-body { padding: 1.35rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.95rem; }
     .modal-footer {
@@ -467,7 +490,7 @@
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-main); }
     .form-control {
-      padding: 0.6rem 0.85rem;
+      padding: 0.65rem 0.85rem;
       font-size: 0.88rem;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -500,11 +523,11 @@
     }
 
     .files-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; }
-    .files-table th { background: #f8fafc; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); }
+    .files-table th { background: #f8fafc; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text-muted); }
     .files-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
 
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none; }
-    .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); padding: 0.85rem 1.15rem; font-size: 0.86rem; font-weight: 600; pointer-events: auto; }
+    .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); padding: 0.85rem 1.15rem; font-size: 0.86rem; font-weight: 600; pointer-events: auto; }
     .toast-success { border-left: 4px solid var(--success); }
     .toast-error { border-left: 4px solid var(--danger); }
 
@@ -538,14 +561,23 @@
     
     <!-- ---------------- VIEW 1: SERVERS LIST ---------------- -->
     <div id="view-servers-list">
-      <div class="list-headline">
-        <span class="list-title">My Servers</span>
+      <div class="section-header-row">
+        <span class="section-title">My Servers</span>
+        <span class="servers-count-badge" id="servers-count-text">1 Active</span>
       </div>
 
       <!-- SERVER CARDS CONTAINER -->
       <div id="servers-container" class="servers-grid"></div>
 
-      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:16px; border:2px dashed #cbd5e1;">
+      <!-- ফাঁকা ভাব দূর করার আধুনিক হেল্প বার -->
+      <div class="dashboard-help-tip">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--primary);flex-shrink:0;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>সার্ভার চালু করতে বা রিয়েল-টাইম কনসোল ও ফাইল দেখতে <strong>সার্ভার কার্ডের ওপর ট্যাপ করুন</strong>।</div>
+      </div>
+
+      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:16px; border:2px dashed #cbd5e1; margin-top:1rem;">
         <h3 style="font-size:1.1rem; font-weight:700;">No servers found</h3>
         <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create your first server to get started.</p>
       </div>
@@ -566,7 +598,7 @@
         <div>
           <div style="display:flex; align-items:center; gap:0.65rem;">
             <span id="detail-server-name" class="detail-title">Server Name</span>
-            <span id="detail-status-badge" class="status-badge stopped"></span>
+            <span id="detail-status-badge" class="status-capsule stopped"></span>
           </div>
           <div id="detail-server-id" class="detail-meta-text">id_placeholder</div>
         </div>
@@ -597,10 +629,7 @@
       <!-- 2. RECENT LOGS (Live Terminal) -->
       <div class="logs-card">
         <div class="logs-header-bar">
-          <span class="logs-heading">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Recent Logs
-          </span>
+          <span class="logs-heading">Recent Logs</span>
           <button class="logs-view-all-btn" onclick="openFullConsoleModal()">View All</button>
         </div>
         <div id="terminal-recent" class="terminal-body">Loading recent logs...</div>
@@ -799,6 +828,11 @@
       const list = Object.values(serversData);
       const container = document.getElementById('servers-container');
       const emptyState = document.getElementById('empty-state');
+      const countBadge = document.getElementById('servers-count-text');
+
+      if (countBadge) {
+        countBadge.textContent = `${list.length} ${list.length === 1 ? 'Server' : 'Servers'}`;
+      }
 
       if (list.length === 0) {
         container.innerHTML = '';
@@ -807,21 +841,31 @@
       }
       emptyState.style.display = 'none';
 
-      // নতুন প্রিমিয়াম কার্ড ডিজাইন
+      // উচ্চমানের সাদা কার্ড ডিজাইন
       container.innerHTML = list.map(server => {
         const isRunning = server.status === 'running';
+        const statusText = isRunning ? 'Running' : 'Stopped';
+        const statusClass = isRunning ? 'running' : 'stopped';
+
         return `
-          <div class="server-card-item ${isRunning ? 'is-running' : ''}" onclick="openServerDetail('${server.id}')">
-            <div class="server-info-col">
-              <div class="server-item-name">${escapeHtml(server.name)}</div>
-              <div class="server-item-id-badge">${escapeHtml(server.id)}</div>
+          <div class="server-card-item" onclick="openServerDetail('${server.id}')">
+            <div class="server-card-left">
+              <div class="server-item-avatar">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                </svg>
+              </div>
+              <div class="server-info-col">
+                <div class="server-item-name">${escapeHtml(server.name)}</div>
+                <div class="server-item-id">${escapeHtml(server.id)}</div>
+              </div>
             </div>
             <div class="server-card-right">
-              <span class="status-badge ${isRunning ? 'running' : 'stopped'}">
-                <span class="pulse-dot"></span>
-                ${isRunning ? 'Running' : 'Stopped'}
+              <span class="status-capsule ${statusClass}">
+                <span class="capsule-dot"></span>
+                ${statusText}
               </span>
-              <div class="chevron-icon">
+              <div class="chevron-arrow">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -838,13 +882,15 @@
       if (!server) return;
 
       const isRunning = server.status === 'running';
+      const statusText = isRunning ? 'Running' : 'Stopped';
+      const statusClass = isRunning ? 'running' : 'stopped';
 
       document.getElementById('detail-server-name').textContent = server.name;
       document.getElementById('detail-server-id').textContent = server.id;
       
       const badge = document.getElementById('detail-status-badge');
-      badge.className = `status-badge ${isRunning ? 'running' : 'stopped'}`;
-      badge.innerHTML = `<span class="pulse-dot"></span> ${isRunning ? 'Running' : 'Stopped'}`;
+      badge.className = `status-capsule ${statusClass}`;
+      badge.innerHTML = `<span class="capsule-dot"></span> ${statusText}`;
 
       document.getElementById('ctrl-btn-start').disabled = isRunning;
       document.getElementById('ctrl-btn-stop').disabled = !isRunning;
