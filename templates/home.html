@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ServerPanel — Professional Cloud & Server Management</title>
+  <title>ServerPanel — Professional Cloud Management</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -24,26 +24,23 @@
       --stopped-bg: #f1f5f9;
       --stopped-text: #475569;
       --stopped-dot: #94a3b8;
-      --danger: #dc2626;
-      --danger-hover: #b91c1c;
+      --btn-start: #16a34a;
+      --btn-start-hover: #15803d;
+      --btn-stop: #dc2626;
+      --btn-stop-hover: #b91c1c;
+      --btn-restart: #2563eb;
+      --btn-restart-hover: #1d4ed8;
       --danger-light: #fef2f2;
       --purple: #7c3aed;
-      --purple-hover: #6d28d9;
       --purple-light: #f5f3ff;
-      --dark: #1e293b;
-      --dark-hover: #0f172a;
+      --dark: #0f172a;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
       --radius: 10px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
@@ -54,12 +51,7 @@
       flex-direction: column;
     }
 
-    /* Common typography and utilities */
-    a { color: inherit; text-decoration: none; }
-    button, input, select, textarea {
-      font-family: inherit;
-      font-size: 0.875rem;
-    }
+    button, input, select, textarea { font-family: inherit; font-size: 0.875rem; }
     .icon {
       display: inline-block;
       width: 18px;
@@ -81,7 +73,7 @@
       z-index: 40;
     }
     .header-container {
-      max-width: 1280px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 0.875rem 1.5rem;
       display: flex;
@@ -89,11 +81,7 @@
       justify-content: space-between;
       gap: 1rem;
     }
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+    .brand-section { display: flex; align-items: center; gap: 0.75rem; }
     .brand-icon {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #ffffff;
@@ -102,32 +90,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
     }
     .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.02em;
-    }
-    .brand-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-    }
+    .brand-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+    .header-actions { display: flex; align-items: center; gap: 0.625rem; }
 
     /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
       font-weight: 500;
       padding: 0.5rem 0.875rem;
       border-radius: 8px;
@@ -136,82 +110,32 @@
       transition: all 0.15s ease;
       white-space: nowrap;
     }
-    .btn:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed !important;
-    }
-    .btn-primary {
-      background-color: var(--primary);
-      color: #fff;
-    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed !important; }
+    .btn-primary { background-color: var(--primary); color: #fff; }
     .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
-    .btn-prominent {
-      background-color: var(--primary);
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
-      font-weight: 600;
-      padding: 0.55rem 1rem;
-    }
-    .btn-prominent:hover:not(:disabled) {
-      background-color: var(--primary-hover);
-      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.45);
-    }
-    .btn-secondary {
-      background-color: #ffffff;
-      border-color: var(--border);
-      color: var(--text-main);
-    }
-    .btn-secondary:hover:not(:disabled) {
-      background-color: #f8fafc;
-      border-color: #cbd5e1;
-    }
-    .btn-danger {
-      background-color: var(--danger);
-      color: #fff;
-    }
-    .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); }
-    .btn-danger-outline {
-      background-color: transparent;
-      border-color: #fecaca;
-      color: var(--danger);
-    }
-    .btn-danger-outline:hover:not(:disabled) {
-      background-color: var(--danger-light);
-      border-color: var(--danger);
-    }
-    .btn-purple {
-      background-color: var(--purple-light);
-      border-color: #ddd6fe;
-      color: var(--purple);
-    }
-    .btn-purple:hover:not(:disabled) {
-      background-color: #ede9fe;
-      border-color: var(--purple);
-    }
-    .btn-dark {
-      background-color: var(--dark);
-      color: #fff;
-    }
-    .btn-dark:hover:not(:disabled) { background-color: var(--dark-hover); }
-    .btn-icon-only {
-      padding: 0.5rem;
-      border-radius: 8px;
-    }
+    .btn-secondary { background-color: #ffffff; border-color: var(--border); color: var(--text-main); }
+    .btn-secondary:hover:not(:disabled) { background-color: #f8fafc; border-color: #cbd5e1; }
+    .btn-danger { background-color: var(--btn-stop); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background-color: var(--btn-stop-hover); }
+    .btn-danger-outline { background-color: transparent; border-color: #fecaca; color: var(--btn-stop); }
+    .btn-danger-outline:hover:not(:disabled) { background-color: var(--danger-light); }
+    .btn-purple { background-color: var(--purple-light); border-color: #ddd6fe; color: var(--purple); }
+    .btn-purple:hover:not(:disabled) { background-color: #ede9fe; }
 
     /* Main Container */
     main {
       flex: 1;
-      max-width: 1280px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
       padding: 2rem 1.5rem;
     }
 
-    /* Stats Cards */
+    /* Views */
+    .view-container { display: none; }
+    .view-container.active { display: block; }
+
+    /* Statistics */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -223,27 +147,19 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.25rem;
-      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .stat-info { display: flex; flex-direction: column; gap: 0.25rem; }
-    .stat-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-info { display: flex; flex-direction: column; }
+    .stat-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; }
     .stat-value { font-size: 1.85rem; font-weight: 700; color: var(--text-main); }
-    .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .stat-icon.total { background-color: var(--primary-light); color: var(--primary); }
-    .stat-icon.running { background-color: var(--running-bg); color: var(--running-text); }
-    .stat-icon.stopped { background-color: var(--stopped-bg); color: var(--stopped-text); }
+    .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .stat-icon.total { background: var(--primary-light); color: var(--primary); }
+    .stat-icon.running { background: var(--running-bg); color: var(--running-text); }
+    .stat-icon.stopped { background: var(--stopped-bg); color: var(--stopped-text); }
 
-    /* Section Header */
+    /* List Controls */
     .section-header {
       display: flex;
       flex-wrap: wrap;
@@ -252,57 +168,35 @@
       gap: 1rem;
       margin-bottom: 1.25rem;
     }
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .search-filter-bar {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    .search-box {
-      position: relative;
-      min-width: 240px;
-    }
+    .search-filter-bar { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .search-box { position: relative; min-width: 250px; }
     .search-box input {
       width: 100%;
       padding: 0.5rem 0.75rem 0.5rem 2.25rem;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background-color: var(--card-bg);
       outline: none;
-      transition: border-color 0.15s ease;
+      background: var(--card-bg);
     }
-    .search-box input:focus { border-color: var(--border-focus); }
     .search-box .icon {
       position: absolute;
       left: 0.75rem;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
-      pointer-events: none;
     }
     .filter-select {
       padding: 0.5rem 0.85rem;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background-color: var(--card-bg);
+      background: var(--card-bg);
       outline: none;
-      color: var(--text-main);
-      cursor: pointer;
     }
-    .filter-select:focus { border-color: var(--border-focus); }
 
-    /* Server Grid / Cards */
+    /* Clean Server Cards (Image 1 Fixed) */
     .server-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 1.25rem;
     }
     .server-card {
@@ -312,36 +206,28 @@
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
     }
     .server-card:hover {
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
       border-color: #cbd5e1;
     }
     .card-head {
-      padding: 1.25rem 1.25rem 0.75rem;
+      padding: 1.25rem;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 0.5rem;
       border-bottom: 1px solid #f1f5f9;
     }
-    .server-header-info { display: flex; flex-direction: column; gap: 0.2rem; }
-    .server-name {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .server-id-type {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .server-name { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
+    .server-sub { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      padding: 0.25rem 0.6rem;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
       font-size: 0.75rem;
       font-weight: 600;
       border-radius: 9999px;
@@ -349,12 +235,7 @@
     }
     .badge-running { background-color: var(--running-bg); color: var(--running-text); }
     .badge-stopped { background-color: var(--stopped-bg); color: var(--stopped-text); }
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      display: inline-block;
-    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; }
     .badge-running .badge-dot { background-color: var(--running-dot); }
     .badge-stopped .badge-dot { background-color: var(--stopped-dot); }
 
@@ -366,60 +247,137 @@
       font-size: 0.825rem;
     }
     .spec-item { display: flex; flex-direction: column; gap: 0.15rem; }
-    .spec-label { font-size: 0.7rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; }
+    .spec-label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
     .spec-value { font-weight: 600; color: var(--text-main); }
-    .spec-pid { font-family: 'JetBrains Mono', monospace; }
-
-    .card-actions {
-      padding: 0.875rem 1.25rem;
-      background-color: #fafbfc;
+    .card-footer {
+      padding: 0.75rem 1.25rem;
+      background: #fafbfc;
       border-top: 1px solid #f1f5f9;
       border-radius: 0 0 var(--radius) var(--radius);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.4rem;
     }
-    .card-actions .btn {
-      font-size: 0.8rem;
-      padding: 0.375rem 0.625rem;
+    .btn-manage {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      font-weight: 600;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+    }
+    .btn-manage:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
     }
 
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 4rem 1.5rem;
+    /* ------------------------------------------------------------- */
+    /* SERVER DETAIL VIEW (IMAGE 2 UI) */
+    /* ------------------------------------------------------------- */
+    .detail-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .detail-header-left { display: flex; align-items: center; gap: 1rem; }
+    .detail-title-group h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+    .detail-title-group p { font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+    /* Server Controls Card (Exact Image 2 Style) */
+    .server-controls-card {
       background: var(--card-bg);
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      grid-column: 1 / -1;
-      margin-top: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
     }
-    .empty-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.25rem;
-      color: var(--text-muted);
-      opacity: 0.6;
+    .controls-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; }
+    .controls-subtitle { font-size: 0.825rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .control-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.875rem;
     }
-    .empty-title {
-      font-size: 1.15rem;
+    .btn-control {
+      padding: 0.75rem 1rem;
+      font-size: 0.925rem;
       font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: filter 0.15s ease, transform 0.1s ease;
     }
-    .empty-desc {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      max-width: 400px;
-      margin: 0 auto 1.5rem;
+    .btn-control:hover:not(:disabled) { filter: brightness(0.92); }
+    .btn-control:active:not(:disabled) { transform: scale(0.98); }
+    .btn-ctrl-start { background-color: var(--btn-start); }
+    .btn-ctrl-stop { background-color: var(--btn-stop); }
+    .btn-ctrl-restart { background-color: var(--btn-restart); }
+
+    /* Recent Logs Card (Exact Image 2 Style) */
+    .recent-logs-card {
+      background: #090d16;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 1.5rem;
+    }
+    .logs-header {
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1c2438;
+    }
+    .logs-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logs-view-all {
+      color: #38bdf8;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .logs-view-all:hover { text-decoration: underline; }
+    .logs-terminal-body {
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.835rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+      height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Extra Actions Bar */
+    .extra-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
     }
 
     /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background-color: rgba(15, 23, 42, 0.55);
+      background: rgba(15, 23, 42, 0.6);
       backdrop-filter: blur(3px);
       display: none;
       align-items: center;
@@ -431,21 +389,16 @@
     .modal-container {
       background: var(--card-bg);
       border-radius: 12px;
-      box-shadow: var(--shadow-lg);
       width: 100%;
       max-width: 520px;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      animation: modalIn 0.2s ease-out;
+      box-shadow: var(--shadow-lg);
     }
     .modal-container.large { max-width: 850px; }
     .modal-container.xlarge { max-width: 1050px; }
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.97) translateY(-8px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
     .modal-header {
       padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
@@ -453,64 +406,33 @@
       align-items: center;
       justify-content: space-between;
     }
-    .modal-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 6px;
-    }
-    .modal-close:hover { background-color: #f1f5f9; color: var(--text-main); }
-    .modal-body {
-      padding: 1.25rem;
-      overflow-y: auto;
-      flex: 1;
-    }
+    .modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+    .modal-close { background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; }
+    .modal-body { padding: 1.25rem; overflow-y: auto; flex: 1; }
     .modal-footer {
       padding: 0.875rem 1.25rem;
       border-top: 1px solid var(--border);
       display: flex;
-      align-items: center;
       justify-content: flex-end;
       gap: 0.75rem;
-      background-color: #fafbfc;
+      background: #fafbfc;
     }
 
-    /* Form Groups */
-    .form-group { margin-bottom: 1.1rem; }
-    .form-group:last-child { margin-bottom: 0; }
-    .form-label {
-      display: block;
-      font-size: 0.825rem;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 0.375rem;
-    }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.825rem; font-weight: 600; margin-bottom: 0.35rem; }
     .form-control {
       width: 100%;
-      padding: 0.6rem 0.75rem;
+      padding: 0.55rem 0.75rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       outline: none;
-      transition: border-color 0.15s ease;
-      background: #ffffff;
     }
     .form-control:focus { border-color: var(--border-focus); }
 
-    /* Console Terminal */
+    /* Interactive Terminal Modal */
     .terminal-container {
       background-color: #0d1117;
       border-radius: 8px;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       height: 480px;
@@ -521,98 +443,27 @@
       color: #e6edf3;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.815rem;
-      line-height: 1.45;
       overflow-y: auto;
       white-space: pre-wrap;
-      word-break: break-all;
     }
     .terminal-input-bar {
       display: flex;
       border-top: 1px solid #21262d;
-      background-color: #161b22;
+      background: #161b22;
       padding: 0.5rem;
       gap: 0.5rem;
     }
-    .terminal-prompt {
-      color: #58a6ff;
-      font-family: 'JetBrains Mono', monospace;
-      padding: 0.4rem 0.5rem;
-      font-weight: bold;
-    }
-    .terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-    }
+    .terminal-prompt { color: #58a6ff; font-family: 'JetBrains Mono', monospace; padding: 0.4rem 0.5rem; font-weight: bold; }
+    .terminal-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-family: 'JetBrains Mono', monospace; }
 
-    /* File Manager UI */
-    .file-manager-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .breadcrumb-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.825rem;
-      color: var(--text-muted);
-      overflow-x: auto;
-    }
-    .breadcrumb-part {
-      cursor: pointer;
-      color: var(--primary);
-    }
-    .breadcrumb-part:hover { text-decoration: underline; }
-    .file-table-container {
-      max-height: 400px;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .file-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      text-align: left;
-    }
-    .file-table th {
-      background-color: #f8fafc;
-      padding: 0.65rem 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .file-table td {
-      padding: 0.65rem 0.85rem;
-      border-bottom: 1px solid #f1f5f9;
-      color: var(--text-main);
-    }
-    .file-table tr:last-child td { border-bottom: none; }
-    .file-table tr:hover td { background-color: #f8fafc; }
-    .file-name-cell {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      font-weight: 500;
-    }
+    /* File Table */
+    .file-table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+    .file-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+    .file-table th { background: #f8fafc; padding: 0.65rem 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .file-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
+    .file-name-cell { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500; }
     .file-name-cell:hover { color: var(--primary); }
 
-    /* File Editor */
     .code-editor {
       width: 100%;
       height: 440px;
@@ -622,59 +473,32 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       outline: none;
-      resize: vertical;
-      background: #fdfdfd;
-      line-height: 1.45;
-      tab-size: 4;
+      background: #fff;
     }
-    .code-editor:focus { border-color: var(--border-focus); }
 
-    /* Toast Notification Container */
-    #toast-container {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.625rem;
-      z-index: 100;
-      pointer-events: none;
-    }
+    /* Toast */
+    #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; }
     .toast {
-      pointer-events: auto;
-      min-width: 280px;
-      max-width: 400px;
-      background: #ffffff;
+      min-width: 260px;
+      background: #fff;
       border: 1px solid var(--border);
       border-left: 4px solid var(--primary);
       box-shadow: var(--shadow-lg);
       border-radius: 6px;
       padding: 0.75rem 1rem;
       font-size: 0.85rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.65rem;
-      animation: toastIn 0.25s ease-out;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+      font-weight: 500;
     }
     .toast.success { border-left-color: #16a34a; }
     .toast.error { border-left-color: #dc2626; }
     .toast.info { border-left-color: var(--primary); }
-    .toast-msg { flex: 1; color: var(--text-main); font-weight: 500; }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .header-container { flex-direction: column; align-items: stretch; }
-      .header-actions { justify-content: space-between; }
-      .section-header { flex-direction: column; align-items: stretch; }
-      .search-box { width: 100%; min-width: 100%; }
-      .search-filter-bar { width: 100%; justify-content: stretch; }
+      .control-buttons-grid { grid-template-columns: 1fr; }
+      .search-box { width: 100%; }
+      .search-filter-bar { width: 100%; }
       .filter-select { flex: 1; }
-      .server-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -684,13 +508,8 @@
   <header>
     <div class="header-container">
       <div class="brand-section">
-        <div class="brand-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-            <line x1="6" y1="18" x2="6.01" y2="18"></line>
-          </svg>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
         </div>
         <div>
           <h1 class="brand-title">ServerPanel</h1>
@@ -698,119 +517,162 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-secondary" onclick="loadServers()" title="Refresh Servers" aria-label="Refresh Servers">
+        <button class="btn btn-secondary" onclick="loadServers()">
           <svg class="icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
           Refresh
         </button>
-        <button class="btn btn-prominent" onclick="openCreateModal()" aria-label="Create New Server">
+        <button class="btn btn-primary" onclick="openCreateModal()">
           <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           + Create Server
-        </button>
-        <button class="btn btn-secondary btn-icon-only" onclick="showToast('ServerPanel v2.4.0 — All systems active.', 'info')" title="Panel Info" aria-label="Panel Settings">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </button>
-        <button class="btn btn-secondary btn-icon-only" onclick="showToast('Logged in as Administrator', 'info')" title="User Profile" aria-label="Administrator Profile">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Area -->
   <main>
-    <!-- Dashboard Statistics -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-label">Total Servers</span>
-          <span class="stat-value" id="stat-total">0</span>
+    <!-- ============================================================= -->
+    <!-- VIEW 1: MY SERVERS LIST (CLEAN CARDS, NO BUTTON CLUTTER)     -->
+    <!-- ============================================================= -->
+    <div id="view-server-list" class="view-container active">
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Total Servers</span>
+            <span class="stat-value" id="stat-total">0</span>
+          </div>
+          <div class="stat-icon total"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect></svg></div>
         </div>
-        <div class="stat-icon total">
-          <svg class="icon" style="width:24px;height:24px" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6" y2="6"></line><line x1="6" y1="18" x2="6" y2="18"></line></svg>
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Running</span>
+            <span class="stat-value" id="stat-running">0</span>
+          </div>
+          <div class="stat-icon running"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Stopped</span>
+            <span class="stat-value" id="stat-stopped">0</span>
+          </div>
+          <div class="stat-icon stopped"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg></div>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-label">Running</span>
-          <span class="stat-value" id="stat-running">0</span>
-        </div>
-        <div class="stat-icon running">
-          <svg class="icon" style="width:24px;height:24px" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-label">Stopped</span>
-          <span class="stat-value" id="stat-stopped">0</span>
-        </div>
-        <div class="stat-icon stopped">
-          <svg class="icon" style="width:24px;height:24px" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg>
+
+      <!-- Controls -->
+      <div class="section-header">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">My Servers</h2>
+        <div class="search-filter-bar">
+          <div class="search-box">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="search-input" placeholder="Search servers..." oninput="filterServers()" />
+          </div>
+          <select id="status-filter" class="filter-select" onchange="filterServers()">
+            <option value="all">All Status</option>
+            <option value="running">Running</option>
+            <option value="stopped">Stopped</option>
+          </select>
         </div>
       </div>
+
+      <!-- Clean Cards -->
+      <div id="server-grid" class="server-grid"></div>
     </div>
 
-    <!-- Servers Section -->
-    <div class="section-header">
-      <h2 class="section-title">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6M12 19h8"></path></svg>
-        My Servers
-      </h2>
-      <div class="search-filter-bar">
-        <div class="search-box">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" placeholder="Search by name, ID, or type..." oninput="filterServers()" aria-label="Search servers" />
+    <!-- ============================================================= -->
+    <!-- VIEW 2: SERVER DETAIL VIEW (IMAGE 2 DESIGN: CONTROLS + LOGS)  -->
+    <!-- ============================================================= -->
+    <div id="view-server-detail" class="view-container">
+      <div class="detail-nav">
+        <div class="detail-header-left">
+          <button class="btn btn-secondary" onclick="backToServersList()">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+          </button>
+          <div class="detail-title-group">
+            <h2 id="detail-server-name">Server Name</h2>
+            <p id="detail-server-meta">srv-id &bull; Python</p>
+          </div>
         </div>
-        <select id="status-filter" class="filter-select" onchange="filterServers()" aria-label="Filter servers by status">
-          <option value="all">All Status</option>
-          <option value="running">Running</option>
-          <option value="stopped">Stopped</option>
-        </select>
+        <div id="detail-status-badge"></div>
       </div>
-    </div>
 
-    <!-- Server List / Grid Container -->
-    <div id="server-list" class="server-grid">
-      <!-- Dynamically populated servers -->
+      <!-- Server Controls (Exact match to Image 2) -->
+      <div class="server-controls-card">
+        <div class="controls-title">Server Controls</div>
+        <div class="controls-subtitle">Start, stop or restart your server</div>
+        <div class="control-buttons-grid">
+          <button id="btn-detail-start" class="btn-control btn-ctrl-start" onclick="handleDetailStart()">
+            <svg class="icon" style="fill:currentColor;stroke:none;width:14px;height:14px;" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Start
+          </button>
+          <button id="btn-detail-stop" class="btn-control btn-ctrl-stop" onclick="handleDetailStop()">
+            <svg class="icon" style="fill:currentColor;stroke:none;width:14px;height:14px;" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg>
+            Stop
+          </button>
+          <button id="btn-detail-restart" class="btn-control btn-ctrl-restart" onclick="handleDetailRestart()">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Logs (Exact match to Image 2) -->
+      <div class="recent-logs-card">
+        <div class="logs-header">
+          <div class="logs-title">
+            <svg class="icon" style="color:#38bdf8;" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            Recent Logs
+          </div>
+          <a class="logs-view-all" onclick="openFullConsoleModal()">View All</a>
+        </div>
+        <div id="detail-recent-logs" class="logs-terminal-body">Loading logs...</div>
+      </div>
+
+      <!-- Dedicated Actions: Files, Settings, Delete -->
+      <div class="extra-actions-bar">
+        <button class="btn btn-purple" onclick="openFilesForCurrentServer()">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          File Manager
+        </button>
+        <button class="btn btn-secondary" onclick="openSettingsForCurrentServer()">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </button>
+        <button class="btn btn-danger-outline" onclick="openDeleteForCurrentServer()">
+          <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Delete Server
+        </button>
+      </div>
     </div>
   </main>
 
-  <!-- Create Server Modal -->
-  <div id="create-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="create-modal-title">
+  <!-- Modals: Create Server -->
+  <div id="create-modal" class="modal-backdrop">
     <div class="modal-container">
       <div class="modal-header">
-        <h3 id="create-modal-title" class="modal-title">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Create New Server
-        </h3>
-        <button class="modal-close" onclick="closeModal('create-modal')" aria-label="Close modal">&times;</button>
+        <h3 class="modal-title">Create New Server</h3>
+        <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label" for="create-name">Server Name</label>
-          <input type="text" id="create-name" class="form-control" placeholder="e.g. My Telegram Bot" required />
+          <label class="form-label">Server Name</label>
+          <input type="text" id="create-name" class="form-control" placeholder="e.g. My Bot Server" />
         </div>
         <div class="form-group">
-          <label class="form-label" for="create-type">Server Type</label>
-          <select id="create-type" class="form-control">
-            <option value="Python" selected>Python 3</option>
-          </select>
+          <label class="form-label">Type</label>
+          <select id="create-type" class="form-control"><option value="Python">Python 3</option></select>
         </div>
         <div class="form-group">
-          <label class="form-label" for="create-ram">Configured RAM</label>
+          <label class="form-label">RAM</label>
           <select id="create-ram" class="form-control">
-            <option value="512 MB">512 MB</option>
-            <option value="1 GB" selected>1 GB</option>
-            <option value="2 GB">2 GB</option>
-            <option value="4 GB">4 GB</option>
+            <option value="512 MB">512 MB</option><option value="1 GB" selected>1 GB</option><option value="2 GB">2 GB</option><option value="4 GB">4 GB</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" for="create-disk">Configured Disk</label>
+          <label class="form-label">Disk</label>
           <select id="create-disk" class="form-control">
-            <option value="1 GB">1 GB</option>
-            <option value="2 GB" selected>2 GB</option>
-            <option value="5 GB">5 GB</option>
-            <option value="10 GB">10 GB</option>
+            <option value="1 GB">1 GB</option><option value="2 GB" selected>2 GB</option><option value="5 GB">5 GB</option><option value="10 GB">10 GB</option>
           </select>
         </div>
       </div>
@@ -821,26 +683,23 @@
     </div>
   </div>
 
-  <!-- Console / Logs Modal -->
-  <div id="console-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <!-- Interactive Terminal Modal (View All) -->
+  <div id="console-modal" class="modal-backdrop">
     <div class="modal-container large">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-          Console: <span id="console-server-name" style="color:var(--primary); font-weight:600; margin-left:4px;"></span>
-        </h3>
-        <div style="display: flex; gap: 0.5rem; align-items:center;">
+        <h3 class="modal-title">Console Terminal</h3>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
           <button class="btn btn-secondary" style="font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="clearLogs()">Clear Logs</button>
-          <button class="modal-close" onclick="closeConsoleModal()">&times;</button>
+          <button class="modal-close" onclick="closeModal('console-modal')">&times;</button>
         </div>
       </div>
-      <div class="modal-body" style="padding: 1rem;">
+      <div class="modal-body" style="padding:1rem;">
         <div class="terminal-container">
-          <div id="terminal-output" class="terminal-output">Connecting to logs...</div>
-          <form id="terminal-form" class="terminal-input-bar" onsubmit="sendCommand(event)">
+          <div id="terminal-output" class="terminal-output">Connecting...</div>
+          <form class="terminal-input-bar" onsubmit="sendCommand(event)">
             <span class="terminal-prompt">&gt;</span>
             <input type="text" id="terminal-input" class="terminal-input" placeholder="Type a command and press Enter..." autocomplete="off" />
-            <button type="submit" class="btn btn-primary" style="padding: 0.35rem 0.85rem; font-size:0.75rem;">Send</button>
+            <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.85rem; font-size:0.75rem;">Send</button>
           </form>
         </div>
       </div>
@@ -848,51 +707,26 @@
   </div>
 
   <!-- File Manager Modal -->
-  <div id="files-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div id="files-modal" class="modal-backdrop">
     <div class="modal-container xlarge">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-          Files: <span id="files-server-name" style="color:var(--primary); font-weight:600; margin-left:4px;"></span>
-        </h3>
+        <h3 class="modal-title">File Manager</h3>
         <button class="modal-close" onclick="closeModal('files-modal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="file-manager-toolbar">
-          <div class="breadcrumb-bar" id="file-breadcrumbs">
-            <!-- Rendered breadcrumbs -->
-          </div>
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+          <div id="file-breadcrumbs" style="font-family:'JetBrains Mono',monospace; font-size:0.85rem;"></div>
+          <div style="display:flex; gap:0.5rem;">
             <input type="file" id="file-upload-input" style="display:none;" onchange="handleFileSelected(event)" />
-            <button class="btn btn-secondary" onclick="document.getElementById('file-upload-input').click()">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              Upload
-            </button>
-            <button class="btn btn-secondary" onclick="promptCreateFolder()">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
-              New Folder
-            </button>
-            <button class="btn btn-secondary" onclick="loadFiles(currentFileManagerServerId, currentFileManagerPath)">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-              Refresh
-            </button>
+            <button class="btn btn-secondary" onclick="document.getElementById('file-upload-input').click()">Upload</button>
+            <button class="btn btn-secondary" onclick="promptCreateFolder()">New Folder</button>
+            <button class="btn btn-secondary" onclick="loadFiles(activeServer.id, currentPath)">Refresh</button>
           </div>
         </div>
-
         <div class="file-table-container">
           <table class="file-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Size</th>
-                <th>Modified</th>
-                <th style="text-align: right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="file-list-body">
-              <!-- Dynamically populated files -->
-            </tbody>
+            <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Modified</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="file-list-body"></tbody>
           </table>
         </div>
       </div>
@@ -900,18 +734,13 @@
   </div>
 
   <!-- File Editor Modal -->
-  <div id="editor-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div id="editor-modal" class="modal-backdrop">
     <div class="modal-container large">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-          Edit: <span id="editor-filename" style="color:var(--primary); font-weight:600; margin-left:4px;"></span>
-        </h3>
+        <h3 class="modal-title">Edit: <span id="editor-filename" style="color:var(--primary); margin-left:4px;"></span></h3>
         <button class="modal-close" onclick="closeModal('editor-modal')">&times;</button>
       </div>
-      <div class="modal-body" style="padding: 1rem;">
-        <textarea id="editor-textarea" class="code-editor" spellcheck="false"></textarea>
-      </div>
+      <div class="modal-body"><textarea id="editor-textarea" class="code-editor" spellcheck="false"></textarea></div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('editor-modal')">Cancel</button>
         <button id="btn-save-file" class="btn btn-primary" onclick="saveFile()">Save File</button>
@@ -919,29 +748,25 @@
     </div>
   </div>
 
-  <!-- Server Settings Modal -->
-  <div id="settings-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-backdrop">
     <div class="modal-container">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Server Settings
-        </h3>
+        <h3 class="modal-title">Server Settings</h3>
         <button class="modal-close" onclick="closeModal('settings-modal')">&times;</button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="settings-server-id" />
         <div class="form-group">
-          <label class="form-label" for="settings-name">Server Name</label>
-          <input type="text" id="settings-name" class="form-control" required />
+          <label class="form-label">Server Name</label>
+          <input type="text" id="settings-name" class="form-control" />
         </div>
         <div class="form-group">
-          <label class="form-label" for="settings-startup">Startup File</label>
-          <input type="text" id="settings-startup" class="form-control" placeholder="main.py" required />
+          <label class="form-label">Startup File</label>
+          <input type="text" id="settings-startup" class="form-control" />
         </div>
         <div class="form-group">
-          <label class="form-label" for="settings-requirements">Requirements File</label>
-          <input type="text" id="settings-requirements" class="form-control" placeholder="requirements.txt" required />
+          <label class="form-label">Requirements File</label>
+          <input type="text" id="settings-requirements" class="form-control" />
         </div>
       </div>
       <div class="modal-footer">
@@ -951,24 +776,16 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div id="delete-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <!-- Delete Modal -->
+  <div id="delete-modal" class="modal-backdrop">
     <div class="modal-container">
       <div class="modal-header">
-        <h3 class="modal-title" style="color:var(--danger)">
-          <svg class="icon" viewBox="0 0 24 24"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          Confirm Server Deletion
-        </h3>
+        <h3 class="modal-title" style="color:var(--btn-stop);">Delete Server</h3>
         <button class="modal-close" onclick="closeModal('delete-modal')">&times;</button>
       </div>
       <div class="modal-body">
-        <p style="font-size:0.9rem; color:var(--text-main); margin-bottom:0.75rem;">
-          Are you sure you want to permanently delete <strong id="delete-server-name"></strong>?
-        </p>
-        <p style="font-size:0.825rem; color:var(--danger); background:var(--danger-light); padding:0.6rem; border-radius:6px;">
-          Warning: This action is permanent. All associated files, virtual environment scripts, and output logs will be deleted immediately.
-        </p>
-        <input type="hidden" id="delete-server-id" />
+        <p style="margin-bottom:0.75rem;">Are you sure you want to permanently delete <strong id="delete-name"></strong>?</p>
+        <p style="font-size:0.8rem; color:var(--btn-stop); background:var(--danger-light); padding:0.6rem; border-radius:6px;">This action cannot be undone.</p>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('delete-modal')">Cancel</button>
@@ -977,192 +794,99 @@
     </div>
   </div>
 
-  <!-- Toast Notification Stack -->
-  <div id="toast-container" aria-live="polite"></div>
+  <!-- Toasts -->
+  <div id="toast-container"></div>
 
-  <!-- Vanilla JavaScript Logic -->
   <script>
-    // State management
     let rawServers = [];
-    let consoleInterval = null;
-    let currentConsoleServerId = null;
-    let currentFileManagerServerId = null;
-    let currentFileManagerPath = "";
-    let activeEditorFilePath = "";
+    let activeServer = null;
+    let detailLogInterval = null;
+    let currentPath = "";
+    let activeEditPath = "";
+
+    function showToast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function openCreateModal() { document.getElementById('create-name').value = ''; openModal('create-modal'); }
 
     // -------------------------------------------------------------
-    // Toast Notification System
-    // -------------------------------------------------------------
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-
-      let iconSvg = '';
-      if (type === 'success') {
-        iconSvg = '<svg class="icon" style="color:#16a34a" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-      } else if (type === 'error') {
-        iconSvg = '<svg class="icon" style="color:#dc2626" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-      } else {
-        iconSvg = '<svg class="icon" style="color:#2563eb" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-      }
-
-      toast.innerHTML = `${iconSvg}<div class="toast-msg">${escapeHtml(message)}</div>`;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        setTimeout(() => toast.remove(), 250);
-      }, 3500);
-    }
-
-    // Modal Helpers
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-    function openCreateModal() {
-      document.getElementById('create-name').value = '';
-      openModal('create-modal');
-      setTimeout(() => document.getElementById('create-name').focus(), 50);
-    }
-
-    // Helper: Escapes HTML
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // -------------------------------------------------------------
-    // Core Server APIs & Rendering
+    // SERVER LIST VIEW
     // -------------------------------------------------------------
     async function loadServers(isBackground = false) {
       try {
         const res = await fetch('/api/servers');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.status === 'success') {
           rawServers = data.servers || [];
-          updateStatistics(rawServers);
-          renderServers(rawServers);
-        } else {
-          if (!isBackground) showToast(data.message || 'Failed to load servers', 'error');
+          updateStats(rawServers);
+          renderServerGrid(rawServers);
+
+          // If currently inside a detail view, refresh active server state
+          if (activeServer) {
+            const found = rawServers.find(s => s.id === activeServer.id);
+            if (found) {
+              activeServer = found;
+              updateDetailHeader();
+            }
+          }
         }
       } catch (err) {
         if (!isBackground) showToast(`Network error: ${err.message}`, 'error');
       }
     }
 
-    function updateStatistics(servers) {
-      const total = servers.length;
-      const running = servers.filter(s => s.status === 'running').length;
-      const stopped = total - running;
-
-      document.getElementById('stat-total').textContent = total;
-      document.getElementById('stat-running').textContent = running;
-      document.getElementById('stat-stopped').textContent = stopped;
+    function updateStats(servers) {
+      document.getElementById('stat-total').textContent = servers.length;
+      document.getElementById('stat-running').textContent = servers.filter(s => s.status === 'running').length;
+      document.getElementById('stat-stopped').textContent = servers.filter(s => s.status !== 'running').length;
     }
 
     function filterServers() {
-      const query = document.getElementById('search-input').value.toLowerCase().trim();
-      const statusFilter = document.getElementById('status-filter').value;
-
+      const q = document.getElementById('search-input').value.toLowerCase().trim();
+      const status = document.getElementById('status-filter').value;
       const filtered = rawServers.filter(s => {
-        const matchesQuery = s.name.toLowerCase().includes(query) ||
-                             s.id.toLowerCase().includes(query) ||
-                             (s.type && s.type.toLowerCase().includes(query));
-        const matchesStatus = (statusFilter === 'all') || (s.status === statusFilter);
-        return matchesQuery && matchesStatus;
+        const matchQ = s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q);
+        const matchS = status === 'all' || s.status === status;
+        return matchQ && matchS;
       });
-
-      renderServers(filtered);
+      renderServerGrid(filtered);
     }
 
-    function renderServers(servers) {
-      const container = document.getElementById('server-list');
-      if (!servers || servers.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="2" y="2" width="20" height="8" rx="2"></rect>
-              <rect x="2" y="14" width="20" height="8" rx="2"></rect>
-              <line x1="6" y1="6" x2="6.01" y2="6"></line>
-              <line x1="6" y1="18" x2="6.01" y2="18"></line>
-            </svg>
-            <h3 class="empty-title">No servers found</h3>
-            <p class="empty-desc">No servers yet — Create your first server to get started with python application deployment.</p>
-            <button class="btn btn-prominent" onclick="openCreateModal()">+ Create Server</button>
-          </div>
-        `;
+    function renderServerGrid(servers) {
+      const grid = document.getElementById('server-grid');
+      if (!servers.length) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); background:#fff; border:1px dashed var(--border); border-radius:10px;">No servers found. Click "+ Create Server" to get started.</div>`;
         return;
       }
 
-      container.innerHTML = servers.map(s => {
+      grid.innerHTML = servers.map(s => {
         const isRunning = s.status === 'running';
         const badgeClass = isRunning ? 'badge-running' : 'badge-stopped';
-        const startStopBtn = isRunning
-          ? `<button class="btn btn-secondary" onclick="stopServer('${s.id}', this)" title="Stop Server">
-               <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"></rect></svg> Stop
-             </button>`
-          : `<button class="btn btn-primary" onclick="startServer('${s.id}', this)" title="Start Server">
-               <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Start
-             </button>`;
-
         return `
-          <div class="server-card" id="card-${s.id}">
+          <div class="server-card" onclick="openServerDetail('${s.id}')">
             <div class="card-head">
-              <div class="server-header-info">
-                <span class="server-name">${escapeHtml(s.name)}</span>
-                <span class="server-id-type">${s.id} &bull; ${escapeHtml(s.type || 'Python')}</span>
+              <div>
+                <div class="server-name">${s.name}</div>
+                <div class="server-sub">${s.id} &bull; ${s.type || 'Python'}</div>
               </div>
-              <span class="badge ${badgeClass}">
-                <span class="badge-dot"></span>
-                ${s.status}
-              </span>
+              <span class="badge ${badgeClass}"><span class="badge-dot"></span>${s.status}</span>
             </div>
             <div class="card-body">
-              <div class="spec-item">
-                <span class="spec-label">RAM</span>
-                <span class="spec-value">${escapeHtml(s.ram || '1 GB')}</span>
-              </div>
-              <div class="spec-item">
-                <span class="spec-label">Disk</span>
-                <span class="spec-value">${escapeHtml(s.disk || '2 GB')}</span>
-              </div>
-              <div class="spec-item">
-                <span class="spec-label">PID</span>
-                <span class="spec-value spec-pid">${s.pid ? s.pid : '&mdash;'}</span>
-              </div>
-              <div class="spec-item">
-                <span class="spec-label">Created Date</span>
-                <span class="spec-value" style="font-size:0.75rem;">${s.created_at ? s.created_at.split(' ')[0] : '&mdash;'}</span>
-              </div>
+              <div class="spec-item"><span class="spec-label">RAM</span><span class="spec-value">${s.ram || '1 GB'}</span></div>
+              <div class="spec-item"><span class="spec-label">DISK</span><span class="spec-value">${s.disk || '2 GB'}</span></div>
+              <div class="spec-item"><span class="spec-label">PID</span><span class="spec-value" style="font-family:'JetBrains Mono';">${s.pid || '&mdash;'}</span></div>
+              <div class="spec-item"><span class="spec-label">CREATED DATE</span><span class="spec-value" style="font-size:0.75rem;">${s.created_at ? s.created_at.split(' ')[0] : '&mdash;'}</span></div>
             </div>
-            <div class="card-actions">
-              ${startStopBtn}
-              <button class="btn btn-secondary" onclick="restartServer('${s.id}', this)" title="Restart Server">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg> Restart
-              </button>
-              <button class="btn btn-dark" onclick="openConsole('${s.id}', '${escapeHtml(s.name)}')" title="View Console Logs">
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg> Console
-              </button>
-              <button class="btn btn-purple" onclick="openFiles('${s.id}', '${escapeHtml(s.name)}')" title="Manage Files">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> Files
-              </button>
-              <button class="btn btn-secondary" onclick="openSettings('${s.id}')" title="Configure Settings">
-                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-              </button>
-              <button class="btn btn-danger-outline" onclick="confirmDelete('${s.id}', '${escapeHtml(s.name)}')" title="Delete Server">
-                <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              </button>
+            <div class="card-footer">
+              <button class="btn-manage">Manage Server ➜</button>
             </div>
           </div>
         `;
@@ -1170,22 +894,135 @@
     }
 
     // -------------------------------------------------------------
-    // Server Creation & Process Actions
+    // SERVER DETAIL VIEW (IMAGE 2)
+    // -------------------------------------------------------------
+    function openServerDetail(serverId) {
+      const server = rawServers.find(s => s.id === serverId);
+      if (!server) return;
+
+      activeServer = server;
+      document.getElementById('view-server-list').classList.remove('active');
+      document.getElementById('view-server-detail').classList.add('active');
+
+      updateDetailHeader();
+      fetchRecentLogs();
+
+      if (detailLogInterval) clearInterval(detailLogInterval);
+      detailLogInterval = setInterval(fetchRecentLogs, 2500);
+    }
+
+    function backToServersList() {
+      if (detailLogInterval) {
+        clearInterval(detailLogInterval);
+        detailLogInterval = null;
+      }
+      activeServer = null;
+      document.getElementById('view-server-detail').classList.remove('active');
+      document.getElementById('view-server-list').classList.add('active');
+      loadServers();
+    }
+
+    function updateDetailHeader() {
+      if (!activeServer) return;
+      document.getElementById('detail-server-name').textContent = activeServer.name;
+      document.getElementById('detail-server-meta').textContent = `${activeServer.id} • ${activeServer.type || 'Python'} • RAM: ${activeServer.ram} • Disk: ${activeServer.disk}`;
+
+      const isRunning = activeServer.status === 'running';
+      document.getElementById('detail-status-badge').innerHTML = `
+        <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}" style="font-size:0.85rem; padding:0.35rem 0.85rem;">
+          <span class="badge-dot"></span>${activeServer.status} (PID: ${activeServer.pid || 'None'})
+        </span>
+      `;
+
+      // Control button states
+      document.getElementById('btn-detail-start').disabled = isRunning;
+      document.getElementById('btn-detail-stop').disabled = !isRunning;
+      document.getElementById('btn-detail-restart').disabled = !isRunning;
+    }
+
+    async function fetchRecentLogs() {
+      if (!activeServer) return;
+      try {
+        const res = await fetch(`/api/logs/${activeServer.id}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          const logBox = document.getElementById('detail-recent-logs');
+          const isAtBottom = logBox.scrollHeight - logBox.scrollTop <= logBox.clientHeight + 40;
+          logBox.textContent = data.logs || '[No logs yet]';
+          if (isAtBottom) logBox.scrollTop = logBox.scrollHeight;
+
+          const terminalModal = document.getElementById('terminal-output');
+          if (terminalModal) terminalModal.textContent = data.logs || '[Empty logs]';
+        }
+      } catch (e) {
+        console.error("Log fetch error", e);
+      }
+    }
+
+    // Server Controls Handlers
+    async function handleDetailStart() {
+      if (!activeServer) return;
+      showToast('Starting server...', 'info');
+      try {
+        const res = await fetch(`/api/start/${activeServer.id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Server started successfully!', 'success');
+          loadServers();
+          fetchRecentLogs();
+        } else {
+          showToast(data.message || 'Start failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleDetailStop() {
+      if (!activeServer) return;
+      showToast('Stopping server...', 'info');
+      try {
+        const res = await fetch(`/api/stop/${activeServer.id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Server stopped.', 'info');
+          loadServers();
+          fetchRecentLogs();
+        } else {
+          showToast(data.message || 'Stop failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function handleDetailRestart() {
+      if (!activeServer) return;
+      showToast('Restarting server...', 'info');
+      try {
+        const res = await fetch(`/api/restart/${activeServer.id}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Server restarted successfully!', 'success');
+          loadServers();
+          fetchRecentLogs();
+        } else {
+          showToast(data.message || 'Restart failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // CREATE / SETTINGS / DELETE / FILES
     // -------------------------------------------------------------
     async function createServer() {
       const name = document.getElementById('create-name').value.trim();
       const type = document.getElementById('create-type').value;
       const ram = document.getElementById('create-ram').value;
       const disk = document.getElementById('create-disk').value;
-      const btn = document.getElementById('btn-create-submit');
-
-      if (!name) {
-        showToast('Please provide a server name', 'error');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
+      if (!name) return showToast('Name is required', 'error');
 
       try {
         const res = await fetch('/api/create_server', {
@@ -1194,520 +1031,206 @@
           body: JSON.stringify({ name, type, ram, disk })
         });
         const data = await res.json();
-        if (res.ok && data.status === 'success') {
+        if (data.status === 'success') {
           closeModal('create-modal');
-          showToast(`Server "${name}" created successfully!`, 'success');
-          await loadServers();
+          showToast('Server created!', 'success');
+          loadServers();
         } else {
-          showToast(data.message || 'Creation failed', 'error');
+          showToast(data.message, 'error');
         }
       } catch (err) {
-        showToast(`Request failed: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Create Server';
+        showToast(err.message, 'error');
       }
     }
 
-    async function startServer(serverId, btn) {
-      if (btn) { btn.disabled = true; btn.textContent = 'Starting...'; }
-      try {
-        const res = await fetch(`/api/start/${serverId}`, { method: 'POST' });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast(`Server started (PID ${data.pid})`, 'success');
-          await loadServers();
-        } else {
-          showToast(data.message || 'Failed to start server', 'error');
-          if (btn) { btn.disabled = false; btn.textContent = 'Start'; }
-        }
-      } catch (err) {
-        showToast(`Request error: ${err.message}`, 'error');
-        if (btn) { btn.disabled = false; btn.textContent = 'Start'; }
-      }
-    }
-
-    async function stopServer(serverId, btn) {
-      if (btn) { btn.disabled = true; btn.textContent = 'Stopping...'; }
-      try {
-        const res = await fetch(`/api/stop/${serverId}`, { method: 'POST' });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Server stopped successfully', 'info');
-          await loadServers();
-        } else {
-          showToast(data.message || 'Failed to stop server', 'error');
-          if (btn) { btn.disabled = false; btn.textContent = 'Stop'; }
-        }
-      } catch (err) {
-        showToast(`Request error: ${err.message}`, 'error');
-        if (btn) { btn.disabled = false; btn.textContent = 'Stop'; }
-      }
-    }
-
-    async function restartServer(serverId, btn) {
-      if (btn) { btn.disabled = true; btn.textContent = 'Restarting...'; }
-      try {
-        const res = await fetch(`/api/restart/${serverId}`, { method: 'POST' });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Server restarted successfully', 'success');
-          await loadServers();
-        } else {
-          showToast(data.message || 'Restart failed', 'error');
-          if (btn) { btn.disabled = false; btn.textContent = 'Restart'; }
-        }
-      } catch (err) {
-        showToast(`Request error: ${err.message}`, 'error');
-        if (btn) { btn.disabled = false; btn.textContent = 'Restart'; }
-      }
-    }
-
-    function confirmDelete(serverId, serverName) {
-      document.getElementById('delete-server-id').value = serverId;
-      document.getElementById('delete-server-name').textContent = serverName;
-      openModal('delete-modal');
-    }
-
-    async function deleteServer() {
-      const serverId = document.getElementById('delete-server-id').value;
-      const btn = document.getElementById('btn-confirm-delete');
-      if (!serverId) return;
-
-      btn.disabled = true;
-      btn.textContent = 'Deleting...';
-
-      try {
-        const res = await fetch(`/api/server/${serverId}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          closeModal('delete-modal');
-          showToast(data.message || 'Server deleted', 'success');
-          await loadServers();
-        } else {
-          showToast(data.message || 'Deletion failed', 'error');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Permanently Delete';
-      }
-    }
-
-    // -------------------------------------------------------------
-    // Console & Log APIs
-    // -------------------------------------------------------------
-    function openConsole(serverId, serverName) {
-      currentConsoleServerId = serverId;
-      document.getElementById('console-server-name').textContent = serverName;
-      document.getElementById('terminal-output').textContent = 'Fetching logs...';
+    function openFullConsoleModal() {
       openModal('console-modal');
-
-      loadLogs();
-      if (consoleInterval) clearInterval(consoleInterval);
-      consoleInterval = setInterval(loadLogs, 2500);
+      fetchRecentLogs();
     }
 
-    function closeConsoleModal() {
-      if (consoleInterval) {
-        clearInterval(consoleInterval);
-        consoleInterval = null;
-      }
-      currentConsoleServerId = null;
-      closeModal('console-modal');
-    }
-
-    async function loadLogs() {
-      if (!currentConsoleServerId) return;
-      try {
-        const res = await fetch(`/api/logs/${currentConsoleServerId}`);
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          const terminal = document.getElementById('terminal-output');
-          const isAtBottom = terminal.scrollHeight - terminal.scrollTop <= terminal.clientHeight + 50;
-          terminal.textContent = data.logs || '[Log file is empty]';
-          if (isAtBottom) {
-            terminal.scrollTop = terminal.scrollHeight;
-          }
-        }
-      } catch (err) {
-        console.error("Log fetch error", err);
-      }
-    }
-
-    async function sendCommand(event) {
-      event.preventDefault();
+    async function sendCommand(e) {
+      e.preventDefault();
       const input = document.getElementById('terminal-input');
-      const command = input.value.trim();
-      if (!command || !currentConsoleServerId) return;
-
+      const cmd = input.value.trim();
+      if (!cmd || !activeServer) return;
       input.value = '';
       try {
-        const res = await fetch('/api/command', {
+        await fetch('/api/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ server_id: currentConsoleServerId, command })
+          body: JSON.stringify({ server_id: activeServer.id, command: cmd })
         });
-        const data = await res.json();
-        if (!res.ok || data.status !== 'success') {
-          showToast(data.message || 'Failed to send command', 'error');
-        }
-        loadLogs();
+        fetchRecentLogs();
       } catch (err) {
-        showToast(`Command error: ${err.message}`, 'error');
+        showToast(err.message, 'error');
       }
     }
 
     async function clearLogs() {
-      if (!currentConsoleServerId) return;
-      try {
-        const res = await fetch(`/api/clear_logs/${currentConsoleServerId}`, { method: 'POST' });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Logs cleared', 'info');
-          loadLogs();
-        } else {
-          showToast(data.message || 'Error clearing logs', 'error');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-      }
+      if (!activeServer) return;
+      await fetch(`/api/clear_logs/${activeServer.id}`, { method: 'POST' });
+      fetchRecentLogs();
     }
 
-    // -------------------------------------------------------------
-    // File Manager APIs
-    // -------------------------------------------------------------
-    function openFiles(serverId, serverName) {
-      currentFileManagerServerId = serverId;
-      currentFileManagerPath = "";
-      document.getElementById('files-server-name').textContent = serverName;
+    // Files
+    function openFilesForCurrentServer() {
+      if (!activeServer) return;
+      currentPath = "";
       openModal('files-modal');
-      loadFiles(serverId, "");
+      loadFiles(activeServer.id, "");
     }
 
     async function loadFiles(serverId, path = "") {
-      currentFileManagerPath = path;
+      currentPath = path;
       const tbody = document.getElementById('file-list-body');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1.5rem;">Loading files...</td></tr>';
-
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
       renderBreadcrumbs(path);
 
       try {
         const res = await fetch(`/api/files/${serverId}?path=${encodeURIComponent(path)}`);
         const data = await res.json();
-        if (res.ok && data.status === 'success') {
+        if (data.status === 'success') {
           renderFileList(data.items || []);
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--danger);">${escapeHtml(data.message || 'Failed to load directory')}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--btn-stop);">${data.message}</td></tr>`;
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--danger);">Error: ${escapeHtml(err.message)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--btn-stop);">${err.message}</td></tr>`;
       }
     }
 
     function renderBreadcrumbs(path) {
       const bc = document.getElementById('file-breadcrumbs');
       const parts = path ? path.split('/').filter(Boolean) : [];
-
-      let html = `<span class="breadcrumb-part" onclick="loadFiles('${currentFileManagerServerId}', '')">root</span>`;
-      let accumulated = "";
-
-      parts.forEach((p, idx) => {
-        accumulated += (accumulated ? "/" : "") + p;
-        const currentAcc = accumulated;
-        html += ` <span style="color:#cbd5e1">/</span> <span class="breadcrumb-part" onclick="loadFiles('${currentFileManagerServerId}', '${escapeHtml(currentAcc)}')">${escapeHtml(p)}</span>`;
+      let html = `<span style="cursor:pointer;color:var(--primary);" onclick="loadFiles('${activeServer.id}', '')">root</span>`;
+      let acc = "";
+      parts.forEach(p => {
+        acc += (acc ? "/" : "") + p;
+        const currentAcc = acc;
+        html += ` / <span style="cursor:pointer;color:var(--primary);" onclick="loadFiles('${activeServer.id}', '${currentAcc}')">${p}</span>`;
       });
-
       bc.innerHTML = html;
     }
 
     function renderFileList(items) {
       const tbody = document.getElementById('file-list-body');
-      if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Empty folder</td></tr>';
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Empty folder</td></tr>';
         return;
       }
-
       tbody.innerHTML = items.map(item => {
-        const itemPath = currentFileManagerPath ? `${currentFileManagerPath}/${item.name}` : item.name;
-        const isDir = item.is_dir;
-        const isZip = item.type === 'zip';
-
-        let icon = isDir
-          ? '<svg class="icon" style="color:#f59e0b" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>'
-          : '<svg class="icon" style="color:#64748b" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
-
-        let clickHandler = isDir
-          ? `onclick="loadFiles('${currentFileManagerServerId}', '${escapeHtml(itemPath)}')"`
-          : `onclick="openFile('${itemPath}', '${escapeHtml(item.name)}')"` ;
-
+        const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+        const clickAttr = item.is_dir ? `onclick="loadFiles('${activeServer.id}', '${itemPath}')"` : `onclick="openFile('${itemPath}', '${item.name}')"`;
         return `
           <tr>
-            <td>
-              <div class="file-name-cell" ${clickHandler}>
-                ${icon}
-                <span>${escapeHtml(item.name)}</span>
-              </div>
-            </td>
-            <td><span style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted);">${item.type}</span></td>
-            <td style="font-family:'JetBrains Mono', monospace; font-size:0.8rem;">${item.size}</td>
+            <td><div class="file-name-cell" ${clickAttr}>${item.is_dir ? '📁' : '📄'} <span>${item.name}</span></div></td>
+            <td><span style="font-size:0.75rem; color:var(--text-muted);">${item.type.toUpperCase()}</span></td>
+            <td>${item.size}</td>
             <td style="color:var(--text-muted); font-size:0.75rem;">${item.modified}</td>
             <td style="text-align:right;">
-              <div style="display:inline-flex; gap:0.35rem;">
-                ${!isDir ? `
-                  <button class="btn btn-secondary" style="padding:0.25rem 0.45rem; font-size:0.75rem;" onclick="openFile('${itemPath}', '${escapeHtml(item.name)}')" title="Edit text">
-                    Edit
-                  </button>
-                  <a class="btn btn-secondary" style="padding:0.25rem 0.45rem; font-size:0.75rem;" href="/api/file/${currentFileManagerServerId}?path=${encodeURIComponent(itemPath)}&download=true" title="Download">
-                    <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                  </a>
-                ` : ''}
-                ${isZip ? `
-                  <button class="btn btn-purple" style="padding:0.25rem 0.45rem; font-size:0.75rem;" onclick="extractZip('${itemPath}')" title="Extract ZIP">
-                    Extract
-                  </button>
-                ` : ''}
-                <button class="btn btn-secondary" style="padding:0.25rem 0.45rem; font-size:0.75rem;" onclick="renameItem('${itemPath}', '${escapeHtml(item.name)}')" title="Rename">
-                  Rename
-                </button>
-                <button class="btn btn-danger-outline" style="padding:0.25rem 0.45rem; font-size:0.75rem;" onclick="deleteItem('${itemPath}')" title="Delete">
-                  <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
-                </button>
-              </div>
+              ${!item.is_dir ? `<button class="btn btn-secondary" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="openFile('${itemPath}', '${item.name}')">Edit</button>` : ''}
+              <button class="btn btn-danger-outline" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="deleteFile('${itemPath}')">Delete</button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    async function openFile(path, filename) {
-      activeEditorFilePath = path;
-      document.getElementById('editor-filename').textContent = filename;
-      document.getElementById('editor-textarea').value = 'Loading file contents...';
+    async function openFile(path, name) {
+      activeEditPath = path;
+      document.getElementById('editor-filename').textContent = name;
       openModal('editor-modal');
-
-      try {
-        const res = await fetch(`/api/file/${currentFileManagerServerId}?path=${encodeURIComponent(path)}`);
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          document.getElementById('editor-textarea').value = data.content;
-        } else {
-          showToast(data.message || 'Error loading file', 'error');
-          closeModal('editor-modal');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-        closeModal('editor-modal');
-      }
+      const res = await fetch(`/api/file/${activeServer.id}?path=${encodeURIComponent(path)}`);
+      const data = await res.json();
+      document.getElementById('editor-textarea').value = data.content || '';
     }
 
     async function saveFile() {
       const content = document.getElementById('editor-textarea').value;
-      const btn = document.getElementById('btn-save-file');
-      btn.disabled = true;
-      btn.textContent = 'Saving...';
-
-      try {
-        const res = await fetch(`/api/file/${currentFileManagerServerId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: activeEditorFilePath, content })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('File saved successfully', 'success');
-          closeModal('editor-modal');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Failed to save', 'error');
-        }
-      } catch (err) {
-        showToast(`Save error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Save File';
-      }
+      await fetch(`/api/file/${activeServer.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: activeEditPath, content })
+      });
+      showToast('File saved!', 'success');
+      closeModal('editor-modal');
+      loadFiles(activeServer.id, currentPath);
     }
 
-    async function handleFileSelected(event) {
-      const file = event.target.files[0];
-      if (!file || !currentFileManagerServerId) return;
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('path', currentFileManagerPath);
-
-      showToast(`Uploading ${file.name}...`, 'info');
-
-      try {
-        const res = await fetch(`/api/upload/${currentFileManagerServerId}`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('File uploaded successfully', 'success');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Upload failed', 'error');
-        }
-      } catch (err) {
-        showToast(`Upload error: ${err.message}`, 'error');
-      } finally {
-        event.target.value = '';
-      }
+    async function handleFileSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('path', currentPath);
+      await fetch(`/api/upload/${activeServer.id}`, { method: 'POST', body: fd });
+      showToast('File uploaded', 'success');
+      loadFiles(activeServer.id, currentPath);
+      e.target.value = '';
     }
 
     async function promptCreateFolder() {
-      const folderName = prompt('Enter new folder name:');
-      if (!folderName || !folderName.trim()) return;
-
-      try {
-        const res = await fetch(`/api/create_folder/${currentFileManagerServerId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ folder_name: folderName.trim(), path: currentFileManagerPath })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast(`Folder "${folderName}" created`, 'success');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Failed to create folder', 'error');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-      }
+      const name = prompt('Folder name:');
+      if (!name) return;
+      await fetch(`/api/create_folder/${activeServer.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_name: name, path: currentPath })
+      });
+      loadFiles(activeServer.id, currentPath);
     }
 
-    async function renameItem(oldPath, oldName) {
-      const newName = prompt(`Rename "${oldName}" to:`, oldName);
-      if (!newName || !newName.trim() || newName === oldName) return;
-
-      try {
-        const res = await fetch(`/api/rename/${currentFileManagerServerId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ old_path: oldPath, new_name: newName.trim() })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Item renamed successfully', 'success');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Rename failed', 'error');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-      }
+    async function deleteFile(path) {
+      if (!confirm(`Delete ${path}?`)) return;
+      await fetch(`/api/file/${activeServer.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path })
+      });
+      loadFiles(activeServer.id, currentPath);
     }
 
-    async function deleteItem(path) {
-      if (!confirm(`Are you sure you want to delete "${path}"? This cannot be undone.`)) return;
-
-      try {
-        const res = await fetch(`/api/file/${currentFileManagerServerId}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Item deleted successfully', 'info');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Delete failed', 'error');
-        }
-      } catch (err) {
-        showToast(`Error: ${err.message}`, 'error');
-      }
-    }
-
-    async function extractZip(path) {
-      showToast('Extracting ZIP archive...', 'info');
-      try {
-        const res = await fetch(`/api/extract/${currentFileManagerServerId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Extracted successfully', 'success');
-          loadFiles(currentFileManagerServerId, currentFileManagerPath);
-        } else {
-          showToast(data.message || 'Extraction failed', 'error');
-        }
-      } catch (err) {
-        showToast(`Extraction error: ${err.message}`, 'error');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // Server Settings APIs
-    // -------------------------------------------------------------
-    async function openSettings(serverId) {
-      const server = rawServers.find(s => s.id === serverId);
-      if (!server) return;
-
-      document.getElementById('settings-server-id').value = server.id;
-      document.getElementById('settings-name').value = server.name;
-      document.getElementById('settings-startup').value = server.startup_file || 'main.py';
-      document.getElementById('settings-requirements').value = server.requirements_file || 'requirements.txt';
-
+    // Settings
+    function openSettingsForCurrentServer() {
+      if (!activeServer) return;
+      document.getElementById('settings-name').value = activeServer.name;
+      document.getElementById('settings-startup').value = activeServer.startup_file || 'main.py';
+      document.getElementById('settings-requirements').value = activeServer.requirements_file || 'requirements.txt';
       openModal('settings-modal');
     }
 
     async function saveSettings() {
-      const serverId = document.getElementById('settings-server-id').value;
       const name = document.getElementById('settings-name').value.trim();
       const startup_file = document.getElementById('settings-startup').value.trim();
       const requirements_file = document.getElementById('settings-requirements').value.trim();
-      const btn = document.getElementById('btn-save-settings');
-
-      if (!name) {
-        showToast('Server name cannot be empty', 'error');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Saving...';
-
-      try {
-        const res = await fetch(`/api/server/${serverId}/settings`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, startup_file, requirements_file })
-        });
-        const data = await res.json();
-        if (res.ok && data.status === 'success') {
-          showToast('Settings saved successfully', 'success');
-          closeModal('settings-modal');
-          await loadServers();
-        } else {
-          showToast(data.message || 'Failed to save settings', 'error');
-        }
-      } catch (err) {
-        showToast(`Save error: ${err.message}`, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Save Settings';
-      }
+      await fetch(`/api/server/${activeServer.id}/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, startup_file, requirements_file })
+      });
+      closeModal('settings-modal');
+      showToast('Settings saved!', 'success');
+      loadServers();
     }
 
-    // -------------------------------------------------------------
-    // Initialization & Background Polling
-    // -------------------------------------------------------------
+    // Delete
+    function openDeleteForCurrentServer() {
+      if (!activeServer) return;
+      document.getElementById('delete-name').textContent = activeServer.name;
+      openModal('delete-modal');
+    }
+
+    async function deleteServer() {
+      await fetch(`/api/server/${activeServer.id}`, { method: 'DELETE' });
+      closeModal('delete-modal');
+      showToast('Server deleted', 'success');
+      backToServersList();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       loadServers();
-
-      // Periodic auto-refresh every 5 seconds without interrupting user interactions
       setInterval(() => {
-        // Do not interrupt active text editing
-        const activeElem = document.activeElement;
-        const isEditing = activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA');
-        if (!isEditing) {
+        if (!document.getElementById('view-server-detail').classList.contains('active')) {
           loadServers(true);
         }
       }, 5000);
