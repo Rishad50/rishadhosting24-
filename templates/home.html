@@ -33,9 +33,8 @@
       --danger-light: #fef2f2;
       --purple: #7c3aed;
       --purple-light: #f5f3ff;
-      --dark: #0f172a;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
       --radius: 10px;
     }
@@ -75,26 +74,74 @@
     .header-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0.875rem 1.5rem;
+      padding: 0.75rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
+
+    /* Dashboard Header Elements */
     .brand-section { display: flex; align-items: center; gap: 0.75rem; }
     .brand-icon {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #ffffff;
-      padding: 0.6rem;
+      padding: 0.55rem;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+    .brand-icon svg { width: 20px; height: 20px; }
+    .brand-title { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
     .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); }
     .header-actions { display: flex; align-items: center; gap: 0.625rem; }
+
+    /* Server Detail Header Elements (Back button replaces logo) */
+    .detail-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      min-width: 0;
+    }
+    .btn-back-header {
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-back-header:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .detail-header-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .detail-server-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .detail-server-meta {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* Buttons */
     .btn {
@@ -128,14 +175,13 @@
       max-width: 1200px;
       width: 100%;
       margin: 0 auto;
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1.25rem;
     }
 
-    /* Views */
     .view-container { display: none; }
     .view-container.active { display: block; }
 
-    /* Statistics */
+    /* Dashboard Stats */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -159,7 +205,6 @@
     .stat-icon.running { background: var(--running-bg); color: var(--running-text); }
     .stat-icon.stopped { background: var(--stopped-bg); color: var(--stopped-text); }
 
-    /* List Controls */
     .section-header {
       display: flex;
       flex-wrap: wrap;
@@ -178,13 +223,7 @@
       outline: none;
       background: var(--card-bg);
     }
-    .search-box .icon {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-    }
+    .search-box .icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .filter-select {
       padding: 0.5rem 0.85rem;
       border: 1px solid var(--border);
@@ -193,7 +232,7 @@
       outline: none;
     }
 
-    /* Clean Server Cards (Image 1 Fixed) */
+    /* Clean Server Cards on List */
     .server-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -263,6 +302,7 @@
       font-weight: 600;
       padding: 0.45rem 0.75rem;
       border-radius: 6px;
+      cursor: pointer;
     }
     .btn-manage:hover {
       background: var(--primary);
@@ -271,39 +311,27 @@
     }
 
     /* ------------------------------------------------------------- */
-    /* SERVER DETAIL VIEW (IMAGE 2 UI) */
+    /* SERVER DETAIL VIEW COMPONENTS                                 */
     /* ------------------------------------------------------------- */
-    .detail-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .detail-header-left { display: flex; align-items: center; gap: 1rem; }
-    .detail-title-group h2 { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
-    .detail-title-group p { font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-
-    /* Server Controls Card (Exact Image 2 Style) */
+    /* Server Controls (Image 2 style) */
     .server-controls-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.25rem 1.5rem;
+      padding: 1.25rem;
       box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
     .controls-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; }
     .controls-subtitle { font-size: 0.825rem; color: var(--text-muted); margin-bottom: 1rem; }
     .control-buttons-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.875rem;
+      gap: 0.75rem;
     }
     .btn-control {
       padding: 0.75rem 1rem;
-      font-size: 0.925rem;
+      font-size: 0.95rem;
       font-weight: 600;
       border-radius: 8px;
       border: none;
@@ -321,13 +349,13 @@
     .btn-ctrl-stop { background-color: var(--btn-stop); }
     .btn-ctrl-restart { background-color: var(--btn-restart); }
 
-    /* Recent Logs Card (Exact Image 2 Style) */
+    /* Recent Logs (Image 2 style) */
     .recent-logs-card {
       background: #090d16;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: var(--shadow-md);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
     .logs-header {
       padding: 0.85rem 1.25rem;
@@ -364,12 +392,12 @@
       word-break: break-all;
     }
 
-    /* Extra Actions Bar */
+    /* Actions Bar */
     .extra-actions-bar {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 0.75rem;
+      gap: 0.65rem;
       flex-wrap: wrap;
     }
 
@@ -493,20 +521,25 @@
     .toast.error { border-left-color: #dc2626; }
     .toast.info { border-left-color: var(--primary); }
 
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .header-container { flex-direction: column; align-items: stretch; }
+      .header-container { padding: 0.75rem 1rem; }
       .control-buttons-grid { grid-template-columns: 1fr; }
       .search-box { width: 100%; }
       .search-filter-bar { width: 100%; }
       .filter-select { flex: 1; }
+      .btn-back-header span { display: inline; }
+      .extra-actions-bar { justify-content: stretch; }
+      .extra-actions-bar .btn { flex: 1; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Adaptive Dynamic Header -->
   <header>
-    <div class="header-container">
+    <!-- 1. DASHBOARD HEADER (Shown on Server List) -->
+    <div id="header-dashboard" class="header-container">
       <div class="brand-section">
         <div class="brand-icon">
           <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
@@ -523,18 +556,33 @@
         </button>
         <button class="btn btn-primary" onclick="openCreateModal()">
           <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          + Create Server
+          Create Server
         </button>
       </div>
+    </div>
+
+    <!-- 2. SERVER DETAIL HEADER (Logo এর জায়গায় সরাসরি Back বাটন) -->
+    <div id="header-detail" class="header-container" style="display: none;">
+      <div class="detail-nav-left">
+        <!-- Logo এর জায়গায় Back Button -->
+        <button class="btn-back-header" onclick="backToServersList()" title="Back to servers">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Back</span>
+        </button>
+        <div class="detail-header-info">
+          <h2 id="detail-server-name" class="detail-server-title">Server Name</h2>
+          <div id="detail-server-meta" class="detail-server-meta">srv-id &bull; Python</div>
+        </div>
+      </div>
+      <div id="detail-status-badge"></div>
     </div>
   </header>
 
   <main>
     <!-- ============================================================= -->
-    <!-- VIEW 1: MY SERVERS LIST (CLEAN CARDS, NO BUTTON CLUTTER)     -->
+    <!-- VIEW 1: MY SERVERS LIST                                       -->
     <!-- ============================================================= -->
     <div id="view-server-list" class="view-container active">
-      <!-- Stats -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-info">
@@ -559,7 +607,6 @@
         </div>
       </div>
 
-      <!-- Controls -->
       <div class="section-header">
         <h2 style="font-size: 1.2rem; font-weight: 700;">My Servers</h2>
         <div class="search-filter-bar">
@@ -575,28 +622,13 @@
         </div>
       </div>
 
-      <!-- Clean Cards -->
       <div id="server-grid" class="server-grid"></div>
     </div>
 
     <!-- ============================================================= -->
-    <!-- VIEW 2: SERVER DETAIL VIEW (IMAGE 2 DESIGN: CONTROLS + LOGS)  -->
+    <!-- VIEW 2: SERVER DETAIL VIEW (NO EXTRA HEADER CLUTTER)         -->
     <!-- ============================================================= -->
     <div id="view-server-detail" class="view-container">
-      <div class="detail-nav">
-        <div class="detail-header-left">
-          <button class="btn btn-secondary" onclick="backToServersList()">
-            <svg class="icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back
-          </button>
-          <div class="detail-title-group">
-            <h2 id="detail-server-name">Server Name</h2>
-            <p id="detail-server-meta">srv-id &bull; Python</p>
-          </div>
-        </div>
-        <div id="detail-status-badge"></div>
-      </div>
-
       <!-- Server Controls (Exact match to Image 2) -->
       <div class="server-controls-card">
         <div class="controls-title">Server Controls</div>
@@ -629,7 +661,7 @@
         <div id="detail-recent-logs" class="logs-terminal-body">Loading logs...</div>
       </div>
 
-      <!-- Dedicated Actions: Files, Settings, Delete -->
+      <!-- Additional Management Bar -->
       <div class="extra-actions-bar">
         <button class="btn btn-purple" onclick="openFilesForCurrentServer()">
           <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
@@ -829,7 +861,6 @@
           updateStats(rawServers);
           renderServerGrid(rawServers);
 
-          // If currently inside a detail view, refresh active server state
           if (activeServer) {
             const found = rawServers.find(s => s.id === activeServer.id);
             if (found) {
@@ -863,7 +894,7 @@
     function renderServerGrid(servers) {
       const grid = document.getElementById('server-grid');
       if (!servers.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); background:#fff; border:1px dashed var(--border); border-radius:10px;">No servers found. Click "+ Create Server" to get started.</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); background:#fff; border:1px dashed var(--border); border-radius:10px;">No servers found. Click "Create Server" to get started.</div>`;
         return;
       }
 
@@ -894,13 +925,19 @@
     }
 
     // -------------------------------------------------------------
-    // SERVER DETAIL VIEW (IMAGE 2)
+    // SERVER DETAIL VIEW (LOGO REPLACED WITH BACK BUTTON)
     // -------------------------------------------------------------
     function openServerDetail(serverId) {
       const server = rawServers.find(s => s.id === serverId);
       if (!server) return;
 
       activeServer = server;
+
+      // Switch Headers
+      document.getElementById('header-dashboard').style.display = 'none';
+      document.getElementById('header-detail').style.display = 'flex';
+
+      // Switch Views
       document.getElementById('view-server-list').classList.remove('active');
       document.getElementById('view-server-detail').classList.add('active');
 
@@ -917,6 +954,12 @@
         detailLogInterval = null;
       }
       activeServer = null;
+
+      // Switch Headers back
+      document.getElementById('header-detail').style.display = 'none';
+      document.getElementById('header-dashboard').style.display = 'flex';
+
+      // Switch Views back
       document.getElementById('view-server-detail').classList.remove('active');
       document.getElementById('view-server-list').classList.add('active');
       loadServers();
@@ -929,8 +972,8 @@
 
       const isRunning = activeServer.status === 'running';
       document.getElementById('detail-status-badge').innerHTML = `
-        <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}" style="font-size:0.85rem; padding:0.35rem 0.85rem;">
-          <span class="badge-dot"></span>${activeServer.status} (PID: ${activeServer.pid || 'None'})
+        <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}" style="font-size:0.8rem; padding:0.3rem 0.75rem;">
+          <span class="badge-dot"></span>${isRunning ? 'Running' : 'Stopped'}
         </span>
       `;
 
@@ -959,7 +1002,7 @@
       }
     }
 
-    // Server Controls Handlers
+    // Controls
     async function handleDetailStart() {
       if (!activeServer) return;
       showToast('Starting server...', 'info');
@@ -1014,9 +1057,7 @@
       }
     }
 
-    // -------------------------------------------------------------
-    // CREATE / SETTINGS / DELETE / FILES
-    // -------------------------------------------------------------
+    // Create Server
     async function createServer() {
       const name = document.getElementById('create-name').value.trim();
       const type = document.getElementById('create-type').value;
