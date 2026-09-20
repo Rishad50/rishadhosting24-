@@ -313,7 +313,7 @@
     /* ------------------------------------------------------------- */
     /* SERVER DETAIL VIEW COMPONENTS                                 */
     /* ------------------------------------------------------------- */
-    /* Server Controls (Image 2 style) */
+    /* Server Controls */
     .server-controls-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -349,7 +349,7 @@
     .btn-ctrl-stop { background-color: var(--btn-stop); }
     .btn-ctrl-restart { background-color: var(--btn-restart); }
 
-    /* Recent Logs (Image 2 style) */
+    /* Recent Logs */
     .recent-logs-card {
       background: #090d16;
       border-radius: 12px;
@@ -521,7 +521,6 @@
     .toast.error { border-left-color: #dc2626; }
     .toast.info { border-left-color: var(--primary); }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .header-container { padding: 0.75rem 1rem; }
       .control-buttons-grid { grid-template-columns: 1fr; }
@@ -538,7 +537,7 @@
 
   <!-- Adaptive Dynamic Header -->
   <header>
-    <!-- 1. DASHBOARD HEADER (Shown on Server List) -->
+    <!-- 1. DASHBOARD HEADER (Refresh button removed) -->
     <div id="header-dashboard" class="header-container">
       <div class="brand-section">
         <div class="brand-icon">
@@ -550,10 +549,6 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn btn-secondary" onclick="loadServers()">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-          Refresh
-        </button>
         <button class="btn btn-primary" onclick="openCreateModal()">
           <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Create Server
@@ -561,10 +556,9 @@
       </div>
     </div>
 
-    <!-- 2. SERVER DETAIL HEADER (Logo এর জায়গায় সরাসরি Back বাটন) -->
+    <!-- 2. SERVER DETAIL HEADER -->
     <div id="header-detail" class="header-container" style="display: none;">
       <div class="detail-nav-left">
-        <!-- Logo এর জায়গায় Back Button -->
         <button class="btn-back-header" onclick="backToServersList()" title="Back to servers">
           <svg class="icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           <span>Back</span>
@@ -579,9 +573,7 @@
   </header>
 
   <main>
-    <!-- ============================================================= -->
-    <!-- VIEW 1: MY SERVERS LIST                                       -->
-    <!-- ============================================================= -->
+    <!-- VIEW 1: MY SERVERS LIST -->
     <div id="view-server-list" class="view-container active">
       <div class="stats-grid">
         <div class="stat-card">
@@ -625,11 +617,8 @@
       <div id="server-grid" class="server-grid"></div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- VIEW 2: SERVER DETAIL VIEW (NO EXTRA HEADER CLUTTER)         -->
-    <!-- ============================================================= -->
+    <!-- VIEW 2: SERVER DETAIL VIEW -->
     <div id="view-server-detail" class="view-container">
-      <!-- Server Controls (Exact match to Image 2) -->
       <div class="server-controls-card">
         <div class="controls-title">Server Controls</div>
         <div class="controls-subtitle">Start, stop or restart your server</div>
@@ -649,7 +638,6 @@
         </div>
       </div>
 
-      <!-- Recent Logs (Exact match to Image 2) -->
       <div class="recent-logs-card">
         <div class="logs-header">
           <div class="logs-title">
@@ -661,7 +649,6 @@
         <div id="detail-recent-logs" class="logs-terminal-body">Loading logs...</div>
       </div>
 
-      <!-- Additional Management Bar -->
       <div class="extra-actions-bar">
         <button class="btn btn-purple" onclick="openFilesForCurrentServer()">
           <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
@@ -925,7 +912,7 @@
     }
 
     // -------------------------------------------------------------
-    // SERVER DETAIL VIEW (LOGO REPLACED WITH BACK BUTTON)
+    // SERVER DETAIL VIEW
     // -------------------------------------------------------------
     function openServerDetail(serverId) {
       const server = rawServers.find(s => s.id === serverId);
@@ -933,11 +920,9 @@
 
       activeServer = server;
 
-      // Switch Headers
       document.getElementById('header-dashboard').style.display = 'none';
       document.getElementById('header-detail').style.display = 'flex';
 
-      // Switch Views
       document.getElementById('view-server-list').classList.remove('active');
       document.getElementById('view-server-detail').classList.add('active');
 
@@ -955,11 +940,9 @@
       }
       activeServer = null;
 
-      // Switch Headers back
       document.getElementById('header-detail').style.display = 'none';
       document.getElementById('header-dashboard').style.display = 'flex';
 
-      // Switch Views back
       document.getElementById('view-server-detail').classList.remove('active');
       document.getElementById('view-server-list').classList.add('active');
       loadServers();
@@ -977,7 +960,6 @@
         </span>
       `;
 
-      // Control button states
       document.getElementById('btn-detail-start').disabled = isRunning;
       document.getElementById('btn-detail-stop').disabled = !isRunning;
       document.getElementById('btn-detail-restart').disabled = !isRunning;
