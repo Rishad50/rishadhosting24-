@@ -238,12 +238,6 @@
       align-items: center;
       gap: 0.35rem;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .server-item-meta .sep {
-      color: #cbd5e1;
-      font-weight: bold;
     }
 
     /* Badges */
@@ -307,7 +301,7 @@
     .detail-meta-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
     .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    /* --- Server Controls Card (User screenshot match) --- */
+    /* --- Server Controls Card (Start, Stop, Restart) --- */
     .controls-card {
       background: #ffffff;
       border: 1px solid var(--border);
@@ -355,7 +349,7 @@
     .btn-ctrl-restart { background-color: #2563eb; }
     .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; }
 
-    /* --- Recent Logs Terminal (User screenshot match) --- */
+    /* --- Recent Logs Terminal --- */
     .logs-card {
       background: #0b1329;
       border-radius: var(--radius-lg);
@@ -552,7 +546,7 @@
         <button class="btn btn-secondary btn-sm" onclick="loadServers(true)">↻ Refresh</button>
       </div>
 
-      <!-- SERVER CARDS (হুবহু স্ক্রিনশটের মতো ক্লিন) -->
+      <!-- SERVER CARDS (RAM এবং Disk ছাড়া পরিচ্ছন্ন তালিকা) -->
       <div id="servers-container" class="servers-grid"></div>
 
       <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
@@ -587,7 +581,7 @@
         </div>
       </div>
 
-      <!-- 1. SERVER CONTROLS (আপনার ছবির হুবহু ডিজাইন) -->
+      <!-- 1. SERVER CONTROLS (Start, Stop, Restart) -->
       <div class="controls-card">
         <div class="controls-title">Server Controls</div>
         <div class="controls-desc">Start, stop or restart your server</div>
@@ -604,7 +598,7 @@
         </div>
       </div>
 
-      <!-- 2. RECENT LOGS (আপনার ছবির হুবহু ডিজাইন) -->
+      <!-- 2. RECENT LOGS (Live Terminal) -->
       <div class="logs-card">
         <div class="logs-header-bar">
           <span class="logs-heading">Recent Logs</span>
@@ -746,7 +740,7 @@
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- ================= LOGIC & SCRIPT ================= -->
+  <!-- ================= JAVASCRIPT ================= -->
   <script>
     let serversData = {};
     let selectedServerId = null;
@@ -823,7 +817,7 @@
       }
       emptyState.style.display = 'none';
 
-      // আপনার স্ক্রিনশটের হুবহু লেআউট
+      // এখানে RAM এবং Disk সম্পূর্ণ বাদ দিয়ে শুধু Python রাখা হয়েছে
       container.innerHTML = filtered.map(server => {
         const isRunning = server.status === 'running';
         return `
@@ -838,10 +832,6 @@
                 <div class="server-item-name">${escapeHtml(server.name)}</div>
                 <div class="server-item-meta">
                   <span>${server.type || 'Python'}</span>
-                  <span class="sep">•</span>
-                  <span>RAM: ${server.ram}</span>
-                  <span class="sep">•</span>
-                  <span>Disk: ${server.disk}</span>
                 </div>
               </div>
             </div>
