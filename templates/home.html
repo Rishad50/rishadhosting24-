@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ServerPanel — Professional Dashboard</title>
+  <title>ServerPanel — Manage Your Servers Easily</title>
   <style>
-    /* ---------------- GLOBAL CSS & VARIABLES ---------------- */
+    /* ---------------- CSS RESET & THEME VARIABLES ---------------- */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -21,12 +21,14 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --success: #10b981;
+      --success-hover: #059669;
       --danger: #ef4444;
+      --danger-hover: #dc2626;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
       --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -41,7 +43,7 @@
       flex-direction: column;
     }
 
-    /* ---------------- HEADER ---------------- */
+    /* ---------------- TOP HEADER ---------------- */
     .app-header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -50,9 +52,9 @@
       z-index: 40;
     }
     .header-container {
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 0.9rem 1.5rem;
+      padding: 0.85rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -61,7 +63,7 @@
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0.75rem;
       cursor: pointer;
     }
     .brand-icon {
@@ -75,8 +77,8 @@
       color: #fff;
     }
     .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
-    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+    .brand-title { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.02em; }
+    .brand-subtitle { font-size: 0.76rem; color: var(--text-muted); }
 
     /* ---------------- BUTTONS ---------------- */
     .btn {
@@ -93,104 +95,114 @@
       cursor: pointer;
       transition: all 0.15s ease-in-out;
       outline: none;
+      white-space: nowrap;
     }
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
     .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
-    .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-secondary:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
+
     .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
 
-    /* ---------------- MAIN WRAPPER ---------------- */
+    /* ---------------- MAIN CONTAINER ---------------- */
     .main-container {
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 1.5rem;
+      padding: 1.25rem;
       width: 100%;
       flex: 1;
     }
 
     /* ---------------- VIEW 1: SERVERS LIST VIEW ---------------- */
     #view-servers-list { display: block; }
-    
+
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
     }
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.25rem;
+      padding: 0.9rem 1rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
       box-shadow: var(--shadow-sm);
     }
     .stat-icon {
-      width: 44px;
-      height: 44px;
+      width: 38px;
+      height: 38px;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .stat-blue { background: #eff6ff; color: var(--primary); }
     .stat-green { background: #ecfdf5; color: var(--success); }
     .stat-gray { background: #f1f5f9; color: var(--text-muted); }
-    .stat-val { font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
-    .stat-label { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); }
+    .stat-val { font-size: 1.35rem; font-weight: 700; line-height: 1.1; }
+    .stat-label { font-size: 0.74rem; font-weight: 500; color: var(--text-muted); }
 
     .filter-bar {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 0.75rem 1rem;
+      padding: 0.65rem 0.85rem;
       margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+      gap: 0.65rem;
     }
     .search-input {
-      padding: 0.45rem 0.85rem;
+      padding: 0.45rem 0.75rem;
       font-size: 0.85rem;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       outline: none;
-      min-width: 220px;
+      flex: 1;
+      max-width: 300px;
     }
 
-    /* Clean Clickable Server Card */
+    /* --- MOBILE RESPONSIVE SERVER CARD --- */
     .servers-grid {
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
     .server-card-item {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.15rem 1.4rem;
+      padding: 0.95rem 1.15rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 0.85rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    .server-card-item:hover {
+    .server-card-item:hover, .server-card-item:active {
       border-color: var(--primary);
-      box-shadow: var(--shadow-md);
+      background-color: #fafcff;
       transform: translateY(-1px);
     }
     .server-item-left {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
+      min-width: 0;
+      flex: 1;
     }
     .server-item-icon {
       width: 44px;
@@ -204,23 +216,52 @@
       flex-shrink: 0;
     }
     .server-item-icon svg { width: 22px; height: 22px; }
-    .server-item-name { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.2rem; }
-    .server-item-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .server-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 0;
+    }
+    .server-item-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .server-item-meta {
+      font-size: 0.78rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .server-item-meta .sep {
+      color: #cbd5e1;
+      font-weight: bold;
+    }
 
+    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      padding: 0.25rem 0.65rem;
+      padding: 0.3rem 0.65rem;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       font-weight: 600;
+      flex-shrink: 0;
     }
-    .badge-running { background: #ecfdf5; color: var(--success); }
-    .badge-stopped { background: #f1f5f9; color: var(--text-muted); }
-    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
+    .badge-running { background: #ecfdf5; color: #10b981; }
+    .badge-stopped { background: #f1f5f9; color: #64748b; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; }
 
-    /* ---------------- VIEW 2: SERVER DETAIL VIEW (IMAGE EXACT MATCH) ---------------- */
+    /* ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- */
     #view-server-detail {
       display: none;
       animation: fadeIn 0.15s ease-out;
@@ -234,9 +275,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.25rem;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+      margin-bottom: 1.15rem;
     }
     .back-btn {
       display: inline-flex;
@@ -255,8 +294,8 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.4rem;
-      margin-bottom: 1.25rem;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.15rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
@@ -264,44 +303,44 @@
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .detail-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
-    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem; }
-    .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; }
+    .detail-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+    .detail-meta-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    /* --- Server Controls Box (Exact like user screenshot) --- */
+    /* --- Server Controls Card (User screenshot match) --- */
     .controls-card {
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.4rem;
-      margin-bottom: 1.25rem;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.15rem;
       box-shadow: var(--shadow-sm);
     }
     .controls-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.2rem;
     }
     .controls-desc {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
+      margin-bottom: 0.95rem;
     }
     .control-buttons-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
     .btn-ctrl {
-      padding: 0.75rem 1rem;
-      font-size: 0.95rem;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.92rem;
       font-weight: 600;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
       border: none;
       cursor: pointer;
       color: #ffffff;
@@ -315,28 +354,27 @@
 
     .btn-ctrl-restart { background-color: #2563eb; }
     .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; }
-    .btn-ctrl:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* --- Recent Logs Terminal (Exact like user screenshot) --- */
+    /* --- Recent Logs Terminal (User screenshot match) --- */
     .logs-card {
       background: #0b1329;
       border-radius: var(--radius-lg);
-      padding: 1.2rem 1.4rem;
+      padding: 1.1rem 1.25rem;
       box-shadow: var(--shadow-md);
     }
     .logs-header-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
     }
     .logs-heading {
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #ffffff;
     }
     .logs-view-all-btn {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: #38bdf8;
       cursor: pointer;
@@ -348,10 +386,10 @@
     .terminal-body {
       background: transparent;
       color: #38bdf8;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 0.84rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
       line-height: 1.6;
-      height: 190px;
+      height: 180px;
       overflow-y: auto;
       white-space: pre-wrap;
       user-select: text;
@@ -374,7 +412,7 @@
       background: var(--surface);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border);
       display: flex;
@@ -382,10 +420,10 @@
       overflow: hidden;
       max-height: 90vh;
     }
-    .modal-card.modal-lg { max-width: 860px; }
-    .modal-card.modal-xl { max-width: 1040px; height: 85vh; }
+    .modal-card.modal-lg { max-width: 800px; }
+    .modal-card.modal-xl { max-width: 950px; height: 85vh; }
     .modal-header {
-      padding: 1.1rem 1.4rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -393,9 +431,9 @@
     }
     .modal-title { font-size: 1.05rem; font-weight: 700; }
     .modal-close-btn { background: transparent; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); }
-    .modal-body { padding: 1.4rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+    .modal-body { padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; }
     .modal-footer {
-      padding: 1rem 1.4rem;
+      padding: 0.9rem 1.25rem;
       border-top: 1px solid var(--border);
       background: #f8fafc;
       display: flex;
@@ -403,7 +441,6 @@
       gap: 0.65rem;
     }
 
-    /* Form */
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-main); }
     .form-control {
@@ -412,16 +449,16 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       outline: none;
+      font-family: inherit;
     }
 
-    /* Full Terminal */
     .full-terminal {
       background: #0b1329;
       color: #38bdf8;
       font-family: monospace;
       padding: 1rem;
       border-radius: var(--radius-sm);
-      height: 380px;
+      height: 360px;
       overflow-y: auto;
       font-size: 0.84rem;
       white-space: pre-wrap;
@@ -438,25 +475,24 @@
       outline: none;
     }
 
-    /* File Table */
     .files-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; }
     .files-table th { background: #f8fafc; padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); }
     .files-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
 
-    /* Toast */
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none; }
     .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 0.85rem 1.1rem; font-size: 0.85rem; font-weight: 500; pointer-events: auto; }
     .toast-success { border-left: 4px solid var(--success); }
     .toast-error { border-left: 4px solid var(--danger); }
 
     @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: 1fr; }
       .control-buttons-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ================= TOP HEADER ================= -->
+  <!-- TOP HEADER -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-section" onclick="showServersListView()">
@@ -474,7 +510,7 @@
     </div>
   </header>
 
-  <!-- ================= MAIN CONTAINER ================= -->
+  <!-- MAIN CONTAINER -->
   <main class="main-container">
     
     <!-- ---------------- VIEW 1: SERVERS LIST (হোম স্ক্রিন) ---------------- -->
@@ -483,7 +519,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon stat-blue">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
           </div>
           <div>
             <div class="stat-val" id="stat-total">0</div>
@@ -492,7 +528,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-icon stat-green">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div>
             <div class="stat-val" id="stat-running">0</div>
@@ -501,7 +537,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-icon stat-gray">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <div>
             <div class="stat-val" id="stat-stopped">0</div>
@@ -510,22 +546,22 @@
         </div>
       </div>
 
-      <!-- FILTER -->
+      <!-- FILTER & SEARCH -->
       <div class="filter-bar">
         <input type="text" id="search-input" class="search-input" placeholder="Search servers..." oninput="renderServersList()" />
         <button class="btn btn-secondary btn-sm" onclick="loadServers(true)">↻ Refresh</button>
       </div>
 
-      <!-- SERVER CARDS LIST (ক্লিন ও সিম্পল) -->
+      <!-- SERVER CARDS (হুবহু স্ক্রিনশটের মতো ক্লিন) -->
       <div id="servers-container" class="servers-grid"></div>
 
       <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
-        <h3 style="font-size:1.15rem; font-weight:700;">No servers found</h3>
-        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create a new server to start running your bot.</p>
+        <h3 style="font-size:1.1rem; font-weight:700;">No servers found</h3>
+        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create a new server to get started.</p>
       </div>
     </div>
 
-    <!-- ---------------- VIEW 2: SERVER DETAIL (সার্ভারের উপরে চাপ দিলে এটি আসবে) ---------------- -->
+    <!-- ---------------- VIEW 2: SERVER DETAIL (কার্ডে চাপ দিলে এটি আসবে) ---------------- -->
     <div id="view-server-detail">
       <!-- Back Navigation -->
       <div class="detail-nav-header">
@@ -535,7 +571,7 @@
         </button>
       </div>
 
-      <!-- Selected Server Info Card -->
+      <!-- Top Info -->
       <div class="detail-top-card">
         <div>
           <div style="display:flex; align-items:center; gap:0.65rem;">
@@ -582,7 +618,7 @@
 
   <!-- ================= MODALS ================= -->
 
-  <!-- Create Server Modal -->
+  <!-- Modal: Create Server -->
   <div id="modal-create" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -593,7 +629,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Server Name</label>
-            <input type="text" id="create-name" class="form-control" placeholder="e.g. My Python Bot" required />
+            <input type="text" id="create-name" class="form-control" placeholder="e.g. RISHAD" required />
           </div>
           <div class="form-group">
             <label class="form-label">Server Type</label>
@@ -624,7 +660,7 @@
     </div>
   </div>
 
-  <!-- Full Console Modal ("View All" ক্লিক করলে এটি আসবে) -->
+  <!-- Modal: Full Console ("View All" চাপলে আসবে) -->
   <div id="modal-console" class="modal-overlay">
     <div class="modal-card modal-lg">
       <div class="modal-header">
@@ -645,7 +681,7 @@
     </div>
   </div>
 
-  <!-- File Manager Modal -->
+  <!-- Modal: File Manager -->
   <div id="modal-files" class="modal-overlay">
     <div class="modal-card modal-xl">
       <div class="modal-header">
@@ -678,7 +714,7 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
+  <!-- Modal: Settings -->
   <div id="modal-settings" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -710,7 +746,7 @@
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- ================= JAVASCRIPT ================= -->
+  <!-- ================= LOGIC & SCRIPT ================= -->
   <script>
     let serversData = {};
     let selectedServerId = null;
@@ -729,7 +765,7 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // ---------------- NAVIGATION BETWEEN VIEWS ----------------
+    // ---------------- NAVIGATION ----------------
     function showServersListView() {
       selectedServerId = null;
       if (liveLogInterval) clearInterval(liveLogInterval);
@@ -745,10 +781,10 @@
       renderServerDetail();
       fetchLogs();
       if (liveLogInterval) clearInterval(liveLogInterval);
-      liveLogInterval = setInterval(fetchLogs, 3000);
+      liveLogInterval = setInterval(fetchLogs, 2500);
     }
 
-    // ---------------- LOAD & RENDER SERVERS ----------------
+    // ---------------- SERVERS DATA & LIST ----------------
     async function loadServers(manual = false) {
       try {
         const res = await fetch('/api/servers');
@@ -787,20 +823,24 @@
       }
       emptyState.style.display = 'none';
 
-      // সার্ভার কার্ডের ওপর সরাসরি ক্লিক করার ব্যবস্থা
+      // আপনার স্ক্রিনশটের হুবহু লেআউট
       container.innerHTML = filtered.map(server => {
         const isRunning = server.status === 'running';
         return `
           <div class="server-card-item" onclick="openServerDetail('${server.id}')">
             <div class="server-item-left">
               <div class="server-item-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                </svg>
               </div>
-              <div>
+              <div class="server-info-col">
                 <div class="server-item-name">${escapeHtml(server.name)}</div>
                 <div class="server-item-meta">
-                  <span>${server.type}</span> • 
-                  <span>RAM: ${server.ram}</span> • 
+                  <span>${server.type || 'Python'}</span>
+                  <span class="sep">•</span>
+                  <span>RAM: ${server.ram}</span>
+                  <span class="sep">•</span>
                   <span>Disk: ${server.disk}</span>
                 </div>
               </div>
@@ -816,14 +856,13 @@
       }).join('');
     }
 
-    // ---------------- DETAIL VIEW RENDER ----------------
+    // ---------------- DETAIL VIEW ----------------
     function renderServerDetail() {
       const server = serversData[selectedServerId];
       if (!server) return;
 
       const isRunning = server.status === 'running';
 
-      // Top info
       document.getElementById('detail-server-name').textContent = server.name;
       document.getElementById('detail-server-meta').textContent = `${server.type} • ${server.ram} RAM • ${server.disk} Disk • PID: ${server.pid || 'None'}`;
       
@@ -831,12 +870,11 @@
       badge.className = `badge ${isRunning ? 'badge-running' : 'badge-stopped'}`;
       badge.innerHTML = `<span class="badge-dot"></span> ${isRunning ? 'Running' : 'Stopped'}`;
 
-      // Server Controls Button States
       document.getElementById('ctrl-btn-start').disabled = isRunning;
       document.getElementById('ctrl-btn-stop').disabled = !isRunning;
     }
 
-    // ---------------- SERVER POWER CONTROLS ----------------
+    // ---------------- SERVER ACTIONS ----------------
     async function handleStart() {
       if (!selectedServerId) return;
       showToast('Starting server...');
@@ -876,7 +914,7 @@
       showServersListView();
     }
 
-    // ---------------- LOGS FETCHING ----------------
+    // ---------------- LOGS ----------------
     async function fetchLogs() {
       if (!selectedServerId) return;
       try {
@@ -941,7 +979,7 @@
       closeModal('modal-create');
       await loadServers();
       if (data.server && data.server.id) {
-        openServerDetail(data.server.id); // সরাসরি নতুন তৈরি হওয়া সার্ভারে নিয়ে যাবে
+        openServerDetail(data.server.id);
       }
     }
 
@@ -1034,12 +1072,12 @@
       return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    // ---------------- INIT ----------------
+    // ---------------- INITIALIZE ----------------
     window.addEventListener('DOMContentLoaded', () => {
       loadServers();
       setInterval(() => {
         const modalActive = document.querySelector('.modal-overlay.active');
-        if (!modalActive) loadServers();
+        if (!modalActive && !selectedServerId) loadServers();
       }, 5000);
     });
   </script>
