@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ServerPanel — Manage Your Servers Easily</title>
+  <title>ServerPanel</title>
   <style>
     /* ---------------- CSS RESET & THEME VARIABLES ---------------- */
     *, *::before, *::after {
@@ -21,16 +21,14 @@
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --success: #10b981;
-      --success-hover: #059669;
+      --success-light: #ecfdf5;
       --danger: #ef4444;
-      --danger-hover: #dc2626;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --shadow-hover: 0 10px 25px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -41,18 +39,21 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ---------------- TOP HEADER ---------------- */
     .app-header {
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 40;
     }
     .header-container {
-      max-width: 1000px;
+      max-width: 960px;
       margin: 0 auto;
       padding: 0.85rem 1.25rem;
       display: flex;
@@ -67,18 +68,19 @@
       cursor: pointer;
     }
     .brand-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
     }
     .brand-icon svg { width: 22px; height: 22px; }
-    .brand-title { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.02em; }
-    .brand-subtitle { font-size: 0.76rem; color: var(--text-muted); }
+    .brand-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-main); }
+    .brand-subtitle { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
 
     /* ---------------- BUTTONS ---------------- */
     .btn {
@@ -87,128 +89,200 @@
       justify-content: center;
       gap: 0.45rem;
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      padding: 0.5rem 0.95rem;
-      border-radius: var(--radius-sm);
+      padding: 0.55rem 1.1rem;
+      border-radius: 9999px;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.15s ease-in-out;
+      transition: all 0.2s ease;
       outline: none;
       white-space: nowrap;
     }
     .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-primary { 
+      background: linear-gradient(135deg, #2563eb, #1d4ed8); 
+      color: #fff; 
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) { 
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      transform: translateY(-1px);
+    }
 
     .btn-secondary { background: #fff; color: var(--text-main); border-color: var(--border); }
     .btn-secondary:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; }
 
-    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
+    .btn-sm { padding: 0.38rem 0.85rem; font-size: 0.8rem; border-radius: var(--radius-sm); }
 
     /* ---------------- MAIN CONTAINER ---------------- */
     .main-container {
-      max-width: 1000px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 1.25rem;
+      padding: 1.5rem 1.25rem 3rem;
       width: 100%;
       flex: 1;
     }
 
-    /* ---------------- VIEW 1: SERVERS LIST ---------------- */
+    /* ---------------- VIEW 1: PREMIUM SERVERS LIST ---------------- */
     #view-servers-list { display: block; }
+
+    .list-headline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.1rem;
+      padding: 0 0.25rem;
+    }
+    .list-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
     .servers-grid {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.9rem;
     }
+
+    /* PREMIUM SERVER CARD */
     .server-card-item {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(226, 232, 240, 0.8);
       border-radius: var(--radius-lg);
-      padding: 1rem 1.25rem;
-      box-shadow: var(--shadow-sm);
+      padding: 1.15rem 1.35rem;
+      box-shadow: var(--shadow-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.85rem;
+      gap: 1rem;
       cursor: pointer;
-      transition: all 0.18s ease;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       -webkit-tap-highlight-color: transparent;
     }
+    /* Left accent indicator */
+    .server-card-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: #cbd5e1;
+      transition: background 0.2s ease;
+    }
+    .server-card-item.is-running::before {
+      background: linear-gradient(180deg, #10b981, #059669);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
     .server-card-item:hover, .server-card-item:active {
-      border-color: var(--primary);
-      background-color: #fafcff;
-      transform: translateY(-1px);
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
     }
-    .server-item-left {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      min-width: 0;
-      flex: 1;
-    }
-    .server-item-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #eff6ff;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .server-item-icon svg { width: 22px; height: 22px; }
+
     .server-info-col {
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.35rem;
       min-width: 0;
+      padding-left: 0.25rem;
     }
     .server-item-name {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #0f172a;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.2;
     }
-    .server-item-id {
-      font-size: 0.82rem;
-      color: #64748b;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Badges */
-    .badge {
+    .server-item-id-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.65rem;
-      border-radius: 9999px;
-      font-size: 0.76rem;
-      font-weight: 600;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: #f1f5f9;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      width: fit-content;
+      font-weight: 500;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* RIGHT SIDE BADGE & CHEVRON */
+    .server-card-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       flex-shrink: 0;
     }
-    .badge-running { background: #ecfdf5; color: #10b981; }
-    .badge-stopped { background: #f1f5f9; color: #64748b; }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; }
 
-    /* ---------------- VIEW 2: SERVER DETAIL ---------------- */
+    /* STATUS PILL WITH LIVE PULSING DOT */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+    }
+    .status-badge.running {
+      background: #ecfdf5;
+      color: #059669;
+      border-color: #a7f3d0;
+    }
+    .status-badge.stopped {
+      background: #f8fafc;
+      color: #64748b;
+      border-color: #e2e8f0;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+    .status-badge.running .pulse-dot {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+      animation: livePulse 1.8s infinite;
+    }
+    @keyframes livePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .chevron-icon {
+      color: #cbd5e1;
+      transition: transform 0.2s ease, color 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    .server-card-item:hover .chevron-icon {
+      color: var(--primary);
+      transform: translateX(3px);
+    }
+
+    /* ---------------- VIEW 2: SERVER DETAIL VIEW ---------------- */
     #view-server-detail {
       display: none;
-      animation: fadeIn 0.15s ease-out;
+      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -216,7 +290,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.15rem;
+      margin-bottom: 1.25rem;
     }
     .back-btn {
       display: inline-flex;
@@ -228,24 +302,27 @@
       cursor: pointer;
       border: none;
       background: none;
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
     }
-    .back-btn:hover { color: var(--primary); }
+    .back-btn:hover { color: var(--primary); background: #eff6ff; }
 
     .detail-top-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.15rem 1.25rem;
-      margin-bottom: 1.15rem;
-      box-shadow: var(--shadow-sm);
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-subtle);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .detail-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
-    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; font-family: monospace; }
+    .detail-title { font-size: 1.35rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em; }
+    .detail-meta-text { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem; font-family: monospace; }
     .detail-actions-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
     /* --- Server Controls Card --- */
@@ -253,29 +330,29 @@
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.15rem 1.25rem;
-      margin-bottom: 1.15rem;
-      box-shadow: var(--shadow-sm);
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-subtle);
     }
     .controls-title {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 0.2rem;
     }
     .controls-desc {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      margin-bottom: 0.95rem;
+      margin-bottom: 1rem;
     }
     .control-buttons-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
     .btn-ctrl {
-      padding: 0.7rem 0.9rem;
-      font-size: 0.92rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       border-radius: var(--radius-md);
       display: flex;
@@ -286,36 +363,41 @@
       cursor: pointer;
       color: #ffffff;
       transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
     .btn-ctrl-start { background-color: #10b981; }
-    .btn-ctrl-start:hover:not(:disabled) { background-color: #059669; }
+    .btn-ctrl-start:hover:not(:disabled) { background-color: #059669; transform: translateY(-1px); }
 
     .btn-ctrl-stop { background-color: #ef4444; }
-    .btn-ctrl-stop:hover:not(:disabled) { background-color: #dc2626; }
+    .btn-ctrl-stop:hover:not(:disabled) { background-color: #dc2626; transform: translateY(-1px); }
 
     .btn-ctrl-restart { background-color: #2563eb; }
-    .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; }
+    .btn-ctrl-restart:hover:not(:disabled) { background-color: #1d4ed8; transform: translateY(-1px); }
 
     /* --- Recent Logs Terminal --- */
     .logs-card {
       background: #0b1329;
       border-radius: var(--radius-lg);
-      padding: 1.1rem 1.25rem;
-      box-shadow: var(--shadow-md);
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-subtle);
+      border: 1px solid #1e293b;
     }
     .logs-header-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
     }
     .logs-heading {
       font-size: 0.95rem;
       font-weight: 700;
       color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
     }
     .logs-view-all-btn {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: #38bdf8;
       cursor: pointer;
@@ -330,7 +412,7 @@
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
       font-size: 0.82rem;
       line-height: 1.6;
-      height: 180px;
+      height: 190px;
       overflow-y: auto;
       white-space: pre-wrap;
       user-select: text;
@@ -341,7 +423,7 @@
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(4px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -354,7 +436,7 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 500px;
-      box-shadow: var(--shadow-lg);
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
       border: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -364,7 +446,7 @@
     .modal-card.modal-lg { max-width: 800px; }
     .modal-card.modal-xl { max-width: 950px; height: 85vh; }
     .modal-header {
-      padding: 1rem 1.25rem;
+      padding: 1.1rem 1.35rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -372,9 +454,9 @@
     }
     .modal-title { font-size: 1.05rem; font-weight: 700; }
     .modal-close-btn { background: transparent; border: none; cursor: pointer; font-size: 1.3rem; color: var(--text-muted); }
-    .modal-body { padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; }
+    .modal-body { padding: 1.35rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.95rem; }
     .modal-footer {
-      padding: 0.9rem 1.25rem;
+      padding: 1rem 1.35rem;
       border-top: 1px solid var(--border);
       background: #f8fafc;
       display: flex;
@@ -385,13 +467,14 @@
     .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
     .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-main); }
     .form-control {
-      padding: 0.55rem 0.85rem;
-      font-size: 0.875rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.88rem;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       outline: none;
       font-family: inherit;
     }
+    .form-control:focus { border-color: var(--primary); }
 
     .full-terminal {
       background: #0b1329;
@@ -410,18 +493,18 @@
       background: #1e293b;
       border: 1px solid #334155;
       color: #fff;
-      padding: 0.55rem 0.85rem;
-      font-size: 0.85rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.86rem;
       border-radius: var(--radius-sm);
       outline: none;
     }
 
     .files-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; }
-    .files-table th { background: #f8fafc; padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); }
-    .files-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
+    .files-table th { background: #f8fafc; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); }
+    .files-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
 
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none; }
-    .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 0.85rem 1.1rem; font-size: 0.85rem; font-weight: 500; pointer-events: auto; }
+    .toast { min-width: 260px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); padding: 0.85rem 1.15rem; font-size: 0.86rem; font-weight: 600; pointer-events: auto; }
     .toast-success { border-left: 4px solid var(--success); }
     .toast-error { border-left: 4px solid var(--danger); }
 
@@ -455,12 +538,16 @@
     
     <!-- ---------------- VIEW 1: SERVERS LIST ---------------- -->
     <div id="view-servers-list">
-      <!-- SERVER CARDS -->
+      <div class="list-headline">
+        <span class="list-title">My Servers</span>
+      </div>
+
+      <!-- SERVER CARDS CONTAINER -->
       <div id="servers-container" class="servers-grid"></div>
 
-      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:12px; border:2px dashed #cbd5e1;">
+      <div id="empty-state" style="display:none; text-align:center; padding:3.5rem 1.5rem; background:#fff; border-radius:16px; border:2px dashed #cbd5e1;">
         <h3 style="font-size:1.1rem; font-weight:700;">No servers found</h3>
-        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create a new server to get started.</p>
+        <p style="color:#64748b; font-size:0.85rem; margin-top:0.35rem;">Create your first server to get started.</p>
       </div>
     </div>
 
@@ -469,7 +556,7 @@
       <!-- Back Navigation -->
       <div class="detail-nav-header">
         <button class="back-btn" onclick="showServersListView()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           Back to Servers
         </button>
       </div>
@@ -478,10 +565,10 @@
       <div class="detail-top-card">
         <div>
           <div style="display:flex; align-items:center; gap:0.65rem;">
-            <span id="detail-server-name" class="detail-title">Testing</span>
-            <span id="detail-status-badge" class="badge"></span>
+            <span id="detail-server-name" class="detail-title">Server Name</span>
+            <span id="detail-status-badge" class="status-badge stopped"></span>
           </div>
-          <div id="detail-server-id" class="detail-meta-text">testing_1779785743</div>
+          <div id="detail-server-id" class="detail-meta-text">id_placeholder</div>
         </div>
         <div class="detail-actions-right">
           <button class="btn btn-secondary btn-sm" onclick="openFileManager()">📁 Files</button>
@@ -510,7 +597,10 @@
       <!-- 2. RECENT LOGS (Live Terminal) -->
       <div class="logs-card">
         <div class="logs-header-bar">
-          <span class="logs-heading">Recent Logs</span>
+          <span class="logs-heading">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Recent Logs
+          </span>
           <button class="logs-view-all-btn" onclick="openFullConsoleModal()">View All</button>
         </div>
         <div id="terminal-recent" class="terminal-body">Loading recent logs...</div>
@@ -532,7 +622,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label">Server Name</label>
-            <input type="text" id="create-name" class="form-control" placeholder="e.g. Testing" required />
+            <input type="text" id="create-name" class="form-control" placeholder="e.g. RISHAD" required />
           </div>
           <div class="form-group">
             <label class="form-label">Server Type</label>
@@ -717,27 +807,25 @@
       }
       emptyState.style.display = 'none';
 
-      // এখানে Python-এর বদলে সরাসরি Server ID (যেমন testing_1779785743) দেখানো হয়েছে
+      // নতুন প্রিমিয়াম কার্ড ডিজাইন
       container.innerHTML = list.map(server => {
         const isRunning = server.status === 'running';
         return `
-          <div class="server-card-item" onclick="openServerDetail('${server.id}')">
-            <div class="server-item-left">
-              <div class="server-item-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-                </svg>
-              </div>
-              <div class="server-info-col">
-                <div class="server-item-name">${escapeHtml(server.name)}</div>
-                <div class="server-item-id">${escapeHtml(server.id)}</div>
-              </div>
+          <div class="server-card-item ${isRunning ? 'is-running' : ''}" onclick="openServerDetail('${server.id}')">
+            <div class="server-info-col">
+              <div class="server-item-name">${escapeHtml(server.name)}</div>
+              <div class="server-item-id-badge">${escapeHtml(server.id)}</div>
             </div>
-            <div>
-              <span class="badge ${isRunning ? 'badge-running' : 'badge-stopped'}">
-                <span class="badge-dot"></span>
+            <div class="server-card-right">
+              <span class="status-badge ${isRunning ? 'running' : 'stopped'}">
+                <span class="pulse-dot"></span>
                 ${isRunning ? 'Running' : 'Stopped'}
               </span>
+              <div class="chevron-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
           </div>
         `;
@@ -755,8 +843,8 @@
       document.getElementById('detail-server-id').textContent = server.id;
       
       const badge = document.getElementById('detail-status-badge');
-      badge.className = `badge ${isRunning ? 'badge-running' : 'badge-stopped'}`;
-      badge.innerHTML = `<span class="badge-dot"></span> ${isRunning ? 'Running' : 'Stopped'}`;
+      badge.className = `status-badge ${isRunning ? 'running' : 'stopped'}`;
+      badge.innerHTML = `<span class="pulse-dot"></span> ${isRunning ? 'Running' : 'Stopped'}`;
 
       document.getElementById('ctrl-btn-start').disabled = isRunning;
       document.getElementById('ctrl-btn-stop').disabled = !isRunning;
