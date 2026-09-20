@@ -166,8 +166,6 @@
     .btn-danger:hover:not(:disabled) { background-color: var(--btn-stop-hover); }
     .btn-danger-outline { background-color: transparent; border-color: #fecaca; color: var(--btn-stop); }
     .btn-danger-outline:hover:not(:disabled) { background-color: var(--danger-light); }
-    .btn-purple { background-color: var(--purple-light); border-color: #ddd6fe; color: var(--purple); }
-    .btn-purple:hover:not(:disabled) { background-color: #ede9fe; }
 
     /* Main Container */
     main {
@@ -311,7 +309,7 @@
     }
 
     /* ------------------------------------------------------------- */
-    /* EXACT IMAGE-STYLE: SERVER CONTROLS & RECENT LOGS              */
+    /* SERVER CONTROLS & RECENT LOGS                                 */
     /* ------------------------------------------------------------- */
     .server-controls-card {
       background: var(--card-bg);
@@ -321,20 +319,9 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
       margin-bottom: 1.15rem;
     }
-    .controls-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.01em;
-      margin-bottom: 0.2rem;
-    }
-    .controls-subtitle {
-      font-size: 0.8rem;
-      color: #64748b;
-      margin-bottom: 1rem;
-    }
+    .controls-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem; }
+    .controls-subtitle { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; }
     
-    /* বাটন ৩টি সবসময় পাশাপাশি এক সারিতে থাকবে (মোবাইলেও ভাঙবে না) */
     .control-buttons-grid {
       display: grid !important;
       grid-template-columns: repeat(3, 1fr) !important;
@@ -352,29 +339,17 @@
       align-items: center;
       justify-content: center;
       gap: 0.4rem;
-      transition: opacity 0.15s ease, transform 0.1s ease;
       white-space: nowrap;
     }
     .btn-control:hover:not(:disabled) { opacity: 0.92; }
     .btn-control:active:not(:disabled) { transform: scale(0.98); }
-    .ctrl-icon {
-      width: 13px;
-      height: 13px;
-      fill: currentColor;
-      stroke: currentColor;
-      stroke-width: 0;
-      flex-shrink: 0;
-    }
-    .btn-ctrl-restart .ctrl-icon {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.5;
-    }
+    .ctrl-icon { width: 13px; height: 13px; fill: currentColor; stroke: currentColor; stroke-width: 0; flex-shrink: 0; }
+    .btn-ctrl-restart .ctrl-icon { fill: none; stroke: currentColor; stroke-width: 2.5; }
     .btn-ctrl-start { background-color: var(--btn-start); }
     .btn-ctrl-stop { background-color: var(--btn-stop); }
     .btn-ctrl-restart { background-color: var(--btn-restart); }
 
-    /* Recent Logs (হুবহু ছবির কালার ও স্টাইল) */
+    /* Recent Logs */
     .recent-logs-card {
       background: #09101d;
       border-radius: 12px;
@@ -389,19 +364,8 @@
       align-items: center;
       justify-content: space-between;
     }
-    .logs-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.01em;
-    }
-    .logs-view-all {
-      color: #38bdf8;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-    }
+    .logs-title { font-size: 0.95rem; font-weight: 700; color: #ffffff; }
+    .logs-view-all { color: #38bdf8; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; }
     .logs-view-all:hover { text-decoration: underline; }
     .logs-terminal-body {
       padding: 0.6rem 1.15rem 1.15rem;
@@ -415,17 +379,200 @@
       word-break: break-all;
     }
 
-    /* Embedded File Manager Card */
+    /* ------------------------------------------------------------- */
+    /* NEW FILE MANAGER (হুবহু ছবির ডার্ক স্টাইল & ৩-ডট মেনু)         */
+    /* ------------------------------------------------------------- */
     .file-manager-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
+      background: #09101d;
+      border: 1px solid #152238;
       border-radius: 12px;
-      padding: 1.15rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      padding: 1rem 1.15rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
       margin-bottom: 1.15rem;
+      color: #ffffff;
+    }
+    .fm-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .fm-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .fm-title-icon {
+      color: #f59e0b;
+      display: inline-flex;
+    }
+    .fm-quick-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .fm-btn-action {
+      background: #152238;
+      color: #94a3b8;
+      border: 1px solid #1e2e4a;
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .fm-btn-action:hover {
+      background: #1e2e4a;
+      color: #ffffff;
+    }
+    .fm-breadcrumbs {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #c084fc;
+      margin-bottom: 0.85rem;
+    }
+    .fm-breadcrumbs span { cursor: pointer; }
+    .fm-breadcrumbs span:hover { text-decoration: underline; }
+
+    /* Select All Bar */
+    .fm-select-all-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid #152238;
+      margin-bottom: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.05em;
     }
 
-    /* Actions Bar */
+    /* File Row Items */
+    .fm-file-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .fm-file-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid #111a2e;
+      position: relative;
+      transition: background 0.1s ease;
+    }
+    .fm-file-row:last-child { border-bottom: none; }
+    .fm-file-row:hover {
+      background: #0e182a;
+      border-radius: 8px;
+    }
+    .fm-row-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+      flex: 1;
+      cursor: pointer;
+    }
+    .fm-checkbox {
+      width: 17px;
+      height: 17px;
+      border-radius: 4px;
+      border: 1.5px solid #475569;
+      background: transparent;
+      cursor: pointer;
+      accent-color: #2563eb;
+      flex-shrink: 0;
+    }
+    .fm-file-icon {
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .fm-file-icon.folder { color: #f59e0b; }
+    .fm-file-name {
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* 3-Dot (⋮) Menu */
+    .fm-dots-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .fm-dots-btn:hover {
+      background: #152238;
+      color: #ffffff;
+    }
+
+    /* Dropdown Popover */
+    .fm-menu-dropdown {
+      position: absolute;
+      right: 0.5rem;
+      top: 2.2rem;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      min-width: 140px;
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      padding: 0.35rem 0;
+    }
+    .fm-menu-dropdown.show {
+      display: flex;
+    }
+    .fm-menu-item {
+      padding: 0.5rem 0.85rem;
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      text-align: left;
+      width: 100%;
+    }
+    .fm-menu-item:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+    .fm-menu-item.danger {
+      color: #f87171;
+    }
+    .fm-menu-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    /* Extra Bottom Actions */
     .extra-actions-bar {
       display: flex;
       align-items: center;
@@ -516,14 +663,6 @@
     .terminal-prompt { color: #58a6ff; font-family: 'JetBrains Mono', monospace; padding: 0.4rem 0.5rem; font-weight: bold; }
     .terminal-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-family: 'JetBrains Mono', monospace; }
 
-    /* File Table */
-    .file-table-container { max-height: 380px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
-    .file-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
-    .file-table th { background: #f8fafc; padding: 0.65rem 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    .file-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
-    .file-name-cell { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 500; }
-    .file-name-cell:hover { color: var(--primary); }
-
     .code-editor {
       width: 100%;
       height: 440px;
@@ -587,7 +726,7 @@
       </div>
     </div>
 
-    <!-- 2. SERVER DETAIL HEADER (Logo এর জায়গায় Back বাটন) -->
+    <!-- 2. SERVER DETAIL HEADER -->
     <div id="header-detail" class="header-container" style="display: none;">
       <div class="detail-nav-left">
         <button class="btn-back-header" onclick="backToServersList()" title="Back to servers">
@@ -648,9 +787,9 @@
       <div id="server-grid" class="server-grid"></div>
     </div>
 
-    <!-- VIEW 2: SERVER DETAIL VIEW (IMAGE STYLE) -->
+    <!-- VIEW 2: SERVER DETAIL VIEW -->
     <div id="view-server-detail" class="view-container">
-      <!-- 1. Server Controls (Exact match: Start, Stop, Restart in one row) -->
+      <!-- 1. Server Controls -->
       <div class="server-controls-card">
         <div class="controls-title">Server Controls</div>
         <div class="controls-subtitle">Start, stop or restart your server</div>
@@ -670,7 +809,7 @@
         </div>
       </div>
 
-      <!-- 2. Recent Logs (Exact match: Dark box with cyan & green styling) -->
+      <!-- 2. Recent Logs -->
       <div class="recent-logs-card">
         <div class="logs-header">
           <div class="logs-title">Recent Logs</div>
@@ -679,29 +818,43 @@
         <div id="detail-recent-logs" class="logs-terminal-body">Connecting to logs...</div>
       </div>
 
-      <!-- 3. File Manager (Terminal এর ঠিক নিচে) -->
+      <!-- 3. FILE MANAGER (ছবি অনুযায়ী কাস্টমাইজড) -->
       <div class="file-manager-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
-          <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-            <span style="font-weight:700; font-size:1rem; color:var(--text-main); display:flex; align-items:center; gap:0.4rem;">
-              <svg class="icon" style="color:var(--purple);" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              File Manager
+        <div class="fm-header">
+          <div class="fm-title">
+            <span class="fm-title-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
             </span>
-            <div id="file-breadcrumbs" style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; margin-left:0.5rem;"></div>
+            FILE MANAGER
           </div>
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <div class="fm-quick-actions">
             <input type="file" id="file-upload-input" style="display:none;" onchange="handleFileSelected(event)" />
-            <button class="btn btn-secondary" onclick="document.getElementById('file-upload-input').click()">Upload</button>
-            <button class="btn btn-secondary" onclick="promptCreateFolder()">New Folder</button>
-            <button class="btn btn-secondary" onclick="loadFiles(activeServer.id, currentPath)">Refresh</button>
+            <button class="fm-btn-action" onclick="document.getElementById('file-upload-input').click()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Upload
+            </button>
+            <button class="fm-btn-action" onclick="promptCreateFolder()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              New Folder
+            </button>
+            <button class="fm-btn-action" onclick="loadFiles(activeServer.id, currentPath)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              Refresh
+            </button>
           </div>
         </div>
-        <div class="file-table-container">
-          <table class="file-table">
-            <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>Modified</th><th style="text-align:right;">Actions</th></tr></thead>
-            <tbody id="file-list-body"></tbody>
-          </table>
+
+        <!-- Breadcrumb: / root -->
+        <div id="file-breadcrumbs" class="fm-breadcrumbs"></div>
+
+        <!-- SELECT ALL ROW -->
+        <div class="fm-select-all-bar">
+          <input type="checkbox" id="fm-select-all-cb" class="fm-checkbox" onchange="toggleSelectAll(this)" />
+          <span>SELECT ALL</span>
         </div>
+
+        <!-- FILE LIST (Type, Size, Modified ছাড়া ক্লিন রো) -->
+        <div id="fm-file-list" class="fm-file-list"></div>
       </div>
 
       <!-- 4. Extra Actions (Settings & Delete) -->
@@ -860,23 +1013,17 @@
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function openCreateModal() { document.getElementById('create-name').value = ''; openModal('create-modal'); }
 
-    // HTML Escape Helper
     function escapeHtml(text) {
       if (!text) return '';
       return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // টার্মিনাল লগ ছবির মতো কালার করার ফাংশন
     function formatTerminalLogs(rawLogs) {
       if (!rawLogs || !rawLogs.trim()) return '<span style="color:#64748b;">[No logs yet]</span>';
-      
       const lines = rawLogs.split('\n');
       return lines.map(line => {
         let safeLine = escapeHtml(line);
-        // [HH:MM:SS] বা [YYYY-MM-DD HH:MM:SS] কে Cyan কালার দেওয়া
         safeLine = safeLine.replace(/(\[\d{2,4}[-:\d\s]{5,17}\])/g, '<span style="color:#38bdf8;">$1</span>');
-        
-        // Success বা Running সংক্রান্ত শব্দগুলোকে সুন্দর সবুজ রঙ দেওয়া
         if (/successfully|running|ready/i.test(line)) {
           safeLine = safeLine.replace(/(successfully|running|ready|JUBAYER HOSTING)/gi, '<span style="color:#4ade80; font-weight:bold;">$1</span>');
         } else if (/error|fail|exception/i.test(line)) {
@@ -1146,11 +1293,13 @@
       fetchRecentLogs();
     }
 
-    // Files Management
+    // -------------------------------------------------------------
+    // FILE MANAGER LOGIC (TYPE, SIZE, MODIFIED ছাড়া ক্লিন ৩-ডট মেনু)
+    // -------------------------------------------------------------
     async function loadFiles(serverId, path = "") {
       currentPath = path;
-      const tbody = document.getElementById('file-list-body');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+      const container = document.getElementById('fm-file-list');
+      container.innerHTML = '<div style="padding:1.5rem; text-align:center; color:#94a3b8; font-size:0.85rem;">Loading files...</div>';
       renderBreadcrumbs(path);
 
       try {
@@ -1159,48 +1308,118 @@
         if (data.status === 'success') {
           renderFileList(data.items || []);
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--btn-stop);">${data.message}</td></tr>`;
+          container.innerHTML = `<div style="padding:1rem; color:#f87171; text-align:center; font-size:0.85rem;">${data.message}</div>`;
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--btn-stop);">${err.message}</td></tr>`;
+        container.innerHTML = `<div style="padding:1rem; color:#f87171; text-align:center; font-size:0.85rem;">${err.message}</div>`;
       }
     }
 
     function renderBreadcrumbs(path) {
       const bc = document.getElementById('file-breadcrumbs');
       const parts = path ? path.split('/').filter(Boolean) : [];
-      let html = `<span style="cursor:pointer;color:var(--primary);" onclick="loadFiles('${activeServer.id}', '')">root</span>`;
+      let html = `/ <span onclick="loadFiles('${activeServer.id}', '')">root</span>`;
       let acc = "";
       parts.forEach(p => {
         acc += (acc ? "/" : "") + p;
         const currentAcc = acc;
-        html += ` / <span style="cursor:pointer;color:var(--primary);" onclick="loadFiles('${activeServer.id}', '${currentAcc}')">${p}</span>`;
+        html += ` / <span onclick="loadFiles('${activeServer.id}', '${currentAcc}')">${p}</span>`;
       });
       bc.innerHTML = html;
     }
 
     function renderFileList(items) {
-      const tbody = document.getElementById('file-list-body');
+      const container = document.getElementById('fm-file-list');
       if (!items.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Empty folder</td></tr>';
+        container.innerHTML = '<div style="padding:1.5rem; text-align:center; color:#64748b; font-size:0.85rem;">No files or folders here</div>';
         return;
       }
-      tbody.innerHTML = items.map(item => {
+
+      container.innerHTML = items.map((item, index) => {
         const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-        const clickAttr = item.is_dir ? `onclick="loadFiles('${activeServer.id}', '${itemPath}')"` : `onclick="openFile('${itemPath}', '${escapeHtml(item.name)}')"` ;
+        const isDir = item.is_dir;
+        const isZip = item.type === 'zip';
+
+        // আইকন: ফোল্ডার হলে গোল্ড ফোল্ডার, ফাইল হলে কোড ফাইল আইকন
+        const iconSvg = isDir 
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="#f59e0b"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>`
+          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><polyline points="10 13 8 15 10 17"></polyline><polyline points="14 13 16 15 14 17"></polyline></svg>`;
+
+        const clickAction = isDir 
+          ? `loadFiles('${activeServer.id}', '${itemPath}')`
+          : `openFile('${itemPath}', '${escapeHtml(item.name)}')`;
+
         return `
-          <tr>
-            <td><div class="file-name-cell" ${clickAttr}>${item.is_dir ? '📁' : '📄'} <span>${escapeHtml(item.name)}</span></div></td>
-            <td><span style="font-size:0.75rem; color:var(--text-muted);">${item.type.toUpperCase()}</span></td>
-            <td>${item.size}</td>
-            <td style="color:var(--text-muted); font-size:0.75rem;">${item.modified}</td>
-            <td style="text-align:right;">
-              ${!item.is_dir ? `<button class="btn btn-secondary" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="openFile('${itemPath}', '${escapeHtml(item.name)}')">Edit</button>` : ''}
-              <button class="btn btn-danger-outline" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="deleteFile('${itemPath}')">Delete</button>
-            </td>
-          </tr>
+          <div class="fm-file-row">
+            <div class="fm-row-left" onclick="${clickAction}">
+              <input type="checkbox" class="fm-checkbox file-item-checkbox" onclick="event.stopPropagation()" />
+              <span class="fm-file-icon ${isDir ? 'folder' : ''}">
+                ${iconSvg}
+              </span>
+              <span class="fm-file-name">${escapeHtml(item.name)}</span>
+            </div>
+
+            <!-- ৩-ডট বাটন (⋮) -->
+            <button class="fm-dots-btn" onclick="toggleFileMenu(event, ${index})" title="Options">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="5" r="2"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <circle cx="12" cy="19" r="2"></circle>
+              </svg>
+            </button>
+
+            <!-- ৩-ডট মেনু পপওভার -->
+            <div id="fm-menu-${index}" class="fm-menu-dropdown">
+              ${!isDir ? `
+                <button class="fm-menu-item" onclick="openFile('${itemPath}', '${escapeHtml(item.name)}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Edit
+                </button>
+                <a class="fm-menu-item" href="/api/file/${activeServer.id}?path=${encodeURIComponent(itemPath)}&download=true">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Download
+                </a>
+              ` : ''}
+              ${isZip ? `
+                <button class="fm-menu-item" onclick="extractZip('${itemPath}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                  Extract ZIP
+                </button>
+              ` : ''}
+              <button class="fm-menu-item" onclick="renameItem('${itemPath}', '${escapeHtml(item.name)}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+                Rename
+              </button>
+              <button class="fm-menu-item danger" onclick="deleteFile('${itemPath}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>
+                Delete
+              </button>
+            </div>
+          </div>
         `;
       }).join('');
+    }
+
+    // ৩-ডট মেনু ওপেন/ক্লোজ টগল
+    function toggleFileMenu(event, index) {
+      event.stopPropagation();
+      const allMenus = document.querySelectorAll('.fm-menu-dropdown');
+      allMenus.forEach((m, i) => {
+        if (i !== index) m.classList.remove('show');
+      });
+      const targetMenu = document.getElementById(`fm-menu-${index}`);
+      if (targetMenu) targetMenu.classList.toggle('show');
+    }
+
+    // বাইরে ক্লিক করলে ৩-ডট মেনু বন্ধ হওয়া
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.fm-menu-dropdown').forEach(m => m.classList.remove('show'));
+    });
+
+    // Select All
+    function toggleSelectAll(masterCb) {
+      const cbs = document.querySelectorAll('.file-item-checkbox');
+      cbs.forEach(cb => cb.checked = masterCb.checked);
     }
 
     async function openFile(path, name) {
@@ -1245,6 +1464,48 @@
         body: JSON.stringify({ folder_name: name, path: currentPath })
       });
       loadFiles(activeServer.id, currentPath);
+    }
+
+    async function renameItem(oldPath, oldName) {
+      const newName = prompt(`Rename "${oldName}" to:`, oldName);
+      if (!newName || !newName.trim() || newName === oldName) return;
+
+      try {
+        const res = await fetch(`/api/rename/${activeServer.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ old_path: oldPath, new_name: newName.trim() })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Item renamed successfully', 'success');
+          loadFiles(activeServer.id, currentPath);
+        } else {
+          showToast(data.message || 'Rename failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function extractZip(path) {
+      showToast('Extracting ZIP archive...', 'info');
+      try {
+        const res = await fetch(`/api/extract/${activeServer.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast('Extracted successfully', 'success');
+          loadFiles(activeServer.id, currentPath);
+        } else {
+          showToast(data.message || 'Extraction failed', 'error');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
     }
 
     async function deleteFile(path) {
